@@ -3,14 +3,27 @@ import { NgModule } from '@angular/core';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+import { AngularMaterialModule } from './material.module';
+import { FormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
+import { TestapiComponent } from './testapi/testapi.component';
+import { ShowdetailsDialogComponent } from './testapi/showdetails-dialog/showdetails-dialog.component';
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    TestapiComponent,
+    ShowdetailsDialogComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    FormsModule,
+    HttpClientModule,
+    AngularMaterialModule
   ],
   providers: [],
   bootstrap: [AppComponent]

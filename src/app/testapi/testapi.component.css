@@ -1,0 +1,56 @@
+.normal-button {
+    margin-right: 10px !important;
+    font-size: 20px;
+}
+
+.centeralign{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+  }
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+
+  .normal-text {
+      font-size: 25px;
+  }
+
+  .normal-label {
+    font-size: 15px;
+    color: darkslategrey;
+  }
+
+  .database-progress {
+    font-size: 15px;
+    color: red;
+  }
+
+  .disclaimer-text {
+    font-size: 25px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+  }
+
+  .title-text {
+    cursor: pointer;
+    font-size: 20px;
+  }
+
+  .journal-title-text {
+    font-size: 15px;
+    color: gray;
+  }
+
+  .authors-text {
+    font-size: 15px;
+    color: gray;
+  }
+
+  .result-list-item {
+    margin-bottom: 50px;
+    width: 700px !important;
+    height: auto !important;
+  }

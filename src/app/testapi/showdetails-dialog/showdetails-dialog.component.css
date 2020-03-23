@@ -1,0 +1,40 @@
+.details-dialog {
+    width: 600px;
+    height: 500px;
+}
+
+.abstract-text {
+    white-space:pre-wrap;
+    padding-left: 24px;
+    padding-right: 24px;
+    padding-bottom: 24px;
+    padding-top: 10px;
+}
+
+.spacer {
+    flex: 1 1 auto;
+  }
+
+  .centeralign {
+    display: flex;
+    align-items: center;
+    justify-content:center;
+  }
+
+  .details-toolbar-text {
+    color: #666;
+    font-size: 18px;
+    padding-top:5px;
+    padding-left: 24px;
+  }
+
+  .details-toolbar {
+    width: 100%;
+    display: flex;
+    background: #f5f5f5 !important;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  ::ng-deep .mat-dialog-container {
+  padding: 0px !important;
+}

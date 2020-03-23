@@ -1,0 +1,41 @@
+<mat-card class="normal-card">
+    <mat-card-content class="centeralign">
+        <div fxLayout="column">
+            <div class="normal-label">Pubmed query:</div>
+
+            <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline" (keyup.enter)="searchButtonClick(query)">
+                <mat-label style="margin-top: 0px !important;">Query</mat-label>
+                <input matInput type="text" [(ngModel)]="query" class="normal-text">  
+            </mat-form-field>
+
+            <!-- <div *ngIf="isSearched" class="normal-label">Search results:</div> -->
+
+            <div class="database-progress">{{searchProgress}}</div>
+
+            <mat-list *ngIf="isSearched">
+                <div mat-subheader>Search results:</div>
+                <mat-list-item class="result-list-item" *ngFor="let entry of listOfSearchResults, let i = index">
+                    <!-- <div>{{i + 1}})&nbsp;</div> -->
+                    <div fxLayout="column">
+                        <div class="title-text" (click)="moreDetailsClick(entry)">{{entry.title}}</div>
+                        <div class="journal-title-text">Journal:&nbsp;{{entry.journal}}</div>
+                        <div class="authors-text">Authors:&nbsp;{{entry.displayauthors}}</div>
+                    </div>
+                </mat-list-item>
+            </mat-list>
+
+            <!-- <mat-form-field *ngIf="isSearched" class="input-form-field" style="width: 700px !important;">
+                <textarea matInput rows="5" cols="1" type="text" class="normal-text" [(ngModel)]="result" readonly="true"></textarea>
+            </mat-form-field> -->
+
+
+
+
+        </div>
+    </mat-card-content>
+    <mat-divider></mat-divider>
+    <mat-card-actions class="centeralign">
+        <button mat-raised-button color="primary" (click)="searchButtonClick(query)" class="normal-button">{{testButtonText}}</button>
+    </mat-card-actions>
+
+</mat-card>
