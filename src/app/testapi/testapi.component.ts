@@ -23,6 +23,7 @@ export class TestapiComponent implements OnInit {
   isTested = false;
   isSearched = false;
   query = "";
+  resultsNumber = 3;
   result = "";
   listOfSearchIDs = [];
   searchProgress = "";
@@ -33,7 +34,7 @@ export class TestapiComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  async searchButtonClick(query): Promise<void> {
+  async searchButtonClick(query, number): Promise<void> {
     this.listOfSearchIDs.length = 0;
     this.listOfSearchResults.length = 0;
     this.isTested = true;
@@ -42,7 +43,7 @@ export class TestapiComponent implements OnInit {
     this.searchProgress = "Searching PubMed Database..";
 
     console.log("Query:", query);
-    var searchResult = await this.searchDatabase(query);
+    var searchResult = await this.searchDatabase(query, number);
     console.log("Search Result:", searchResult);
     if (searchResult.esearchresult.count == 0)
     {
@@ -103,8 +104,8 @@ export class TestapiComponent implements OnInit {
     FileSaver.saveAs(blob, "Search Results.txt");
   }
 
-  async searchDatabase(query) {
-    const res = await this.pubmedService.searchDatabase(query).toPromise();
+  async searchDatabase(query, number) {
+    const res = await this.pubmedService.searchDatabase(query, number).toPromise();
     return res;
   }
 

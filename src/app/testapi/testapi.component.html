@@ -1,9 +1,16 @@
 <mat-card class="normal-card">
     <mat-card-content class="centeralign">
         <div fxLayout="column">
-            <div class="normal-label">Pubmed query:</div>
+            <div class="normal-label">Number of Results:</div>
 
-            <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline" (keyup.enter)="searchButtonClick(query)">
+            <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline">
+                <mat-label style="margin-top: 0px !important;">Number of results</mat-label>
+                <input matInput type="text" [(ngModel)]="resultsNumber" class="normal-text">  
+            </mat-form-field>
+
+            <div class="normal-label">PubMed query:</div>
+
+            <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
                 <mat-label style="margin-top: 0px !important;">Query</mat-label>
                 <input matInput type="text" [(ngModel)]="query" class="normal-text">  
             </mat-form-field>
@@ -35,7 +42,7 @@
     </mat-card-content>
     <mat-divider></mat-divider>
     <mat-card-actions class="centeralign">
-        <button mat-raised-button color="primary" (click)="searchButtonClick(query)" class="normal-button">{{testButtonText}}</button>
+        <button mat-raised-button color="primary" (click)="searchButtonClick(query, resultsNumber)" class="normal-button">{{testButtonText}}</button>
         <button mat-stroked-button *ngIf="isSearched" color="primary" (click)="downloadResults()" class="normal-button">DOWNLOAD</button>
     </mat-card-actions>
 
