@@ -4,6 +4,9 @@ import { PubmedService } from '../services/pubmed.service';
 import { MatDialog } from '@angular/material/dialog';
 
 import { ShowdetailsDialogComponent } from './showdetails-dialog/showdetails-dialog.component';
+import { isDataSource } from '@angular/cdk/collections';
+
+import * as FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-testapi',
@@ -23,6 +26,7 @@ export class TestapiComponent implements OnInit {
   result = "";
   listOfSearchIDs = [];
   searchProgress = "";
+  abstracts;
   
   listOfSearchResults = [];
 
@@ -40,6 +44,11 @@ export class TestapiComponent implements OnInit {
     console.log("Query:", query);
     var searchResult = await this.searchDatabase(query);
     console.log("Search Result:", searchResult);
+    if (searchResult.esearchresult.count == 0)
+    {
+      this.searchProgress = "The search yielded no results";
+      return;
+    }
 
     //console.log("Test:", searchResult.esearchresult.)
 
@@ -80,7 +89,18 @@ export class TestapiComponent implements OnInit {
     const dialogRef = this.dialog.open(ShowdetailsDialogComponent, {
       data: entry
     });
+  }
 
+  async downloadResults(): Promise<void> {
+    var IDs;
+    console.log("listOfSearchResults:", this.listOfSearchResults);
+    for (var entry of this.listOfSearchResults)
+    {
+      IDs = IDs + entry.id + ",";
+    }
+    var abstracts = await this.getAbstractByID(IDs);
+    var blob = new Blob([abstracts], {type: "text/plain;charset=utf-8"});
+    FileSaver.saveAs(blob, "Search Results.txt");
   }
 
   async searchDatabase(query) {
@@ -91,6 +111,11 @@ export class TestapiComponent implements OnInit {
   async getBasicDataByID(id) {
     const res = await this.pubmedService.getBasicDataByID(id).toPromise();
     return res;
+  }
+
+  async getAbstractByID(id) {
+    const result = await this.pubmedService.getAbstractByID(id).toPromise();
+    return result;
   }
 
   sleep(ms) {

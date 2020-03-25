@@ -38,3 +38,8 @@
   ::ng-deep .mat-dialog-container {
   padding: 0px !important;
 }
+
+.download-button {
+  margin-bottom: 20px;
+  color: #666;
+}

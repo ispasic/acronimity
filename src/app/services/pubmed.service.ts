@@ -17,7 +17,7 @@ export class PubmedService {
 
   public searchDatabase(query): Observable<any> {
     this.db = "pubmed";
-    var retmax = 3;
+    var retmax = 2;
     query = encodeURIComponent(query);
     this.findUrl = baseUrl + "esearch.fcgi?db=" + this.db + "&term=" + query + "&retmode=" + this.retmode + "&retmax=" + retmax;
     console.log("Search Database Url:", this.findUrl);

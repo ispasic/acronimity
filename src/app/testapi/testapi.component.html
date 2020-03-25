@@ -36,6 +36,7 @@
     <mat-divider></mat-divider>
     <mat-card-actions class="centeralign">
         <button mat-raised-button color="primary" (click)="searchButtonClick(query)" class="normal-button">{{testButtonText}}</button>
+        <button mat-stroked-button *ngIf="isSearched" color="primary" (click)="downloadResults()" class="normal-button">DOWNLOAD</button>
     </mat-card-actions>
 
 </mat-card>

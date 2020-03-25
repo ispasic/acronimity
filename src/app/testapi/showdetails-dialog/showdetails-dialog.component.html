@@ -9,4 +9,8 @@
     </div>
     <mat-divider></mat-divider>
     <p class="abstract-text centeralign">{{abstract}}</p>
+    <div *ngIf="isAbstractFormed" class="centeralign">
+        <button mat-stroked-button class="download-button" cdkFocusInitial (click)="downloadDetailsClick()">Download</button>
+    </div>
 </div>
+<mat-divider></mat-divider>
