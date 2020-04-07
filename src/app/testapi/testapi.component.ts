@@ -7,6 +7,7 @@ import { ShowdetailsDialogComponent } from './showdetails-dialog/showdetails-dia
 import { isDataSource } from '@angular/cdk/collections';
 
 import * as FileSaver from 'file-saver';
+import { analyzeAndValidateNgModules } from '@angular/compiler';
 
 @Component({
   selector: 'app-testapi',
@@ -23,11 +24,13 @@ export class TestapiComponent implements OnInit {
   isTested = false;
   isSearched = false;
   query = "";
-  resultsNumber = 3;
+  resultsNumber = 1;
   result = "";
   listOfSearchIDs = [];
   searchProgress = "";
   abstracts;
+
+  acronymList: String[][] = [];
   
   listOfSearchResults = [];
 
@@ -84,6 +87,13 @@ export class TestapiComponent implements OnInit {
 
     console.log("List of IDs:", this.listOfSearchIDs);
     this.result = this.listOfSearchIDs.toString().split(",").join('\n');
+
+    //let testString = "We recruited people with rheumatoid arthritis (RA) or systemic lupuserythematosus (SLE) or DNA (de nuclein acid)."
+    //console.log("testString = ", testString);
+    //this.extractPairs(testString);
+
+    console.log("Found Acronyms = ", this.acronymList);
+
   }
 
   async moreDetailsClick(entry): Promise<void> {
@@ -102,6 +112,10 @@ export class TestapiComponent implements OnInit {
     var abstracts = await this.getAbstractByID(IDs);
     var blob = new Blob([abstracts], {type: "text/plain;charset=utf-8"});
     FileSaver.saveAs(blob, "Search Results.txt");
+
+    this.acronymList.length = 0; //empty the acronym list
+    this.extractPairs(abstracts);
+    console.log("Found Acronyms = ", this.acronymList);
   }
 
   async searchDatabase(query, number) {
@@ -158,5 +172,247 @@ export class TestapiComponent implements OnInit {
       }
     return result;
   }
+
+
+
+//schwartz algorithm implementation
+
+  //check if string contains a letter
+
+  private hasLetter(str: string): boolean {
+    for (let s of str)
+    {
+      if(this.isLetter(s))
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  //check if symbol is a letter
+
+  private isLetter(str: string): boolean {
+    return str.toLowerCase() != str.toUpperCase();
+  }
+
+  //check if symbol is a letter or digit
+
+  private isLetterOrDigit(str: string): boolean {
+    if(str.match(/[0-9]/i))
+    {
+      return true;
+    }
+    return str.toLowerCase() != str.toUpperCase();
+  }
+
+  //check if string has capital letter
+
+  private hasCapital(str: string): boolean {
+    for (let s of str)
+    {
+      if(this.isLetter(s) && s == s.toUpperCase())
+      {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  //count letters and digits in string
+
+  countLetterAndDigits(str: string): number {
+    let count = 0;
+    for (let s of str)
+    {
+      if(this.isLetterOrDigit(s))
+      {
+        count++;
+      }
+    }
+    return count;
+  }
+
+  //check if that is a valid short form
+
+  private isValidShortForm(str: string): boolean {
+    if (this.hasLetter(str) && (this.isLetterOrDigit(str.charAt(0)) || str.charAt(0) == "("))
+    {
+      return true;
+    }
+    return false;
+  }
+
+  private extractPairs(sentence: string) {
+    let acronym = "";
+    let definition = "";
+    let o = -1;
+    let c = -1;
+    let cutoff = -1;
+    let nextc = -1;
+    let tmp = -1;
+    let swapAcronym = "";
+
+    o = sentence.indexOf(" ("); //find open parenthesis
+
+    while (o > -1) //do it while we have an open parenthesis in text
+    {
+      // if(o > -1) //it's >-1 anyhow?
+      // {
+        o++; //move " (" to "("
+
+        c = sentence.indexOf(")", o); //find close parethesis
+        if (c > -1) //if close parenthesis found
+        {
+          //find the start of the previous clause based on punctuation
+          cutoff = Math.max(sentence.lastIndexOf(". ", o), sentence.lastIndexOf(", ", o));
+          if (cutoff == -1) //if no . or , before
+          {
+            cutoff = -2;
+          }
+
+          definition = sentence.substring(cutoff + 2, o); //get the full definition candidate
+          console.log("Initial definition = ", definition);
+          acronym = sentence.substring(o + 1, c); //get the full acronym candidate
+          console.log("Initial acronym = ", acronym);
+        }
+      //}
+
+      if (acronym.length > 0 || definition.length > 0) //candidates found
+      {
+        if (acronym.length > 1 && definition.length > 1) //both candidates are longer than 1 symbol
+        {
+          //look for parenthesis nested in candidate acronym
+          nextc = sentence.indexOf(")", c + 1);
+          if((acronym.indexOf("(") > -1) && (nextc > -1))
+          {
+            acronym = sentence.substring(o + 1, nextc);
+            c = nextc;
+          }
+
+          //if separator in candidate acronym then cut acronym
+          if((tmp = acronym.indexOf(", ")) > -1)
+          {
+            acronym = acronym.substring(0, tmp);
+          }
+          if((tmp = acronym.indexOf("; ")) > -1)
+          {
+            acronym = acronym.substring(0, tmp);
+          }
+
+          //check if acronym is in () or definition
+          var splitted = acronym.split(" "); //split the acronym into parts separated by " "
+
+          //if more than 2 parts in acronym and acronym is longer than definition
+          if(splitted.length > 2 || acronym.length > definition.length) 
+          {
+            //definition found within (***) so need to swap definition and acronym
+
+            //extract the last word before "(" as a candidate for acronym
+            tmp = sentence.lastIndexOf(" ", o - 2);
+            swapAcronym = sentence.substring(tmp + 1, o - 1);
+
+            //swap acronym and definition
+            definition = acronym;
+            acronym = swapAcronym;
+
+            //validate new acronym
+            if(!this.hasCapital(acronym))
+            {
+              acronym = ""; //delete invalid acronym
+            }
+          }
+
+          if(this.isValidShortForm(acronym)) //if acronym is actually valid short form
+          {
+            this.matchPair(acronym.trim(), definition.trim()); //match the pair of acronym and definition candidates
+          }
+        }
+
+        //prepare to process the rest after )
+        sentence = sentence.substring(c + 1);
+      }
+      else
+      {
+        sentence = sentence.substring(o + 1); //process the rest
+      }
+      o = sentence.indexOf(" ("); //find next open parenthesis and repeat the cycle
+    }
+  }
+
+  private bestLongForm(acronym: string, definition: string): string {
+    // --- go through the acronym & definition character by character,
+    //     right to left looking for a match
+
+    definition = definition.toLowerCase();
+
+    let a = acronym.length - 1;
+    let d = definition.length - 1;
+
+    for( ; a >= 0; a--)
+    {
+      let c = acronym.charAt(a).toLowerCase();
+
+      if(this.isLetterOrDigit(c))
+      {
+        while (
+            (d >= 0 && definition.charAt(d) != c) ||
+            (a == 0 && d > 0 && this.isLetterOrDigit(definition.charAt(d - 1)))
+          )
+        {
+          d--;
+        }
+
+        if(d < 0)
+        {
+          return null;
+        }
+
+        d--;
+      }
+
+    }
+
+    d = definition.lastIndexOf(" ", d) + 1;
+    return definition.substring(d);
+  }
+
+  private matchPair(acronym: string, definition: string): void {
+    console.log("acronym in matchPair = ", acronym);
+    console.log("definition in matchPair = ", definition);
+    //acronym has to have at least 2 characters
+    if (acronym.length < 2)
+    {
+      console.log("ERROR: Acronym length is less than 2");
+      return;
+    }
+
+    let bestLongForm = this.bestLongForm(acronym, definition);
+    
+    if (bestLongForm == null)
+    {
+      console.log("ERROR: no bestLongForm determined");
+      return;
+    }
+
+    //check the bestLongForm according to Schwartz algorithm
+    let bestLongFormWords = bestLongForm.split(" ");
+
+    let acronymCharsCount = this.countLetterAndDigits(acronym); //number of characters in acronym that are digits or letters
+    let defWordsCount = bestLongFormWords.length; //number of words in definition
+
+    if(bestLongForm.length < acronym.length || //if long form is shorter than acronym
+      bestLongForm.indexOf(acronym + " ") > -1 || //if long form containt acronym
+      bestLongForm.endsWith(acronym) || //if long form ends with acronym
+      defWordsCount > 2 * acronymCharsCount || defWordsCount > acronymCharsCount + 5 || acronymCharsCount > 10)
+    {
+      return;
+    }
+
+    let foundPair: String[] = [acronym, bestLongForm]; //set up a pair of acronym - long form
+    this.acronymList.push(foundPair); //push the pair into the list
+    //console.log(acronym + " " + bestLongForm); //print list
+  }
+  
 
 }
