@@ -19,8 +19,7 @@ export class PubmedService {
     this.db = "pubmed";
     query = encodeURIComponent(query);
     this.findUrl = baseUrl + "esearch.fcgi?db=" + this.db + "&term=" + query + "&retmode=" + this.retmode + "&retmax=" + retmax;
-    console.log("Search Database Url:", this.findUrl);
-
+    console.log("Search Database Url: ", this.findUrl);
     return this.http.get(this.findUrl)
   }
 
@@ -28,7 +27,6 @@ export class PubmedService {
     this.db = "pubmed";
     this.findUrl = baseUrl + "esummary.fcgi?db=" + this.db + "&id=" + id + "&retmode=" + this.retmode;
     console.log("Get Basic Data Url: ", this.findUrl);
-
     return this.http.get(this.findUrl);
   }
 

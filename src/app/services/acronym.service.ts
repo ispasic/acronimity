@@ -7,7 +7,8 @@ export class AcronymService {
 
   constructor() { }
 
-  acronymList: string[][] = [];
+  //acronymList: string[][] = [];
+  acronymList = [];
 
   //schwartz algorithm implementation
 
@@ -77,7 +78,7 @@ export class AcronymService {
     return false;
   }
 
-  public getAcronymList(sentence: string): string[][] {
+  public getAcronymList(sentence: string) {
     this.acronymList.length = 0;
     this.extractPairs(sentence);
     return this.acronymList;
@@ -201,7 +202,7 @@ export class AcronymService {
             (d >= 0 && definition.charAt(d).toLowerCase() != c) ||
             (a == 0 && d > 0 && this.isLetterOrDigit(definition.charAt(d - 1).toLowerCase()))
           )
-        {
+        {9
           d--;
         }
 
@@ -209,26 +210,35 @@ export class AcronymService {
         {
           return null;
         }
-
         d--;
       }
 
     }
 
-    d = definition.lastIndexOf(" ", d) + 1;
+    d = Math.max(definition.lastIndexOf(" ", d) + 1, definition.lastIndexOf("(", d) + 1, definition.lastIndexOf(")", d) + 1);
     return definition.substring(d);
   }
 
   private matchPair(acronym: string, definition: string): void {
     //acronym has to have at least 2 characters
+
+    //console.log("Acronym candidate: ", acronym);
+    //console.log("Definition candidate: ", definition);
+
     if (acronym.length < 2)
     {
       //console.log("ERROR: Acronym length is less than 2");
       return;
     }
 
-    let bestLongForm = this.bestLongForm(acronym, definition);
+    definition = definition.replace(/\n/g, " "); //swap all endlines by spaces
+
+
     
+    let bestLongForm = this.bestLongForm(acronym, definition);
+
+    //console.log("bestLongForm: ", bestLongForm);
+
     if (bestLongForm == null)
     {
       //console.log("ERROR: no bestLongForm determined");
@@ -253,7 +263,11 @@ export class AcronymService {
       return;
     }
 
-    let foundPair: string[] = [acronym, bestLongForm]; //set up a pair of acronym - long form
+    var foundPair = {
+      "shortform": acronym,
+      "longform": bestLongForm
+    }; //set up a pair of acronym - long form JSON
+
     this.acronymList.push(foundPair); //push the pair into the list
     //console.log(acronym + " " + bestLongForm); //print list
   }

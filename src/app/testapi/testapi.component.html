@@ -43,7 +43,8 @@
     <mat-divider></mat-divider>
     <mat-card-actions class="centeralign">
         <button mat-raised-button color="primary" (click)="searchButtonClick(query, resultsNumber)" class="normal-button">{{testButtonText}}</button>
-        <button mat-stroked-button *ngIf="isSearched" color="primary" (click)="downloadResults()" class="normal-button">DOWNLOAD</button>
+        <button mat-stroked-button *ngIf="isSearched" color="primary" (click)="downloadResultsClick()" class="normal-button">DOWNLOAD</button>
+        <button mat-stroked-button *ngIf="isSearched" color="primary" (click)="getAllAcronymsClick()" class="normal-button">PROCESS ACRONYMS</button>
     </mat-card-actions>
 
 </mat-card>

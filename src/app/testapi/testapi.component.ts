@@ -2,13 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { PubmedService } from '../services/pubmed.service';
 import { AcronymService } from '../services/acronym.service';
+import { AcronymsDatabaseService } from '../services/acronyms-database.service';
 import { MatDialog } from '@angular/material/dialog';
 
 import { ShowdetailsDialogComponent } from './showdetails-dialog/showdetails-dialog.component';
-import { isDataSource } from '@angular/cdk/collections';
 
 import * as FileSaver from 'file-saver';
-import { analyzeAndValidateNgModules } from '@angular/compiler';
 
 @Component({
   selector: 'app-testapi',
@@ -20,6 +19,7 @@ export class TestapiComponent implements OnInit {
   constructor(private router: Router,
     private pubmedService: PubmedService,
     private acronymService: AcronymService,
+    private acronymsDatabaseService: AcronymsDatabaseService,
     private dialog: MatDialog) { }
 
   testButtonText = "SEARCH";
@@ -32,11 +32,16 @@ export class TestapiComponent implements OnInit {
   searchProgress = "";
   abstracts;
 
-  acronymList: String[][] = [];
-  
+  acronymList = [];
+  acronymListFromDatabase;
+  insertObject;
   listOfSearchResults = [];
 
   ngOnInit(): void {
+  }
+
+  ngOnDestroy() {
+    if(this.insertObject) this.insertObject.unsubscribe(console.log);
   }
 
   async searchButtonClick(query, number): Promise<void> {
@@ -58,7 +63,7 @@ export class TestapiComponent implements OnInit {
 
     //console.log("Test:", searchResult.esearchresult.)
 
-    this.searchProgress = "Search done. Fetching basic data for 20 most relevant results..";
+    this.searchProgress = "Search done. Fetching basic data for " + this.resultsNumber + " result(s)..";
     for(var id of searchResult.esearchresult.idlist)
     {
       this.listOfSearchIDs.push(id);
@@ -77,7 +82,7 @@ export class TestapiComponent implements OnInit {
         "pubdate": pubdate,
         "authors": authors,
         "displayauthors": displayAuthors
-      };
+      }; //generate single entry and push it into the list of results
 
       this.listOfSearchResults.push(singleEntry);
     }
@@ -89,22 +94,17 @@ export class TestapiComponent implements OnInit {
 
     console.log("List of IDs:", this.listOfSearchIDs);
     this.result = this.listOfSearchIDs.toString().split(",").join('\n');
-
-    //let testString = "We recruited people with rheumatoid arthritis (RA) or systemic lupuserythematosus (SLE) or DNA (de nuclein acid)."
-    //console.log("testString = ", testString);
-    //this.extractPairs(testString);
-
-    //console.log("Found Acronyms = ", this.acronymList);
-
   }
 
+  //open details dialog
   async moreDetailsClick(entry): Promise<void> {
     const dialogRef = this.dialog.open(ShowdetailsDialogComponent, {
       data: entry
     });
   }
 
-  async downloadResults(): Promise<void> {
+  //download all abstracts as a single file
+  async downloadResultsClick(): Promise<void> {
     var IDs;
     console.log("listOfSearchResults:", this.listOfSearchResults);
     for (var entry of this.listOfSearchResults)
@@ -114,10 +114,30 @@ export class TestapiComponent implements OnInit {
     var abstracts = await this.getAbstractByID(IDs);
     var blob = new Blob([abstracts], {type: "text/plain;charset=utf-8"});
     FileSaver.saveAs(blob, "Search Results.txt");
+  }
 
-    // this.acronymList.length = 0; //empty the acronym list
-    // this.acronymList = this.acronymService.getAcronymList(abstracts); //get Acronym List from service
-    // console.log("Found Acronyms = ", this.acronymList);
+  //get all acronyms and insert them into database
+  async getAllAcronymsClick(): Promise<void> {
+    var IDs;
+    console.log("listOfSearchResults:", this.listOfSearchResults);
+    for (var entry of this.listOfSearchResults)
+    {
+      IDs = IDs + entry.id + ",";
+    }
+    var abstracts = await this.getAbstractByID(IDs);
+
+    this.acronymList.length = 0; //empty the acronym list
+    this.acronymList = this.acronymService.getAcronymList(abstracts); //get acronyms from abstracts
+    console.log("Acronyms from abstracts: ", this.acronymList);
+
+    //insert one by one
+    for (var a of this.acronymList)
+    {
+      this.insertObject = this.acronymsDatabaseService.insertAcronym(a.shortform, a.longform).subscribe(console.log);
+    }
+
+    this.acronymListFromDatabase = await this.getAllAcronymsDatabase(); //get acronyms from MySql database
+    console.log("Acronyms from database: ", this.acronymListFromDatabase);
   }
 
   async searchDatabase(query, number) {
@@ -135,23 +155,13 @@ export class TestapiComponent implements OnInit {
     return result;
   }
 
-  sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  async getAllAcronymsDatabase() {
+    const result = await this.acronymsDatabaseService.getAllAcronyms().toPromise();
+    return result;
   }
 
-  addToResults(id, title, authors, journal, year) {
-
-    var singleEntry = {
-      "id": id,
-      "title": title,
-      "journal": journal,
-      "year": year,
-      "authors": authors
-    };
-
-    this.listOfSearchResults.push(singleEntry);
-
-    return;
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   formDisplayAuthors(authors): String {
