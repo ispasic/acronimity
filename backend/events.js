@@ -39,6 +39,7 @@ function createRouter(db) {
                         [req.query.shortform, req.query.longform],
                         (error) => {
                             if (error) {
+                                console.log(req.query.shortform);
                                 console.error(error);
                                 res.status(500).json({status: 'error'});
                             } else {
