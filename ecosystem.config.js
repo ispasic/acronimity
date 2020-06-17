@@ -1,13 +1,16 @@
 module.exports = {
   apps : [{
-    name: 'pubmedacronyms-frontend',
-    script: 'node_modules/@angular/cli/bin/ng',
-    args: 'serve --port 4203',
-    instances: 1,
-    autorestart: true,
-    watch: '.'
-  }],
-
-  deploy : {
-  }
+    script: 'serve',
+    name: '4203-pubmedacronyms-frontend',
+    env: {
+      PM2_SERVE_PATH: 'dist/pubmedapis',
+      PM2_SERVE_PORT: 4203,
+      PM2_SERVE_SPA: 'true',
+      //PM2_SERVE_HOMEPAGE: 'dist/firstaidcu/index.html'
+    }
+  },
+  {
+    script: 'backend/server.js',
+    name: '8083-pubmedacronyms-backend'
+  }]
 };
