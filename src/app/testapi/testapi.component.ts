@@ -68,7 +68,7 @@ export class TestapiComponent implements OnInit {
     for(var id of searchResult.esearchresult.idlist)
     {
       this.listOfSearchIDs.push(id);
-      await this.sleep(1000);
+      await this.sleep(500);
       var basicDataResult = await this.getBasicDataByID(id);
       var title = basicDataResult.result[id].title;
       var journal = basicDataResult.result[id].fulljournalname;

@@ -188,6 +188,7 @@ export class AcronymService {
     //console.log("Full candidate List: ", candidateList);
     acronymList = this.matchPairs(candidateList); //process full candidate list to get list of acronyms
 
+
     return acronymList;
   }
 
@@ -305,10 +306,12 @@ export class AcronymService {
       }
 
       definition = definition.replace(/\n/g, " "); //swap all endlines by spaces
+      definition = definition.replace(/\u00A0/g, " "); //swap all non-breaking spaces by spaces
+      //console.log("definition after eliminating enters: ", definition);
       
       let bestLongForm = this.bestLongForm(acronym, definition);
 
-      // console.log("bestLongForm: ", bestLongForm);
+      //console.log("bestLongForm: ", bestLongForm);
 
       if (bestLongForm == null)
       {
