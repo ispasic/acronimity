@@ -22,6 +22,7 @@ export class ShowdetailsDialogComponent {
 
     abstract;
     isAbstractFormed = false;
+    isNoAcronyms = false;
     insertObject;
 
     detailsAcronymList = [];
@@ -48,6 +49,10 @@ export class ShowdetailsDialogComponent {
 
       this.detailsAcronymList.length = 0;
       this.detailsAcronymList = this.acronymService.getAcronymList(this.abstract);
+      if (this.detailsAcronymList.length == 0)
+      {
+        this.isNoAcronyms = true;
+      }
       console.log("Acronym List: ", this.detailsAcronymList);
     }
 

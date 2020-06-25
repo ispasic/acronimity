@@ -48,7 +48,8 @@
 }
 
 .download-button {
+    margin-left: 10px;
     margin-bottom: 20px;
-    margin-right: 20px;
+    margin-right: 10px;
     color: #666;
   }

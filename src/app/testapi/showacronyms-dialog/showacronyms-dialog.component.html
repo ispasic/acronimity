@@ -15,8 +15,8 @@
                 <div class="acronym-text">{{a.longform}}</div>
             </div>
         </mat-list-item>
-        <mat-list-item class="result-list-item">
-
+        <mat-list-item *ngIf="isNoAcronyms" class="result-list-item">
+            No acronyms in the abstract
         </mat-list-item>
     </mat-list>
     <div class="centeralign">

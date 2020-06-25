@@ -22,11 +22,15 @@ export class ShowacronymsDialogComponent implements OnInit {
 
   allAcronymList: [];
   insertObject;
+  isNoAcronyms = false;
 
   ngOnInit(): void {
     this.allAcronymList = this.data;
     console.log("Acronyms in Dialog: ", this.allAcronymList);
-    console.log(this.data);
+    if (this.allAcronymList.length == 0)
+      {
+        this.isNoAcronyms = true;
+      }
   }
 
   onNoClick(): void {

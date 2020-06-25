@@ -202,7 +202,7 @@ export class AcronymService {
             (d >= 0 && definition.charAt(d).toLowerCase() != c) ||
             (a == 0 && d > 0 && this.isLetterOrDigit(definition.charAt(d - 1).toLowerCase()))
           )
-        {9
+        {
           d--;
         }
 
@@ -215,15 +215,16 @@ export class AcronymService {
 
     }
 
-    d = Math.max(definition.lastIndexOf(" ", d) + 1, definition.lastIndexOf("(", d) + 1, definition.lastIndexOf(")", d) + 1);
+    d = Math.max(definition.lastIndexOf(" ", d) + 1, definition.lastIndexOf("(", d) + 1, definition.lastIndexOf(")", d) + 1,
+      definition.lastIndexOf("/", d) + 1);
     return definition.substring(d);
   }
 
   private matchPair(acronym: string, definition: string): void {
     //acronym has to have at least 2 characters
 
-    //console.log("Acronym candidate: ", acronym);
-    //console.log("Definition candidate: ", definition);
+    // console.log("Acronym candidate: ", acronym);
+    // console.log("Definition candidate: ", definition);
 
     if (acronym.length < 2)
     {
@@ -237,7 +238,7 @@ export class AcronymService {
     
     let bestLongForm = this.bestLongForm(acronym, definition);
 
-    //console.log("bestLongForm: ", bestLongForm);
+    console.log("bestLongForm: ", bestLongForm);
 
     if (bestLongForm == null)
     {
