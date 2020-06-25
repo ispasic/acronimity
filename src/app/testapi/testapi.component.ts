@@ -6,6 +6,7 @@ import { AcronymsDatabaseService } from '../services/acronyms-database.service';
 import { MatDialog } from '@angular/material/dialog';
 
 import { ShowdetailsDialogComponent } from './showdetails-dialog/showdetails-dialog.component';
+import { ShowacronymsDialogComponent } from './showacronyms-dialog/showacronyms-dialog.component';
 
 import * as FileSaver from 'file-saver';
 
@@ -94,6 +95,19 @@ export class TestapiComponent implements OnInit {
 
     console.log("List of IDs:", this.listOfSearchIDs);
     this.result = this.listOfSearchIDs.toString().split(",").join('\n');
+
+    //get all acronyms into list
+    var IDs;
+    console.log("listOfSearchResults:", this.listOfSearchResults);
+    for (var entry of this.listOfSearchResults)
+    {
+      IDs = IDs + entry.id + ",";
+    }
+    var abstracts = await this.getAbstractByID(IDs);
+
+    this.acronymList.length = 0; //empty the acronym list
+    this.acronymList = this.acronymService.getAcronymList(abstracts); //get acronyms from abstracts
+    console.log("Acronyms from abstracts: ", this.acronymList);
   }
 
   //open details dialog
@@ -117,27 +131,22 @@ export class TestapiComponent implements OnInit {
   }
 
   //get all acronyms and insert them into database
-  async getAllAcronymsClick(): Promise<void> {
-    var IDs;
-    console.log("listOfSearchResults:", this.listOfSearchResults);
-    for (var entry of this.listOfSearchResults)
-    {
-      IDs = IDs + entry.id + ",";
-    }
-    var abstracts = await this.getAbstractByID(IDs);
-
-    this.acronymList.length = 0; //empty the acronym list
-    this.acronymList = this.acronymService.getAcronymList(abstracts); //get acronyms from abstracts
-    console.log("Acronyms from abstracts: ", this.acronymList);
-
+  async insertAllAcronymsClick(): Promise<void> {
     //insert one by one
     for (var a of this.acronymList)
     {
+      console.log("Insert acronym", a);
       this.insertObject = this.acronymsDatabaseService.insertAcronym(a.shortform, a.longform).subscribe(console.log);
     }
 
     this.acronymListFromDatabase = await this.getAllAcronymsDatabase(); //get acronyms from MySql database
     console.log("Acronyms from database: ", this.acronymListFromDatabase);
+  }
+
+  async showAllAcronymsClick(): Promise<void> {
+    const dialogRef = this.dialog.open(ShowacronymsDialogComponent, {
+      data: this.acronymList
+    });
   }
 
   async searchDatabase(query, number) {

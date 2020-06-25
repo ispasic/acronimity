@@ -3,13 +3,6 @@
     height: 500px;
 }
 
-.abstract-text {
-    white-space:pre-wrap;
-    padding-left: 24px;
-    padding-right: 24px;
-    padding-bottom: 24px;
-    padding-top: 10px;
-}
 
 .spacer {
     flex: 1 1 auto;
@@ -39,12 +32,6 @@
   padding: 0px !important;
 }
 
-.download-button {
-  margin-bottom: 20px;
-  margin-right: 20px;
-  color: #666;
-}
-
 .result-list-item {
   margin-bottom: 10px;
   width: auto !important;
@@ -59,3 +46,9 @@
 .acronym-item {
   display: flex;
 }
+
+.download-button {
+    margin-bottom: 20px;
+    margin-right: 20px;
+    color: #666;
+  }

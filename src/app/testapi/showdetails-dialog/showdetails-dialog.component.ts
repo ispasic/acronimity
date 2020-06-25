@@ -24,7 +24,7 @@ export class ShowdetailsDialogComponent {
     isAbstractFormed = false;
     insertObject;
 
-    acronymList = [];
+    detailsAcronymList = [];
 
     onNoClick(): void {
       this.dialogRef.close();
@@ -36,7 +36,7 @@ export class ShowdetailsDialogComponent {
     }
 
     insertAcronymsClick(): void {
-      for (var a of this.acronymList)
+      for (var a of this.detailsAcronymList)
       {
         this.insertObject = this.acronymsDatabaseService.insertAcronym(a.shortform, a.longform).subscribe(console.log);
       }
@@ -46,9 +46,9 @@ export class ShowdetailsDialogComponent {
       this.abstract = await this.getAbstractByID(this.data.id);
       this.isAbstractFormed = true;
 
-      this.acronymList.length = 0;
-      this.acronymList = this.acronymService.getAcronymList(this.abstract);
-      console.log("Acronym List: ", this.acronymList);
+      this.detailsAcronymList.length = 0;
+      this.detailsAcronymList = this.acronymService.getAcronymList(this.abstract);
+      console.log("Acronym List: ", this.detailsAcronymList);
     }
 
     ngOnDestroy() {
@@ -61,7 +61,7 @@ export class ShowdetailsDialogComponent {
     }
 
     swapAcronymsClick(): void{
-      this.abstract = this.swapAcronyms(this.abstract, this.acronymList);
+      this.abstract = this.swapAcronyms(this.abstract, this.detailsAcronymList);
     }
 
     swapAcronyms(text: string, acronymList: any[]): string {

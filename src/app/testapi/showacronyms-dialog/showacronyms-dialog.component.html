@@ -1,18 +1,15 @@
 <div mat-dialog-content class="details-dialog">
     <div fxLayout="row" class="details-toolbar">
-        <div class="details-toolbar-text centeralign">Paper Details</div>
+        <div class="details-toolbar-text centeralign">Full List of Acronyms</div>
         <span class="spacer"></span>
         <button mat-icon-button (click)="onNoClick()">
             <mat-icon>close</mat-icon>
         </button>
 
     </div>
-    <mat-divider></mat-divider>
-    <p class="abstract-text centeralign">{{abstract}}</p>
-    <mat-divider></mat-divider>
     <mat-list>
         <div mat-subheader>Acronyms:</div>
-        <mat-list-item class="result-list-item" *ngFor="let a of detailsAcronymList">
+        <mat-list-item class="result-list-item" *ngFor="let a of allAcronymList">
             <div fxLayout="row" class="acronym-item">
                 <div class="acronym-text">{{a.shortform}}:&nbsp;</div>
                 <div class="acronym-text">{{a.longform}}</div>
@@ -22,9 +19,8 @@
 
         </mat-list-item>
     </mat-list>
-    <div *ngIf="isAbstractFormed" class="centeralign">
-        <button mat-stroked-button class="download-button" cdkFocusInitial (click)="downloadDetailsClick()">Download</button>
+    <div class="centeralign">
+        <button mat-stroked-button class="download-button" cdkFocusInitial (click)="downloadAcronymsClick()">Download</button>
         <button mat-stroked-button class="download-button" cdkFocusInitial (click)="insertAcronymsClick()">Insert Acronyms into Database</button>
-        <button mat-stroked-button class="download-button" cdkFocusInitial (click)="swapAcronymsClick()">Swap Acronyms</button>
     </div>
 </div>

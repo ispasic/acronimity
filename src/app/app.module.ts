@@ -10,12 +10,14 @@ import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { TestapiComponent } from './testapi/testapi.component';
 import { ShowdetailsDialogComponent } from './testapi/showdetails-dialog/showdetails-dialog.component';
+import { ShowacronymsDialogComponent } from './testapi/showacronyms-dialog/showacronyms-dialog.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     TestapiComponent,
-    ShowdetailsDialogComponent
+    ShowdetailsDialogComponent,
+    ShowacronymsDialogComponent
   ],
   imports: [
     BrowserModule,
