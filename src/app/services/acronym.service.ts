@@ -286,12 +286,11 @@ export class AcronymService {
     var acronymList = [];
     var acronym = '';
     var definition = '';
-    var isCorrectPair = true;
+    var isInList = false;
 
     //cycle through the whole candidate list 
     for (var cand of candidateList)
     {
-      isCorrectPair = true;
       acronym = cand.shortform;
       definition = cand.longform;
 
@@ -340,8 +339,24 @@ export class AcronymService {
         "longform": bestLongForm
       }; //set up a pair of acronym - long form JSON
   
-      acronymList.push(foundPair); //push the pair into the list
-      //console.log(acronym + " " + bestLongForm); //print list
+      //check if the pair is in List already
+      isInList = false;
+      for (var acr of acronymList)
+      {
+        if (acr.shortform == foundPair.shortform)
+        {
+          isInList = true;
+          break;
+        }
+      }
+
+      //if not in list
+      if(isInList == false)
+      {
+        acronymList.push(foundPair); //push the pair into the list
+        //console.log(acronym + " " + bestLongForm); //print list
+      }
+
     }
 
     return acronymList;
