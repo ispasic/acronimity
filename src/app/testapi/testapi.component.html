@@ -21,7 +21,7 @@
 
             <mat-list *ngIf="isSearched">
                 <div mat-subheader>Search results:</div>
-                <mat-list-item class="result-list-item" *ngFor="let entry of listOfSearchResults, let i = index">
+                <mat-list-item class="result-list-item" *ngFor="let entry of listOfDisplayResults, let i = index">
                     <!-- <div>{{i + 1}})&nbsp;</div> -->
                     <div fxLayout="column">
                         <div class="title-text" (click)="moreDetailsClick(entry)">{{entry.title}}</div>
@@ -30,6 +30,14 @@
                     </div>
                 </mat-list-item>
             </mat-list>
+
+            <mat-paginator *ngIf="isSearched" [length]="paginatorResultsNumber"
+              [pageSize]="pageSize"
+              [showFirstLastButtons]="true"
+              [pageSizeOptions]="[10, 20, 30, 40, 50]"
+              [pageIndex]="currentPage"
+              (page)="pageEvent = getDisplayResults($event)">
+            </mat-paginator>
 
             <!-- <mat-form-field *ngIf="isSearched" class="input-form-field" style="width: 700px !important;">
                 <textarea matInput rows="5" cols="1" type="text" class="normal-text" [(ngModel)]="result" readonly="true"></textarea>

@@ -9,6 +9,7 @@ import { ShowdetailsDialogComponent } from './showdetails-dialog/showdetails-dia
 import { ShowacronymsDialogComponent } from './showacronyms-dialog/showacronyms-dialog.component';
 
 import * as FileSaver from 'file-saver';
+import { PageEvent } from '@angular/material/paginator';
 
 @Component({
   selector: 'app-testapi',
@@ -37,6 +38,15 @@ export class TestapiComponent implements OnInit {
   acronymListFromDatabase;
   insertObject;
   listOfSearchResults = [];
+  listOfDisplayResults = [];
+
+  pageEvent: PageEvent;
+  currentPage: number;
+  pageSize = 10;
+
+  searchButtonText = "SEARCH";
+  startIndex = 1;
+  paginatorResultsNumber: number;
 
   ngOnInit(): void {
   }
@@ -48,6 +58,7 @@ export class TestapiComponent implements OnInit {
   async searchButtonClick(query, number): Promise<void> {
     this.listOfSearchIDs.length = 0;
     this.listOfSearchResults.length = 0;
+    this.listOfDisplayResults.length = 0;
     this.isTested = true;
     this.isSearched = false;
 
@@ -108,6 +119,21 @@ export class TestapiComponent implements OnInit {
     this.acronymList.length = 0; //empty the acronym list
     this.acronymList = this.acronymService.getAcronymList(abstracts); //get acronyms from abstracts
     console.log("Acronyms from abstracts: ", this.acronymList);
+
+    //if less results then requested
+    if (this.listOfSearchResults.length < this.resultsNumber)
+    {
+      this.paginatorResultsNumber = this.listOfSearchResults.length;
+    }
+    else
+    {
+      this.paginatorResultsNumber = this.resultsNumber;
+    }
+
+    //form initial list of display results
+    for (let i = 0; i < Math.min(10, this.listOfSearchResults.length); i++) {
+      this.listOfDisplayResults.push(this.listOfSearchResults[i]);
+    }
   }
 
   //open details dialog
@@ -192,6 +218,27 @@ export class TestapiComponent implements OnInit {
         result = authors[0].name;
       }
     return result;
+  }
+
+  public getDisplayResults(event?:PageEvent) {
+
+    //clear list of display results
+    this.listOfDisplayResults.length = 0;
+
+    //get page index and size
+    this.currentPage = event.pageIndex;
+    this.pageSize = event.pageSize;
+
+    //console.log("Current Page", this.currentPage);
+    //console.log("Current Display Size", this.pageSize);
+
+    //form list of display results
+    for (let i = this.currentPage * this.pageSize; i < Math.min(this.currentPage * this.pageSize + this.pageSize, this.listOfSearchResults.length); i++) {
+      this.listOfDisplayResults.push(this.listOfSearchResults[i]);
+    }
+
+    return event;
+
   }
 
 }
