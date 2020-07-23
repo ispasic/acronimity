@@ -4,6 +4,7 @@ import { environment } from './../../environments/environment';
 
 //const baseUrl = 'http://localhost:8083/';
 const baseUrl = environment.baseApiUrl;
+//const baseUrl = '/';
 
 @Injectable({
   providedIn: 'root'
