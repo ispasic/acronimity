@@ -58,7 +58,6 @@ export class ShowdetailsDialogComponent {
     }
 
     ngOnDestroy() {
-      if(this.insertObject) this.insertObject.unsubscribe();
     }
 
     async getAbstractByID(id) {

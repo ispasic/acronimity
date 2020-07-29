@@ -38,7 +38,6 @@ export class ShowacronymsDialogComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    if(this.insertObject) this.insertObject.unsubscribe();
   }
 
   downloadAcronymsClick(): void {

@@ -52,7 +52,6 @@ export class TestapiComponent implements OnInit {
   }
 
   ngOnDestroy() {
-    if(this.insertObject) this.insertObject.unsubscribe(console.log);
   }
 
   async searchButtonClick(query, number): Promise<void> {
