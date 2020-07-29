@@ -295,14 +295,14 @@ export class AcronymService {
       acronym = cand.shortform;
       definition = cand.longform;
 
-      // console.log("Acronym candidate: ", acronym);
-      // console.log("Definition candidate: ", definition);
+      //console.log("Acronym candidate: ", acronym);
+      //console.log("Definition candidate: ", definition);
 
       //acronym has to have at least 2 characters
       if (acronym.length < 2)
       {
         //console.log("ERROR: Acronym length is less than 2");
-        return;
+        continue;
       }
 
       definition = definition.replace(/\n/g, " "); //swap all endlines by spaces

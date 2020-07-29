@@ -75,16 +75,20 @@ export class TestapiComponent implements OnInit {
 
     //console.log("Test:", searchResult.esearchresult.)
 
-    this.searchProgress = "Search done. Fetching basic data for " + this.resultsNumber + " result(s)..";
+    var i = 0;
     for(var id of searchResult.esearchresult.idlist)
     {
+      i++;
+      this.searchProgress = "Search done. Fetching basic data for " + i + " result out of " + this.resultsNumber + " result(s)..";
       this.listOfSearchIDs.push(id);
       await this.sleep(500);
       var basicDataResult = await this.getBasicDataByID(id);
+      //console.log("basicDataResult = ", basicDataResult);
       var title = basicDataResult.result[id].title;
       var journal = basicDataResult.result[id].fulljournalname;
       var pubdate = basicDataResult.result[id].pubdate;
       var authors = basicDataResult.result[id].authors;
+      //console.log("Authors = ", authors);
       var displayAuthors = this.formDisplayAuthors(authors);
 
       var singleEntry = {
@@ -109,12 +113,13 @@ export class TestapiComponent implements OnInit {
 
     //get all acronyms into list
     var IDs;
-    console.log("listOfSearchResults:", this.listOfSearchResults);
+    //console.log("listOfSearchResults:", this.listOfSearchResults);
     for (var entry of this.listOfSearchResults)
     {
       IDs = IDs + entry.id + ",";
     }
     var abstracts = await this.getAbstractByID(IDs);
+    //console.log("abstracts = ", abstracts);
 
     this.acronymList.length = 0; //empty the acronym list
     this.acronymList = this.acronymService.getAcronymList(abstracts); //get acronyms from abstracts
@@ -162,7 +167,9 @@ export class TestapiComponent implements OnInit {
     for (var a of this.acronymList)
     {
       console.log("Insert acronym", a);
-      this.insertObject = this.acronymsDatabaseService.insertAcronym(a.shortform, a.longform).subscribe(console.log);
+      this.insertObject = await this.insertAcronym(a.shortform, a.longform);
+      console.log(this.insertObject);
+      //this.insertObject = this.acronymsDatabaseService.insertAcronym(a.shortform, a.longform).subscribe(console.log);
     }
 
     this.acronymListFromDatabase = await this.getAllAcronymsDatabase(); //get acronyms from MySql database
@@ -176,22 +183,27 @@ export class TestapiComponent implements OnInit {
   }
 
   async searchDatabase(query, number) {
-    const res = await this.pubmedService.searchDatabase(query, number).toPromise();
+    const res = await this.pubmedService.searchDatabase(query, number).toPromise().catch(error => console.log(error));
     return res;
   }
 
   async getBasicDataByID(id) {
-    const res = await this.pubmedService.getBasicDataByID(id).toPromise();
+    const res = await this.pubmedService.getBasicDataByID(id).toPromise().catch(error => console.log(error));
     return res;
   }
 
   async getAbstractByID(id) {
-    const result = await this.pubmedService.getAbstractByID(id).toPromise();
+    const result = await this.pubmedService.getAbstractByID(id).toPromise().catch(error => console.log(error));
+    return result;
+  }
+
+  async insertAcronym(shortform, longform) {
+    const result = await this.acronymsDatabaseService.insertAcronym(shortform, longform).toPromise().catch(error => console.log(error));
     return result;
   }
 
   async getAllAcronymsDatabase() {
-    const result = await this.acronymsDatabaseService.getAllAcronyms().toPromise();
+    const result = await this.acronymsDatabaseService.getAllAcronyms().toPromise().catch(error => console.log(error));
     return result;
   }
 
@@ -201,6 +213,11 @@ export class TestapiComponent implements OnInit {
 
   formDisplayAuthors(authors): String {
     var result;
+    if(authors.length == 0)
+    {
+      result = "undefined";
+      return result;
+    }
     if(authors.length > 3)
       {
         result = authors[0].name + ", " + authors[1].name + ", " + authors[2].name + " et al.";

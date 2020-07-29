@@ -46,11 +46,17 @@ export class ShowacronymsDialogComponent implements OnInit {
     FileSaver.saveAs(blob, "Acronyms.txt");
   }
 
-  insertAcronymsClick(): void {
+  async insertAcronymsClick(): Promise<void> {
     for (var a of this.data)
     {
-      this.insertObject = this.acronymsDatabaseService.insertAcronym(a.shortform, a.longform).subscribe(console.log);
+      this.insertObject = await this.insertAcronym(a.shortform, a.longform);
+      console.log(this.insertObject);
     }
+  }
+
+  async insertAcronym(shortform, longform) {
+    const result = await this.acronymsDatabaseService.insertAcronym(shortform, longform).toPromise().catch(error => console.log(error));
+    return result;
   }
 
 }

@@ -36,10 +36,11 @@ export class ShowdetailsDialogComponent {
       FileSaver.saveAs(blob, this.data.title + ".txt");
     }
 
-    insertAcronymsClick(): void {
+    async insertAcronymsClick(): Promise<void> {
       for (var a of this.detailsAcronymList)
       {
-        this.insertObject = this.acronymsDatabaseService.insertAcronym(a.shortform, a.longform).subscribe(console.log);
+        this.insertObject = await this.insertAcronym(a.shortform, a.longform);
+        console.log(this.insertObject);
       }
     }
 
@@ -61,7 +62,7 @@ export class ShowdetailsDialogComponent {
     }
 
     async getAbstractByID(id) {
-      const result = await this.pubmedService.getAbstractByID(id).toPromise();
+      const result = await this.pubmedService.getAbstractByID(id).toPromise().catch(error => console.log(error));
       return result;
     }
 
@@ -86,6 +87,11 @@ export class ShowdetailsDialogComponent {
 
     private replaceAll(str, find: string, replace: string) {
       return str.replace(new RegExp(find, 'g'), replace);
+    }
+
+    async insertAcronym(shortform, longform) {
+      const result = await this.acronymsDatabaseService.insertAcronym(shortform, longform).toPromise().catch(error => console.log(error));
+      return result;
     }
 
     
