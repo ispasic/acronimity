@@ -6,7 +6,7 @@ function createRouter(db) {
 
     //router will be here
 
-    router.post('/insertAcronym', (req, res, next) => {
+    router.post('/insertAcronym1', (req, res, next) => {
         //check if empty request
         if (!req.body.longform || !req.body.shortform)
         {
@@ -56,6 +56,79 @@ function createRouter(db) {
                 }
             }
         );
+    });
+
+    router.post('/insertAcronym', async (req, res, next) => {
+        
+        //check if empty request
+        if (!req.body.longform || !req.body.shortform || !req.body.text ||
+            !req.body.swapText || !req.body.tagText || !req.body.pubMedId)
+        {
+            let msg = 'Not enough parameters in the request body';
+            res.status(500).json({
+                status: 'ok',
+                message: msg
+            });
+            return;
+        }
+
+        let shortform = req.body.shortform;
+        let longform = req.body.longform;
+        let text = req.body.text;
+        let swapText = req.body.swapText;
+        let tagText = req.body.tagText;
+        let pubMedId = req.body.pubMedId;
+
+        try {
+            //check if that abstract is already in database by pubMedId
+            const checkAbstract = await db.query(
+                'SELECT id FROM abstract WHERE pubmed_id=?',
+                [pubMedId]
+            );
+
+            //if in database, get its id
+            if (checkAbstract.length > 0) {
+                let msg = `abstract with ${pubMedId} is already in database`;
+                console.log(msg);
+                refId = checkAbstract[0].id;
+            }
+            //if not in database, insert it into it and get its id
+            else {
+                const insertAbstract = await db.query(
+                    'INSERT INTO abstract (text, tagText, swapText, pubmed_id) VALUES (?,?,?,?)',
+                    [text, swapText, tagText, pubMedId]
+                );
+                refId = insertAbstract.insertId;
+            }
+
+            //check if that acronym is already in database
+            const checkAcronym = await db.query(
+                'SELECT shortform, longform FROM lexicon WHERE shortform=?',
+                [shortform]
+            );
+
+            //if that acronym is already in database
+            if (checkAcronym.length > 0) {
+                let msg = `shortform ${shortform} is already in the database`;
+                console.log(msg);
+                throw msg;
+            }
+            else {
+                const insertAcronym = await db.query(
+                    'INSERT INTO lexicon (shortform, longform, abstract_id) VALUES (?,?,?)',
+                    [shortform, longform, refId]
+                )
+                let msg = `inserted new acronym with shortform: ${shortform} and longform: ${longform}`;
+                console.log(msg);
+                res.status(200).json({
+                    status: 'ok',
+                    message: msg
+                });
+            }
+
+        } catch (error) {
+            res.status(500).send(error);
+        }
     });
 
     router.post('/updateAcronym', (req, res, next) => {
