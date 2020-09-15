@@ -57,6 +57,7 @@ export class ShowdetailsDialogComponent {
       {
         this.detailsAcronymList[i].swapText = swapText;
         this.detailsAcronymList[i].tagText = tagText;
+        this.detailsAcronymList[i].pubMedId = this.data.id;
       }
       console.log("Acronym List: ", this.detailsAcronymList);
     }

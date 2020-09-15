@@ -22,7 +22,11 @@ export class AcronymsDatabaseService {
   insertAcronym(acronym) {
     let reqBody = {
       "shortform": acronym.shortform,
-      "longform": acronym.longform
+      "longform": acronym.longform,
+      "text": acronym.text,
+      "swapText": acronym.swapText,
+      "tagText": acronym.tagText,
+      "pubMedId": acronym.pubMedId
     }
     let headers = {
       "Content-Type": "application/json"

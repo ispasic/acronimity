@@ -144,6 +144,7 @@ export class TestapiComponent implements OnInit {
       {
         singleAcronymList[i].swapText = swapText;
         singleAcronymList[i].tagText = tagText;
+        singleAcronymList[i].pubMedId = this.listOfSearchIDs[i];
       }
       //push acronyms to main acronym list
       this.acronymList = this.acronymList.concat(singleAcronymList);
@@ -198,7 +199,6 @@ export class TestapiComponent implements OnInit {
       console.log("Insert acronym", acronym);
       this.insertObject = await this.insertAcronym(acronym);
       console.log(this.insertObject);
-      //this.insertObject = this.acronymsDatabaseService.insertAcronym(a.shortform, a.longform).subscribe(console.log);
     }
 
     this.acronymListFromDatabase = await this.getAllAcronymsDatabase(); //get acronyms from MySql database
