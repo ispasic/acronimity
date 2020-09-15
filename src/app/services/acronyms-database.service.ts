@@ -16,14 +16,19 @@ export class AcronymsDatabaseService {
 
   getAllAcronyms() {
     this.APIURL = baseUrl + "getAllAcronyms";
-    //console.log("Get All Acronyms Url: ", this.APIURL);
     return this.http.get(this.APIURL);
   }
 
   insertAcronym(shortform: string, longform: string) {
-    this.APIURL = baseUrl + "insertAcronym?shortform=" + shortform + "&longform=" + longform;
-    //console.log("Insert Acronym Url: ", this.APIURL);
-    return this.http.post(this.APIURL, null);
+    let reqBody = {
+      "shortform": shortform,
+      "longform": longform
+    }
+    let headers = {
+      "Content-Type": "application/json"
+    }
+    this.APIURL = baseUrl + "insertAcronym";
+    return this.http.post(this.APIURL, reqBody, {headers});
   }
 
 }
