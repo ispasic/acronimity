@@ -21,8 +21,10 @@ export class ShowdetailsDialogComponent {
     private acronymsDatabaseService: AcronymsDatabaseService) { }
 
     abstract;
+    status;
     isAbstractFormed = false;
     isNoAcronyms = false;
+    isTagged = false;
     insertObject;
 
     detailsAcronymList = [];
@@ -69,23 +71,52 @@ export class ShowdetailsDialogComponent {
       this.abstract = this.swapAcronyms(this.abstract, this.detailsAcronymList);
     }
 
+    tagAcronymsClick(): void{
+      if (!this.isTagged) {
+        this.abstract = this.tagAcronyms(this.abstract, this.detailsAcronymList);
+        this.isTagged = true;
+      }
+      else {
+        this.status = 'Text is already tagged';
+      }
+
+    }
+
     swapAcronyms(text: string, acronymList: any[]): string {
 
       let swapText = text;
+
+      swapText = swapText.replace(/\n/g, " "); //swap all endlines by spaces
+      swapText = swapText.replace(/\u00A0/g, " "); //swap all non-breaking spaces by spaces
 
       for (let acronym of acronymList)
       {
         swapText = this.replaceAll(swapText, acronym.shortform, acronym.longform + "TEMP");
         swapText = this.replaceAll(swapText, acronym.longform, acronym.shortform);
         swapText = this.replaceAll(swapText, acronym.shortform + "TEMP", acronym.longform);
-        //console.log("Replaced 1 ", acronym);
       }
 
       return swapText;
     }
 
+    tagAcronyms(text: string, acronymList: any[]): string {
+
+      let taggedText = text;
+      
+      taggedText = taggedText.replace(/\n/g, " "); //swap all endlines by spaces
+      taggedText = taggedText.replace(/\u00A0/g, " "); //swap all non-breaking spaces by spaces
+
+      for (let acronym of acronymList)
+      {
+        taggedText = this.replaceAll(taggedText, acronym.shortform, "<shortform>" + acronym.shortform +"</shortform>");
+        taggedText = this.replaceAll(taggedText, acronym.longform, "<longform>" + acronym.longform +"</longform>");
+      }
+
+      return taggedText;
+    }
+
     private replaceAll(str, find: string, replace: string) {
-      return str.replace(new RegExp(find, 'g'), replace);
+      return str.replace(new RegExp(find, 'gi'), replace);
     }
 
     async insertAcronym(shortform, longform) {

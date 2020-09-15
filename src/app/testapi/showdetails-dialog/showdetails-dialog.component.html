@@ -9,6 +9,7 @@
     </div>
     <mat-divider></mat-divider>
     <p class="abstract-text centeralign">{{abstract}}</p>
+    <p class="status-text centeralign">{{status}}</p>
     <mat-divider></mat-divider>
     <mat-list *ngIf="isAbstractFormed">
         <div mat-subheader>Acronyms:</div>
@@ -26,5 +27,6 @@
         <button mat-stroked-button class="download-button" cdkFocusInitial (click)="downloadDetailsClick()">Download</button>
         <button mat-stroked-button class="download-button" cdkFocusInitial (click)="insertAcronymsClick()">Insert Acronyms into Database</button>
         <button mat-stroked-button class="download-button" cdkFocusInitial (click)="swapAcronymsClick()">Swap Acronyms</button>
+        <button mat-stroked-button class="download-button" cdkFocusInitial (click)="tagAcronymsClick()">Tag Acronyms</button>
     </div>
 </div>

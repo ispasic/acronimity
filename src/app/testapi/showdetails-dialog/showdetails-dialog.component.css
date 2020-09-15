@@ -11,6 +11,15 @@
     padding-top: 10px;
 }
 
+.status-text {
+  white-space:pre-wrap;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-bottom: 24px;
+  padding-top: 10px;
+  color: red;
+}
+
 .spacer {
     flex: 1 1 auto;
   }
