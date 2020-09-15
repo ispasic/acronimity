@@ -48,13 +48,13 @@ export class ShowacronymsDialogComponent implements OnInit {
   async insertAcronymsClick(): Promise<void> {
     for (var a of this.data)
     {
-      this.insertObject = await this.insertAcronym(a.shortform, a.longform);
+      this.insertObject = await this.insertAcronym(a.shortform, a.longform, a.text);
       console.log(this.insertObject);
     }
   }
 
-  async insertAcronym(shortform, longform) {
-    const result = await this.acronymsDatabaseService.insertAcronym(shortform, longform).toPromise().catch(error => console.log(error));
+  async insertAcronym(shortform, longform, text) {
+    const result = await this.acronymsDatabaseService.insertAcronym(shortform, longform, text).toPromise().catch(error => console.log(error));
     return result;
   }
 

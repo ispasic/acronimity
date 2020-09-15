@@ -166,7 +166,7 @@ export class TestapiComponent implements OnInit {
     for (var a of this.acronymList)
     {
       console.log("Insert acronym", a);
-      this.insertObject = await this.insertAcronym(a.shortform, a.longform);
+      this.insertObject = await this.insertAcronym(a.shortform, a.longform, a.text);
       console.log(this.insertObject);
       //this.insertObject = this.acronymsDatabaseService.insertAcronym(a.shortform, a.longform).subscribe(console.log);
     }
@@ -196,8 +196,8 @@ export class TestapiComponent implements OnInit {
     return result;
   }
 
-  async insertAcronym(shortform, longform) {
-    const result = await this.acronymsDatabaseService.insertAcronym(shortform, longform).toPromise().catch(error => console.log(error));
+  async insertAcronym(shortform, longform, text) {
+    const result = await this.acronymsDatabaseService.insertAcronym(shortform, longform, text).toPromise().catch(error => console.log(error));
     return result;
   }
 
