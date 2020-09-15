@@ -36,14 +36,26 @@ export class ShowdetailsDialogComponent {
     }
 
     async ngOnInit() {
+      //get abstract with pubmed query
       this.abstract = await this.getAbstractByID(this.data.id);
       this.isAbstractFormed = true;
 
+      //form acronym list
       this.detailsAcronymList.length = 0;
       this.detailsAcronymList = this.acronymService.getAcronymList(this.abstract);
+      //if no acronyms
       if (this.detailsAcronymList.length == 0)
       {
         this.isNoAcronyms = true;
+      }
+
+      //swap long<->short in abstract
+      let swapText = this.abstractProcessingService.swapAcronyms(this.abstract, this.detailsAcronymList);
+      let tagText = this.abstractProcessingService.tagAcronyms(this.abstract, this.detailsAcronymList);
+      for (let i = 0; i < this.detailsAcronymList.length; i++)
+      {
+        this.detailsAcronymList[i].swapText = swapText;
+        this.detailsAcronymList[i].tagText = tagText;
       }
       console.log("Acronym List: ", this.detailsAcronymList);
     }
@@ -62,15 +74,15 @@ export class ShowdetailsDialogComponent {
     }
 
     async insertAcronymsClick(): Promise<void> {
-      for (var a of this.detailsAcronymList)
+      for (var acronym of this.detailsAcronymList)
       {
-        this.insertObject = await this.insertAcronym(a.shortform, a.longform, a.text);
+        this.insertObject = await this.insertAcronym(acronym);
         console.log(this.insertObject);
       }
     }
 
-    async insertAcronym(shortform, longform, text) {
-      const result = await this.acronymsDatabaseService.insertAcronym(shortform, longform, text).toPromise().catch(error => console.log(error));
+    async insertAcronym(acronym) {
+      const result = await this.acronymsDatabaseService.insertAcronym(acronym).toPromise().catch(error => console.log(error));
       return result;
     }
 

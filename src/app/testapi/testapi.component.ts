@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { PubmedService } from '../services/pubmed.service';
 import { AcronymService } from '../services/acronym.service';
 import { AcronymsDatabaseService } from '../services/acronyms-database.service';
+import { AbstractProcessingService } from '../services/abstract-processing.service';
 import { MatDialog } from '@angular/material/dialog';
 
 import { ShowdetailsDialogComponent } from './showdetails-dialog/showdetails-dialog.component';
@@ -22,6 +23,7 @@ export class TestapiComponent implements OnInit {
     private pubmedService: PubmedService,
     private acronymService: AcronymService,
     private acronymsDatabaseService: AcronymsDatabaseService,
+    private abstractProcessingService: AbstractProcessingService,
     private dialog: MatDialog) { }
 
   testButtonText = "SEARCH";
@@ -72,13 +74,18 @@ export class TestapiComponent implements OnInit {
       return;
     }
 
+    if (searchResult.esearchresult.idlist.length < this.resultsNumber)
+    {
+      this.resultsNumber = searchResult.esearchresult.idlist.length;
+    }
+
     //console.log("Test:", searchResult.esearchresult.)
 
     var i = 0;
     for(var id of searchResult.esearchresult.idlist)
     {
       i++;
-      this.searchProgress = "Search done. Fetching basic data for " + i + " result out of " + this.resultsNumber + " result(s)..";
+      this.searchProgress = `Search done. Fetching basic data for ${i} result out of ${this.resultsNumber} result(s)`;
       this.listOfSearchIDs.push(id);
       await this.sleep(500);
       var basicDataResult = await this.getBasicDataByID(id);
@@ -103,25 +110,50 @@ export class TestapiComponent implements OnInit {
     }
 
     console.log("List of search results: ", this.listOfSearchResults);
-
-    this.isSearched = true;
-    this.searchProgress = "";
-
     console.log("List of IDs:", this.listOfSearchIDs);
-    this.result = this.listOfSearchIDs.toString().split(",").join('\n');
 
-    //get all acronyms into list
-    var IDs;
-    //console.log("listOfSearchResults:", this.listOfSearchResults);
-    for (var entry of this.listOfSearchResults)
-    {
-      IDs = IDs + entry.id + ",";
-    }
-    var abstracts = await this.getAbstractByID(IDs);
-    //console.log("abstracts = ", abstracts);
+    // this.result = this.listOfSearchIDs.toString().split(",").join('\n');
 
+    // //get all acronyms into list
+    // var IDs;
+    // //console.log("listOfSearchResults:", this.listOfSearchResults);
+    // for (var entry of this.listOfSearchResults)
+    // {
+    //   IDs = IDs + entry.id + ",";
+    // }
+    // var abstracts = await this.getAbstractByID(IDs);
+    // //console.log("abstracts = ", abstracts);
+
+    // this.acronymList.length = 0; //empty the acronym list
+    // this.acronymList = this.acronymService.getAcronymList(abstracts); //get acronyms from abstracts
+
+    //get acronyms from each abstract one by one
     this.acronymList.length = 0; //empty the acronym list
-    this.acronymList = this.acronymService.getAcronymList(abstracts); //get acronyms from abstracts
+    for (let i = 0; i < this.listOfSearchIDs.length; i++) {
+      this.searchProgress = `Search done. Fetching abstract for ${i + 1} result out of ${this.resultsNumber} result(s)`;
+      let abstract = await this.getAbstractByID(this.listOfSearchIDs[i]);
+      await this.sleep(500);
+
+      //form single acronym list
+      let singleAcronymList = this.acronymService.getAcronymList(abstract);
+
+      //swap long<->short in abstract
+      //let swapText = this.abstractProcessingService.swapAcronyms(abstract, singleAcronymList);
+      //let tagText = this.abstractProcessingService.tagAcronyms(abstract, singleAcronymList);
+      let swapText = '';
+      let tagText = '';
+      for (let i = 0; i < singleAcronymList.length; i++)
+      {
+        singleAcronymList[i].swapText = swapText;
+        singleAcronymList[i].tagText = tagText;
+      }
+      //push acronyms to main acronym list
+      this.acronymList = this.acronymList.concat(singleAcronymList);
+    }
+    //search is done
+    this.isSearched = true;
+    this.searchProgress = '';
+
     console.log("Acronyms from abstracts: ", this.acronymList);
 
     //if less results then requested
@@ -163,10 +195,10 @@ export class TestapiComponent implements OnInit {
   //get all acronyms and insert them into database
   async insertAllAcronymsClick(): Promise<void> {
     //insert one by one
-    for (var a of this.acronymList)
+    for (var acronym of this.acronymList)
     {
-      console.log("Insert acronym", a);
-      this.insertObject = await this.insertAcronym(a.shortform, a.longform, a.text);
+      console.log("Insert acronym", acronym);
+      this.insertObject = await this.insertAcronym(acronym);
       console.log(this.insertObject);
       //this.insertObject = this.acronymsDatabaseService.insertAcronym(a.shortform, a.longform).subscribe(console.log);
     }
@@ -196,8 +228,8 @@ export class TestapiComponent implements OnInit {
     return result;
   }
 
-  async insertAcronym(shortform, longform, text) {
-    const result = await this.acronymsDatabaseService.insertAcronym(shortform, longform, text).toPromise().catch(error => console.log(error));
+  async insertAcronym(acronym) {
+    const result = await this.acronymsDatabaseService.insertAcronym(acronym).toPromise().catch(error => console.log(error));
     return result;
   }
 

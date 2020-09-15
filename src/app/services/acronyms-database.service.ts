@@ -19,14 +19,10 @@ export class AcronymsDatabaseService {
     return this.http.get(this.APIURL);
   }
 
-  insertAcronym(shortform: string, longform: string, text: string) {
-
-    //process text before inserting
-    //create swapped text
-
+  insertAcronym(acronym) {
     let reqBody = {
-      "shortform": shortform,
-      "longform": longform
+      "shortform": acronym.shortform,
+      "longform": acronym.longform
     }
     let headers = {
       "Content-Type": "application/json"
