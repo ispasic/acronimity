@@ -94,6 +94,8 @@ export class AcronymService {
     var candidateList = [];
     var acronymList = [];
 
+    let originalSentence = sentence; //save original text
+
     o = sentence.indexOf(" ("); //find open parenthesis
 
     while (o > -1) //do it while we have an open parenthesis in text
@@ -187,7 +189,10 @@ export class AcronymService {
     }
     //console.log("Full candidate List: ", candidateList);
     acronymList = this.matchPairs(candidateList); //process full candidate list to get list of acronyms
-
+    for (let i = 0; i < acronymList.length; i++)
+    {
+      acronymList[i].text = originalSentence;
+    }
 
     return acronymList;
   }
