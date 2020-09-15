@@ -140,11 +140,11 @@ export class TestapiComponent implements OnInit {
       //swap long<->short in abstract
       let swapText = this.abstractProcessingService.swapAcronyms(abstract, singleAcronymList);
       let tagText = this.abstractProcessingService.tagAcronyms(abstract, singleAcronymList);
-      for (let i = 0; i < singleAcronymList.length; i++)
+      for (let j = 0; j < singleAcronymList.length; j++)
       {
-        singleAcronymList[i].swapText = swapText;
-        singleAcronymList[i].tagText = tagText;
-        singleAcronymList[i].pubMedId = this.listOfSearchIDs[i];
+        singleAcronymList[j].swapText = swapText;
+        singleAcronymList[j].tagText = tagText;
+        singleAcronymList[j].pubMedId = this.listOfSearchIDs[i];
       }
       //push acronyms to main acronym list
       this.acronymList = this.acronymList.concat(singleAcronymList);
