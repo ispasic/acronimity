@@ -44,7 +44,7 @@ export class AbstractProcessingService {
 
   //replace all occurences of <find> with <replace> in <str>
   private replaceAll(str, find: string, replace: string) {
-    console.log(`Replacing ${find} with ${replace}`);
+    //console.log(`Replacing ${find} with ${replace}`);
     return str.replace(new RegExp(find, 'gi'), replace);
   }
 }

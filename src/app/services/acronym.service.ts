@@ -230,61 +230,9 @@ export class AcronymService {
     }
 
     d = Math.max(definition.lastIndexOf(" ", d) + 1, definition.lastIndexOf("(", d) + 1, definition.lastIndexOf(")", d) + 1,
-      definition.lastIndexOf("/", d) + 1);
+      definition.lastIndexOf("/", d) + 1, definition.lastIndexOf("]", d) + 1, definition.lastIndexOf("[", d) + 1,
+      definition.lastIndexOf("}", d) + 1, definition.lastIndexOf("{", d) + 1);
     return definition.substring(d);
-  }
-
-  private matchPair(acronym: string, definition: string) {
-    //acronym has to have at least 2 characters
-
-    // console.log("Acronym candidate: ", acronym);
-    // console.log("Definition candidate: ", definition);
-
-    if (acronym.length < 2)
-    {
-      //console.log("ERROR: Acronym length is less than 2");
-      return;
-    }
-
-    definition = definition.replace(/\n/g, " "); //swap all endlines by spaces
-
-
-    
-    let bestLongForm = this.bestLongForm(acronym, definition);
-
-    //console.log("bestLongForm: ", bestLongForm);
-
-    if (bestLongForm == null)
-    {
-      //console.log("ERROR: no bestLongForm determined");
-      return;
-    }
-    
-    //swap \n to " "
-
-    bestLongForm = bestLongForm.replace(/\n/g, " "); //swap all endlines by spaces
-
-    //check the bestLongForm according to Schwartz algorithm
-    let bestLongFormWords = bestLongForm.split(" ");
-
-    let acronymCharsCount = this.countLetterAndDigits(acronym); //number of characters in acronym that are digits or letters
-    let defWordsCount = bestLongFormWords.length; //number of words in definition
-
-    if(bestLongForm.length < acronym.length || //if long form is shorter than acronym
-      bestLongForm.indexOf(acronym + " ") > -1 || //if long form containt acronym
-      bestLongForm.endsWith(acronym) || //if long form ends with acronym
-      defWordsCount > 2 * acronymCharsCount || defWordsCount > acronymCharsCount + 5 || acronymCharsCount > 10)
-    {
-      return;
-    }
-
-    var foundPair = {
-      "shortform": acronym,
-      "longform": bestLongForm
-    }; //set up a pair of acronym - long form JSON
-
-    //this.acronymList.push(foundPair); //push the pair into the list
-    //console.log(acronym + " " + bestLongForm); //print list
   }
 
   private matchPairs(candidateList) {
@@ -369,5 +317,60 @@ export class AcronymService {
 
     return acronymList;
     
+  }
+
+
+  //old single match Pair function
+  private matchPair(acronym: string, definition: string) {
+    //acronym has to have at least 2 characters
+
+    // console.log("Acronym candidate: ", acronym);
+    // console.log("Definition candidate: ", definition);
+
+    if (acronym.length < 2)
+    {
+      //console.log("ERROR: Acronym length is less than 2");
+      return;
+    }
+
+    definition = definition.replace(/\n/g, " "); //swap all endlines by spaces
+
+
+    
+    let bestLongForm = this.bestLongForm(acronym, definition);
+
+    //console.log("bestLongForm: ", bestLongForm);
+
+    if (bestLongForm == null)
+    {
+      //console.log("ERROR: no bestLongForm determined");
+      return;
+    }
+    
+    //swap \n to " "
+
+    bestLongForm = bestLongForm.replace(/\n/g, " "); //swap all endlines by spaces
+
+    //check the bestLongForm according to Schwartz algorithm
+    let bestLongFormWords = bestLongForm.split(" ");
+
+    let acronymCharsCount = this.countLetterAndDigits(acronym); //number of characters in acronym that are digits or letters
+    let defWordsCount = bestLongFormWords.length; //number of words in definition
+
+    if(bestLongForm.length < acronym.length || //if long form is shorter than acronym
+      bestLongForm.indexOf(acronym + " ") > -1 || //if long form containt acronym
+      bestLongForm.endsWith(acronym) || //if long form ends with acronym
+      defWordsCount > 2 * acronymCharsCount || defWordsCount > acronymCharsCount + 5 || acronymCharsCount > 10)
+    {
+      return;
+    }
+
+    var foundPair = {
+      "shortform": acronym,
+      "longform": bestLongForm
+    }; //set up a pair of acronym - long form JSON
+
+    //this.acronymList.push(foundPair); //push the pair into the list
+    //console.log(acronym + " " + bestLongForm); //print list
   }
 }
