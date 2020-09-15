@@ -10,7 +10,8 @@ function createRouter(db) {
 
         //check if empty request
         if (!req.body.longform || !req.body.shortform || !req.body.text ||
-            !req.body.swapText || !req.body.tagText || !req.body.pubMedId)
+            !req.body.swapText || !req.body.tagText || !req.body.pubMedId ||
+            !req.body.title || !req.body.journal || !req.body.authors || !req.body.pubdate)
         {
             let msg = 'Not enough parameters in the request body';
             res.status(500).json({
@@ -25,11 +26,15 @@ function createRouter(db) {
         let swapText = req.body.swapText;
         let tagText = req.body.tagText;
         let pubMedId = req.body.pubMedId;
+        let title = req.body.title;
+        let journal = req.body.journal
+        let authors = req.body.authors;
+        let pubdate = req.body.pubdate;
 
         try {
             //check if that abstract is already in database by pubMedId
             const checkAbstract = await db.query(
-                'SELECT id FROM abstract WHERE pubmed_id=?',
+                'SELECT id FROM abstracts WHERE pubmed_id=?',
                 [pubMedId]
             );
 
@@ -42,15 +47,15 @@ function createRouter(db) {
             //if not in database, insert it into it and get its id
             else {
                 const insertAbstract = await db.query(
-                    'INSERT INTO abstract (text, tagText, swapText, pubmed_id) VALUES (?,?,?,?)',
-                    [text, swapText, tagText, pubMedId]
+                    'INSERT INTO abstracts (text, swapText, tagText, pubmed_id, title, journal, authors, pubdate) VALUES (?,?,?,?,?,?,?,?)',
+                    [text, swapText, tagText, pubMedId, title, journal, authors, pubdate]
                 );
                 refId = insertAbstract.insertId;
             }
 
             //check if that acronym is already in database
             const checkAcronym = await db.query(
-                'SELECT shortform, longform FROM lexicon WHERE shortform=?',
+                'SELECT shortform, longform FROM acronyms WHERE shortform=?',
                 [shortform]
             );
 
@@ -62,7 +67,7 @@ function createRouter(db) {
             }
             else {
                 const insertAcronym = await db.query(
-                    'INSERT INTO lexicon (shortform, longform, abstract_id) VALUES (?,?,?)',
+                    'INSERT INTO acronyms (shortform, longform, abstract_id) VALUES (?,?,?)',
                     [shortform, longform, refId]
                 )
                 let msg = `inserted new acronym with shortform: ${shortform} and longform: ${longform}`;
@@ -93,7 +98,7 @@ function createRouter(db) {
 
         try {
             const result = await db.query(
-                'SELECT * FROM lexicon INNER JOIN abstract ON lexicon.abstract_id=abstract.id WHERE shortform=?',
+                'SELECT * FROM acronyms INNER JOIN abstracts ON acronyms.abstract_id=abstracts.id WHERE shortform=?',
                 [shortform]
             )
             res.status(200).json(result);
@@ -117,7 +122,7 @@ function createRouter(db) {
 
         try {
             const result = await db.query(
-                'SELECT * FROM lexicon INNER JOIN abstract ON lexicon.abstract_id=abstract.id WHERE longform=?',
+                'SELECT * FROM acronyms INNER JOIN abstracts ON acronyms.abstract_id=abstracts.id WHERE longform=?',
                 [longform]
             )
             res.status(200).json(result);
@@ -129,7 +134,7 @@ function createRouter(db) {
     router.get('/getAllAcronyms', async (req, res, next) => {
         try {
             const results = await db.query(
-                'SELECT * FROM lexicon INNER JOIN abstract ON lexicon.abstract_id=abstract.id',
+                'SELECT * FROM acronyms INNER JOIN abstracts ON acronyms.abstract_id=abstracts.id',
             )
             res.status(200).json(results);
         } catch (error) {
@@ -158,7 +163,7 @@ function createRouter(db) {
 
         //check if shortform is already in database
         db.query(
-            'SELECT shortform, longform FROM lexicon WHERE shortform=?',
+            'SELECT shortform, longform FROM acronyms WHERE shortform=?',
             [shortform],
             (error, results) => {
                 if (error) {
@@ -172,7 +177,7 @@ function createRouter(db) {
                     });
                 } else { //valid acronym for insertion
                     db.query(
-                        'INSERT INTO lexicon (shortform, longform) VALUES (?,?)',
+                        'INSERT INTO acronyms (shortform, longform) VALUES (?,?)',
                         [shortform, longform],
                         (error) => {
                             if (error) {
@@ -195,7 +200,7 @@ function createRouter(db) {
 
     router.get('/getAllAcronymsOld', (req, res, next) => {
         db.query(
-            'SELECT * FROM lexicon',
+            'SELECT * FROM acronyms',
             (error, results) => {
                 if(error) {
                     console.log(error);
@@ -225,7 +230,7 @@ function createRouter(db) {
         
         //check if there is an acronym with shortfrom from request
         db.query(
-            'SELECT shortform FROM lexicon WHERE shortform=?',
+            'SELECT shortform FROM acronyms WHERE shortform=?',
             [shortform],
             (error, results) => {
                 if (error) {
@@ -240,7 +245,7 @@ function createRouter(db) {
 
                 } else { //update acronym according to request
                     db.query(
-                        'UPDATE lexicon SET longform=? WHERE shortform=?',
+                        'UPDATE acronyms SET longform=? WHERE shortform=?',
                         [longform, shortform],
                         (error) => {
                             if (error) {
@@ -275,7 +280,7 @@ function createRouter(db) {
         let shortform = req.body.shortform;
 
         db.query(
-            'SELECT shortform, longform FROM lexicon WHERE shortform=?',
+            'SELECT shortform, longform FROM acronyms WHERE shortform=?',
             [shortform],
             (error, results) => {
                 if (error) {
@@ -309,7 +314,7 @@ function createRouter(db) {
         let longform = req.body.longform;
         
         db.query(
-            'SELECT shortform, longform FROM lexicon WHERE longform=?',
+            'SELECT shortform, longform FROM acronyms WHERE longform=?',
             [longform],
             (error, results) => {
                 if (error) {

@@ -26,7 +26,11 @@ export class AcronymsDatabaseService {
       "text": acronym.text,
       "swapText": acronym.swapText,
       "tagText": acronym.tagText,
-      "pubMedId": acronym.pubMedId
+      "pubMedId": acronym.pubMedId,
+      "title": acronym.title,
+      "journal": acronym.journal,
+      "authors": acronym.authors,
+      "pubdate": acronym.pubdate
     }
     let headers = {
       "Content-Type": "application/json"

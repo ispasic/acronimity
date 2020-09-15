@@ -31,7 +31,6 @@ export class TestapiComponent implements OnInit {
   isSearched = false;
   query = "";
   resultsNumber = 1;
-  result = "";
   listOfSearchIDs = [];
   searchProgress = "";
   abstracts;
@@ -145,6 +144,10 @@ export class TestapiComponent implements OnInit {
         singleAcronymList[j].swapText = swapText;
         singleAcronymList[j].tagText = tagText;
         singleAcronymList[j].pubMedId = this.listOfSearchIDs[i];
+        singleAcronymList[j].title = this.listOfSearchResults[i].title;
+        singleAcronymList[j].journal = this.listOfSearchResults[i].journal;
+        singleAcronymList[j].authors = JSON.stringify(this.listOfSearchResults[i].authors).toString();
+        singleAcronymList[j].pubdate = this.listOfSearchResults[i].pubdate;
       }
       //push acronyms to main acronym list
       this.acronymList = this.acronymList.concat(singleAcronymList);
@@ -179,16 +182,29 @@ export class TestapiComponent implements OnInit {
   }
 
   //download all abstracts as a single file
-  async downloadResultsClick(): Promise<void> {
+  async downloadAbstractsClick(): Promise<void> {
     var IDs;
     console.log("listOfSearchResults:", this.listOfSearchResults);
     for (var entry of this.listOfSearchResults)
     {
       IDs = IDs + entry.id + ",";
     }
-    var abstracts = await this.getAbstractByID(IDs);
+    const abstracts = await this.getAbstractByID(IDs);
     var blob = new Blob([abstracts], {type: "text/plain;charset=utf-8"});
     FileSaver.saveAs(blob, "Search Results.txt");
+  }
+
+  //download all acronyms from database as a single file
+  async downloadAcronymsClick(): Promise<void> {
+    const acronymsResult = await this.getAllAcronymsDatabase();
+    console.log(acronymsResult);
+    var blob = new Blob([JSON.stringify(acronymsResult)], {type: "text/plain;charset=utf-8"});
+    FileSaver.saveAs(blob, "Acronyms.json");
+  }
+
+  async getAllAcronymsDatabase() {
+    const result = await this.acronymsDatabaseService.getAllAcronyms().toPromise().catch(error => console.log(error));
+    return result;
   }
 
   //get all acronyms and insert them into database
@@ -203,6 +219,11 @@ export class TestapiComponent implements OnInit {
 
     this.acronymListFromDatabase = await this.getAllAcronymsDatabase(); //get acronyms from MySql database
     console.log("Acronyms from database: ", this.acronymListFromDatabase);
+  }
+
+  async insertAcronym(acronym) {
+    const result = await this.acronymsDatabaseService.insertAcronym(acronym).toPromise().catch(error => console.log(error));
+    return result;
   }
 
   async showAllAcronymsClick(): Promise<void> {
@@ -223,16 +244,6 @@ export class TestapiComponent implements OnInit {
 
   async getAbstractByID(id) {
     const result = await this.pubmedService.getAbstractByID(id).toPromise().catch(error => console.log(error));
-    return result;
-  }
-
-  async insertAcronym(acronym) {
-    const result = await this.acronymsDatabaseService.insertAcronym(acronym).toPromise().catch(error => console.log(error));
-    return result;
-  }
-
-  async getAllAcronymsDatabase() {
-    const result = await this.acronymsDatabaseService.getAllAcronyms().toPromise().catch(error => console.log(error));
     return result;
   }
 

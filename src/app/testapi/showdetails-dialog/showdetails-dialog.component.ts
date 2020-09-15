@@ -40,6 +40,12 @@ export class ShowdetailsDialogComponent {
       //get abstract with pubmed query
       this.abstract = await this.getAbstractByID(this.data.id);
       this.isAbstractFormed = true;
+      await this.sleep(500);
+      let basicData = await this.getBasicDataByID(this.data.id);
+      var title = basicData.result[this.data.id].title;
+      var journal = basicData.result[this.data.id].fulljournalname;
+      var pubdate = basicData.result[this.data.id].pubdate;
+      var authors = basicData.result[this.data.id].authors;
 
       //form acronym list
       this.detailsAcronymList.length = 0;
@@ -58,6 +64,10 @@ export class ShowdetailsDialogComponent {
         this.detailsAcronymList[i].swapText = swapText;
         this.detailsAcronymList[i].tagText = tagText;
         this.detailsAcronymList[i].pubMedId = this.data.id;
+        this.detailsAcronymList[i].title = title;
+        this.detailsAcronymList[i].journal = journal;
+        this.detailsAcronymList[i].authors = authors;
+        this.detailsAcronymList[i].pubdate = pubdate;
       }
       console.log("Acronym List: ", this.detailsAcronymList);
     }
@@ -65,6 +75,11 @@ export class ShowdetailsDialogComponent {
     async getAbstractByID(id) {
       const result = await this.pubmedService.getAbstractByID(id).toPromise().catch(error => console.log(error));
       return result;
+    }
+
+    async getBasicDataByID(id) {
+      const res = await this.pubmedService.getBasicDataByID(id).toPromise().catch(error => console.log(error));
+      return res;
     }
 
     ngOnDestroy() {
@@ -108,6 +123,10 @@ export class ShowdetailsDialogComponent {
         this.status = 'Text is already tagged';
       }
 
+    }
+
+    sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
     }
 
 
