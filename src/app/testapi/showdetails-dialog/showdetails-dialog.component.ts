@@ -27,6 +27,7 @@ export class ShowdetailsDialogComponent {
     isAbstractFormed = false;
     isNoAcronyms = false;
     isTagged = false;
+    isSwapped = false;
     insertObject;
 
     detailsAcronymList = [];
@@ -87,7 +88,14 @@ export class ShowdetailsDialogComponent {
     }
 
     swapAcronymsClick(): void{
-      this.abstract = this.abstractProcessingService.swapAcronyms(this.abstract, this.detailsAcronymList);
+      if (!this.isSwapped) {
+        this.abstract = this.abstractProcessingService.swapAcronyms(this.abstract, this.detailsAcronymList);
+        this.isSwapped = true;
+      }
+      else {
+        this.status = 'Acronyms already swapped';
+      }
+      
     }
 
     tagAcronymsClick(): void{
