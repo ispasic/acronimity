@@ -129,9 +129,10 @@ export class TestapiComponent implements OnInit {
     //get acronyms from each abstract one by one
     this.acronymList.length = 0; //empty the acronym list
     for (let i = 0; i < this.listOfSearchIDs.length; i++) {
+      await this.sleep(500);
       this.searchProgress = `Search done. Fetching abstract for ${i + 1} result out of ${this.resultsNumber} result(s)`;
       let abstract = await this.getAbstractByID(this.listOfSearchIDs[i]);
-      await this.sleep(500);
+
 
       //form single acronym list
       let singleAcronymList = this.acronymService.getAcronymList(abstract);
