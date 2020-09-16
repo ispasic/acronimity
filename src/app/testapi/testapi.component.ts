@@ -146,7 +146,7 @@ export class TestapiComponent implements OnInit {
         singleAcronymList[j].pubMedId = this.listOfSearchIDs[i];
         singleAcronymList[j].title = this.listOfSearchResults[i].title;
         singleAcronymList[j].journal = this.listOfSearchResults[i].journal;
-        singleAcronymList[j].authors = JSON.stringify(this.listOfSearchResults[i].authors).toString();
+        singleAcronymList[j].authors = this.listOfSearchResults[i].authors;
         singleAcronymList[j].pubdate = this.listOfSearchResults[i].pubdate;
       }
       //push acronyms to main acronym list

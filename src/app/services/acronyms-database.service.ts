@@ -29,7 +29,7 @@ export class AcronymsDatabaseService {
       "pubMedId": acronym.pubMedId,
       "title": acronym.title,
       "journal": acronym.journal,
-      "authors": acronym.authors,
+      "authors": JSON.stringify(acronym.authors).toString(),
       "pubdate": acronym.pubdate
     }
     let headers = {

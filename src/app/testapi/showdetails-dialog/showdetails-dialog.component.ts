@@ -66,7 +66,7 @@ export class ShowdetailsDialogComponent {
         this.detailsAcronymList[i].pubMedId = this.data.id;
         this.detailsAcronymList[i].title = title;
         this.detailsAcronymList[i].journal = journal;
-        this.detailsAcronymList[i].authors = JSON.stringify(authors).toString();
+        this.detailsAcronymList[i].authors = authors;
         this.detailsAcronymList[i].pubdate = pubdate;
       }
       console.log("Acronym List: ", this.detailsAcronymList);
@@ -86,8 +86,8 @@ export class ShowdetailsDialogComponent {
     }
 
     downloadDetailsClick(): void {
-      var blob = new Blob([this.abstract], {type: "text/plain;charset=utf-8"});
-      FileSaver.saveAs(blob, this.data.title + ".txt");
+      var blob = new Blob([JSON.stringify(this.detailsAcronymList, null, 2)], {type: "text/plain;charset=utf-8"});
+      FileSaver.saveAs(blob, "Acronyms.json");
     }
 
     async insertAcronymsClick(): Promise<void> {
