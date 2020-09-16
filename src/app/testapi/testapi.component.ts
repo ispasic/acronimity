@@ -197,8 +197,14 @@ export class TestapiComponent implements OnInit {
   //download all acronyms from database as a single file
   async downloadAcronymsClick(): Promise<void> {
     const acronymsResult = await this.getAllAcronymsDatabase();
-    console.log(acronymsResult);
-    var blob = new Blob([JSON.stringify(acronymsResult)], {type: "text/plain;charset=utf-8"});
+    let acronymsJson = JSON.parse(JSON.stringify(acronymsResult));
+    for (let i = 0; i < acronymsJson.length; i++)
+    {
+      if (acronymsJson[i].authors.length > 0) {
+        acronymsJson[i].authors = JSON.parse(acronymsJson[i].authors);
+      } 
+    }
+    var blob = new Blob([JSON.stringify(acronymsJson, null, 2)], {type: "text/plain;charset=utf-8"});
     FileSaver.saveAs(blob, "Acronyms.json");
   }
 
