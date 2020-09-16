@@ -66,7 +66,7 @@ export class ShowdetailsDialogComponent {
         this.detailsAcronymList[i].pubMedId = this.data.id;
         this.detailsAcronymList[i].title = title;
         this.detailsAcronymList[i].journal = journal;
-        this.detailsAcronymList[i].authors = authors;
+        this.detailsAcronymList[i].authors = JSON.stringify(authors).toString();
         this.detailsAcronymList[i].pubdate = pubdate;
       }
       console.log("Acronym List: ", this.detailsAcronymList);
