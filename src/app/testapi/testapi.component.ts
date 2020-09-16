@@ -111,6 +111,8 @@ export class TestapiComponent implements OnInit {
     console.log("List of search results: ", this.listOfSearchResults);
     console.log("List of IDs:", this.listOfSearchIDs);
 
+
+    //get all abstracts instantly
     // this.result = this.listOfSearchIDs.toString().split(",").join('\n');
 
     // //get all acronyms into list
@@ -132,7 +134,11 @@ export class TestapiComponent implements OnInit {
       await this.sleep(500);
       this.searchProgress = `Search done. Fetching abstract for ${i + 1} result out of ${this.resultsNumber} result(s)`;
       let abstract = await this.getAbstractByID(this.listOfSearchIDs[i]);
-
+      if (!abstract)
+      {
+        this.searchProgress = `Request limit to pubmed exceeded`;
+        return;
+      }
 
       //form single acronym list
       let singleAcronymList = this.acronymService.getAcronymList(abstract);
