@@ -13,10 +13,6 @@ dbConfig =
     database: 'acronyms'
 };
 
-var corsOptions = {
-  origin: "http://localhost:4203"
-};
-
 //ordinary connection to mysql for callbacks only
 //const connection = mysql.createConnection(dbConfig);
 //connection.connect();
@@ -40,7 +36,7 @@ const connection = makeDb( dbConfig );
 const port = process.env.PORT || 8083;
 
 const app = express()
-    .use(cors(corsOptions))
+    .use(cors())
     .use(bodyParser.json())
     .use(events(connection));
 
