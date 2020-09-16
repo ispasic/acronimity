@@ -42,7 +42,7 @@ export class ShowacronymsDialogComponent implements OnInit {
 
   downloadAcronymsClick(): void {
     var blob = new Blob([JSON.stringify(this.allAcronymList, null, '\t')], {type: "text/plain;charset=utf-8"});
-    FileSaver.saveAs(blob, "Acronyms.txt");
+    FileSaver.saveAs(blob, "Acronyms.json");
   }
 
   async insertAcronymsClick(): Promise<void> {
