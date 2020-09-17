@@ -32,6 +32,19 @@ function createRouter(db) {
         let pubdate = req.body.pubdate;
 
         try {
+            //check if that acronym is already in database
+            const checkAcronym = await db.query(
+                'SELECT shortform, longform FROM acronyms WHERE shortform=?',
+                [shortform]
+            );
+
+            //if that acronym is already in database
+            if (checkAcronym.length > 0) {
+                let msg = `shortform ${shortform} is already in the database`;
+                console.log(msg);
+                throw msg;
+            }
+
             //check if that abstract is already in database by pubMedId
             const checkAbstract = await db.query(
                 'SELECT id FROM abstracts WHERE pubmed_id=?',
@@ -53,30 +66,17 @@ function createRouter(db) {
                 refId = insertAbstract.insertId;
             }
 
-            //check if that acronym is already in database
-            const checkAcronym = await db.query(
-                'SELECT shortform, longform FROM acronyms WHERE shortform=?',
-                [shortform]
-            );
-
-            //if that acronym is already in database
-            if (checkAcronym.length > 0) {
-                let msg = `shortform ${shortform} is already in the database`;
-                console.log(msg);
-                throw msg;
-            }
-            else {
-                const insertAcronym = await db.query(
-                    'INSERT INTO acronyms (shortform, longform, abstract_id) VALUES (?,?,?)',
-                    [shortform, longform, refId]
-                )
-                let msg = `inserted new acronym with shortform: ${shortform} and longform: ${longform}`;
-                console.log(msg);
-                res.status(200).json({
-                    status: 'ok',
-                    message: msg
-                });
-            }
+            const insertAcronym = await db.query(
+                'INSERT INTO acronyms (shortform, longform, abstract_id) VALUES (?,?,?)',
+                [shortform, longform, refId]
+            )
+            let msg = `inserted new acronym with shortform: ${shortform} and longform: ${longform}`;
+            console.log(msg);
+            res.status(200).json({
+                status: 'ok',
+                message: msg
+            });
+            
 
         } catch (error) {
             res.status(500).send(error);
