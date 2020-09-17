@@ -256,8 +256,6 @@ export class TestapiComponent implements OnInit {
       return;
     }
 
-    this.resultsNumber = loadResult.length;
-
     //form list of search Results
     for (let i = 0; i < loadResult.length; i++) {
       //form single entry for display
