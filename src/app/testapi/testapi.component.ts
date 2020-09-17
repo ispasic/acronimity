@@ -130,35 +130,8 @@ export class TestapiComponent implements OnInit {
 
     //get acronyms from each abstract one by one
     this.acronymList.length = 0; //empty the acronym list
-    for (let i = 0; i < this.listOfSearchIDs.length; i++) {
-      await this.sleep(500);
-      this.searchProgress = `Search done. Fetching abstract for ${i + 1} result out of ${this.resultsNumber} result(s)`;
-      let abstract = await this.getAbstractByID(this.listOfSearchIDs[i]);
-      if (!abstract)
-      {
-        this.searchProgress = `Request limit to pubmed exceeded`;
-        return;
-      }
+    await this.getAcronymsFromAbstracts(this.listOfSearchIDs);
 
-      //form single acronym list
-      let singleAcronymList = this.acronymService.getAcronymList(abstract);
-
-      //swap long<->short in abstract
-      let swapText = this.abstractProcessingService.swapAcronyms(abstract, singleAcronymList);
-      let tagText = this.abstractProcessingService.tagAcronyms(abstract, singleAcronymList);
-      for (let j = 0; j < singleAcronymList.length; j++)
-      {
-        singleAcronymList[j].swapText = swapText;
-        singleAcronymList[j].tagText = tagText;
-        singleAcronymList[j].pubMedId = this.listOfSearchIDs[i];
-        singleAcronymList[j].title = this.listOfSearchResults[i].title;
-        singleAcronymList[j].journal = this.listOfSearchResults[i].journal;
-        singleAcronymList[j].authors = this.listOfSearchResults[i].authors;
-        singleAcronymList[j].pubdate = this.listOfSearchResults[i].pubdate;
-      }
-      //push acronyms to main acronym list
-      this.acronymList = this.acronymList.concat(singleAcronymList);
-    }
     //search is done
     this.isSearched = true;
     this.searchProgress = '';
@@ -179,6 +152,40 @@ export class TestapiComponent implements OnInit {
     for (let i = 0; i < Math.min(10, this.listOfSearchResults.length); i++) {
       this.listOfDisplayResults.push(this.listOfSearchResults[i]);
     }
+  }
+
+  async getAcronymsFromAbstracts(listOfIDs): Promise<any> {
+
+    for (let i = 0; i < listOfIDs.length; i++) {
+      await this.sleep(500);
+      this.searchProgress = `Fetching abstract for ${i + 1} result out of ${this.resultsNumber} result(s)`;
+      let abstract = await this.getAbstractByID(listOfIDs[i]);
+      if (!abstract)
+      {
+        this.searchProgress = `Request limit to pubmed exceeded`;
+        return;
+      }
+
+      //form single acronym list
+      let singleAcronymList = this.acronymService.getAcronymList(abstract);
+
+      //swap long<->short in abstract
+      let swapText = this.abstractProcessingService.swapAcronyms(abstract, singleAcronymList);
+      let tagText = this.abstractProcessingService.tagAcronyms(abstract, singleAcronymList);
+      for (let j = 0; j < singleAcronymList.length; j++)
+      {
+        singleAcronymList[j].swapText = swapText;
+        singleAcronymList[j].tagText = tagText;
+        singleAcronymList[j].pubMedId = listOfIDs[i];
+        singleAcronymList[j].title = this.listOfSearchResults[i].title;
+        singleAcronymList[j].journal = this.listOfSearchResults[i].journal;
+        singleAcronymList[j].authors = this.listOfSearchResults[i].authors;
+        singleAcronymList[j].pubdate = this.listOfSearchResults[i].pubdate;
+      }
+      //push acronyms to main acronym list
+      this.acronymList = this.acronymList.concat(singleAcronymList);
+    }
+    return 
   }
 
   //open details dialog
@@ -213,6 +220,11 @@ export class TestapiComponent implements OnInit {
     }
     var blob = new Blob([JSON.stringify(acronymsJson, null, 2)], {type: "text/plain;charset=utf-8"});
     FileSaver.saveAs(blob, "Acronyms.json");
+  }
+
+  async showDatabaseClick(): Promise<void> {
+
+    return;
   }
 
   async getAllAcronymsDatabase() {
