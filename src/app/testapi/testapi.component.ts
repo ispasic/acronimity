@@ -29,6 +29,7 @@ export class TestapiComponent implements OnInit {
   testButtonText = "SEARCH";
   isTested = false;
   isSearched = false;
+  isLoaded = false;
   query = "";
   resultsNumber = 1;
   listOfSearchIDs = [];
@@ -61,6 +62,7 @@ export class TestapiComponent implements OnInit {
     this.listOfDisplayResults.length = 0;
     this.isTested = true;
     this.isSearched = false;
+    this.isLoaded = false;
 
     this.searchProgress = "Searching PubMed Database..";
 
@@ -155,7 +157,6 @@ export class TestapiComponent implements OnInit {
   }
 
   async getAcronymsFromAbstracts(listOfIDs): Promise<any> {
-
     for (let i = 0; i < listOfIDs.length; i++) {
       await this.sleep(500);
       this.searchProgress = `Fetching abstract for ${i + 1} result out of ${this.resultsNumber} result(s)`;
@@ -185,7 +186,6 @@ export class TestapiComponent implements OnInit {
       //push acronyms to main acronym list
       this.acronymList = this.acronymList.concat(singleAcronymList);
     }
-    return 
   }
 
   //open details dialog
@@ -209,7 +209,7 @@ export class TestapiComponent implements OnInit {
   }
 
   //download all acronyms from database as a single file
-  async downloadAcronymsClick(): Promise<void> {
+  async downloadAcronymsDatabaseClick(): Promise<void> {
     const acronymsResult = await this.getAllAcronymsDatabase();
     let acronymsJson = JSON.parse(JSON.stringify(acronymsResult));
     for (let i = 0; i < acronymsJson.length; i++)
@@ -222,13 +222,102 @@ export class TestapiComponent implements OnInit {
     FileSaver.saveAs(blob, "Acronyms.json");
   }
 
-  async showDatabaseClick(): Promise<void> {
-
-    return;
+  //download all acronyms from results as single file
+  async downloadAcronymsClick(): Promise<void> {
+    var blob = new Blob([JSON.stringify(this.acronymList, null, 2)], {type: "text/plain;charset=utf-8"});
+    FileSaver.saveAs(blob, "Acronyms.json");
   }
 
   async getAllAcronymsDatabase() {
     const result = await this.acronymsDatabaseService.getAllAcronyms().toPromise().catch(error => console.log(error));
+    return result;
+  }
+
+  async showDatabaseClick(): Promise<void> {
+    //null results
+    this.listOfSearchIDs.length = 0;
+    this.listOfSearchResults.length = 0;
+    this.listOfDisplayResults.length = 0;
+    this.acronymList.length = 0;
+    this.isTested = true;
+    this.isSearched = false;
+    this.isLoaded = false;
+
+    this.searchProgress = "Loading MaridDB Database..";
+
+    //get abstracts from database
+    const abstracts = await this.getAllAbstractsDatabase();
+    var loadResult = JSON.parse(JSON.stringify(abstracts));
+
+    console.log("Load Result:", loadResult);
+    if (loadResult.length == 0)
+    {
+      this.searchProgress = "No data in the database";
+      return;
+    }
+
+    this.resultsNumber = loadResult.length;
+
+    //form list of search Results
+    for (let i = 0; i < loadResult.length; i++) {
+      //form single entry for display
+
+      let authors = JSON.parse(loadResult[i].authors);
+      let displayAuthors = this.formDisplayAuthors(authors);
+
+      var singleEntry = {
+        "id": loadResult[i].pubmed_id,
+        "title": loadResult[i].title,
+        "journal": loadResult[i].journal,
+        "pubdate": loadResult[i].pubdate,
+        "authors": JSON.parse(loadResult[i].authors),
+        "displayauthors": displayAuthors
+      }
+      this.listOfSearchResults.push(singleEntry);
+      this.listOfSearchIDs.push(loadResult[i].pubmed_id);
+
+      //find acronyms from the abstract and push to list
+      //form single acronym list
+      let singleAcronymList = this.acronymService.getAcronymList(loadResult[i].text);
+
+      //swap long<->short in abstract
+      let swapText = this.abstractProcessingService.swapAcronyms(loadResult[i].text, singleAcronymList);
+      let tagText = this.abstractProcessingService.tagAcronyms(loadResult[i].text, singleAcronymList);
+      for (let j = 0; j < singleAcronymList.length; j++)
+      {
+        singleAcronymList[j].swapText = swapText;
+        singleAcronymList[j].tagText = tagText;
+        singleAcronymList[j].pubMedId = loadResult[i].pubmed_id;
+        singleAcronymList[j].title = loadResult[i].title;
+        singleAcronymList[j].journal = loadResult[i].journal;
+        singleAcronymList[j].authors = JSON.parse(loadResult[i].authors);
+        singleAcronymList[j].pubdate = loadResult[i].pubdate;
+      }
+      //push acronyms to main acronym list
+      this.acronymList = this.acronymList.concat(singleAcronymList);
+    }
+
+    console.log("List of loaded results: ", this.listOfSearchResults);
+    console.log("List of loaded IDs:", this.listOfSearchIDs);
+
+    //search is done
+    this.isSearched = true;
+    this.searchProgress = '';
+
+    console.log("Acronyms from abstracts: ", this.acronymList);
+
+    this.paginatorResultsNumber = this.listOfSearchResults.length;
+
+    //form initial list of display results
+    for (let i = 0; i < Math.min(10, this.listOfSearchResults.length); i++) {
+      this.listOfDisplayResults.push(this.listOfSearchResults[i]);
+    }
+
+    this.isLoaded = true;
+  }
+
+  async getAllAbstractsDatabase() {
+    const result = await this.acronymsDatabaseService.getAllAbstracts().toPromise().catch(error => console.log(error));
     return result;
   }
 
@@ -242,8 +331,8 @@ export class TestapiComponent implements OnInit {
       console.log(this.insertObject);
     }
 
-    this.acronymListFromDatabase = await this.getAllAcronymsDatabase(); //get acronyms from MySql database
-    console.log("Acronyms from database: ", this.acronymListFromDatabase);
+    // this.acronymListFromDatabase = await this.getAllAcronymsDatabase(); //get acronyms from MySql database
+    // console.log("Acronyms from database: ", this.acronymListFromDatabase);
   }
 
   async insertAcronym(acronym) {

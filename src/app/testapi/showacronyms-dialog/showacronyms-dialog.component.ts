@@ -20,7 +20,7 @@ export class ShowacronymsDialogComponent implements OnInit {
     private acronymService: AcronymService,
     private acronymsDatabaseService: AcronymsDatabaseService) { }
 
-  allAcronymList: [];
+  allAcronymList: any[];
   insertObject;
   isNoAcronyms = false;
 

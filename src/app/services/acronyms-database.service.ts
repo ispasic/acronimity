@@ -19,6 +19,11 @@ export class AcronymsDatabaseService {
     return this.http.get(this.APIURL);
   }
 
+  getAllAbstracts() {
+    this.APIURL = baseUrl + "getAllAbstracts";
+    return this.http.get(this.APIURL);
+  }
+
   insertAcronym(acronym) {
     let reqBody = {
       "shortform": acronym.shortform,
