@@ -83,6 +83,17 @@ function createRouter(db) {
         }
     });
 
+    router.get('/getAllAbstracts', async function(req, res, next) {
+        try {
+            const results = await db.query(
+                'SELECT * FROM abstracts',
+            )
+            res.status(200).json(results);
+        } catch (error) {
+            res.status(500).send(error);
+        }
+    });
+
     router.get('/getAcronymByShort', async function(req, res, next) {
 
         //check if empty request
