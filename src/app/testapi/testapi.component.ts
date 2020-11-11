@@ -51,6 +51,14 @@ export class TestapiComponent implements OnInit {
   paginatorResultsNumber: number;
 
   ngOnInit(): void {
+    let testText = 'University,university, university, UNIVERSITY, UNI (United Nation Influence)';
+    console.log("test Text", testText);
+    let acronymList = this.acronymService.getAcronymList(testText);
+    console.log("Acronym list", acronymList);
+    let tagText = this.abstractProcessingService.tagAcronyms(testText, acronymList);
+    console.log("Tag text", tagText);
+    let swapText = this.abstractProcessingService.swapAcronyms(testText, acronymList);
+    console.log("Swap Text", swapText);
   }
 
   ngOnDestroy() {

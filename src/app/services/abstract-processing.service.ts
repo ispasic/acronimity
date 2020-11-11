@@ -17,9 +17,12 @@ export class AbstractProcessingService {
 
     for (let acronym of acronymList)
     {
-      swapText = this.replaceAll(swapText, acronym.shortform, acronym.longform + "TEMP");
+      swapText = this.replaceAll(swapText, " " + acronym.shortform + " ", " " + acronym.longform + " " + "TEMP");
+      console.log("Swap 1", swapText);
       swapText = this.replaceAll(swapText, acronym.longform, acronym.shortform);
-      swapText = this.replaceAll(swapText, acronym.shortform + "TEMP", acronym.longform);
+      console.log("Swap 2", swapText);
+      swapText = this.replaceAll(swapText, " " + acronym.shortform + " " + "TEMP", " " + acronym.longform + " ");
+      console.log("Swap 3", swapText);
     }
 
     return swapText;
@@ -35,8 +38,8 @@ export class AbstractProcessingService {
 
     for (let acronym of acronymList)
     {
-      taggedText = this.replaceAll(taggedText, acronym.shortform, "<shortform>" + acronym.shortform +"</shortform>");
-      taggedText = this.replaceAll(taggedText, acronym.longform, "<longform>" + acronym.longform +"</longform>");
+      taggedText = this.replaceAll(taggedText, " " + acronym.shortform + " ", " <shortform>" + acronym.shortform + "</shortform> ");
+      taggedText = this.replaceAll(taggedText, acronym.longform, "<longform>" + acronym.longform + "</longform>");
     }
 
     return taggedText;
