@@ -17,12 +17,9 @@ export class AbstractProcessingService {
 
     for (let acronym of acronymList)
     {
-      swapText = this.replaceAll(swapText, " " + acronym.shortform + " ", " " + acronym.longform + " " + "TEMP");
-      console.log("Swap 1", swapText);
+      swapText = this.replaceAll(swapText, acronym.shortform, acronym.longform + " TEMP");
       swapText = this.replaceAll(swapText, acronym.longform, acronym.shortform);
-      console.log("Swap 2", swapText);
-      swapText = this.replaceAll(swapText, " " + acronym.shortform + " " + "TEMP", " " + acronym.longform + " ");
-      console.log("Swap 3", swapText);
+      swapText = this.replaceAll(swapText, acronym.shortform + " TEMP", acronym.longform);
     }
 
     return swapText;
@@ -38,7 +35,7 @@ export class AbstractProcessingService {
 
     for (let acronym of acronymList)
     {
-      taggedText = this.replaceAll(taggedText, " " + acronym.shortform + " ", " <shortform>" + acronym.shortform + "</shortform> ");
+      taggedText = this.replaceAll(taggedText, acronym.shortform, "<shortform>" + acronym.shortform + "</shortform>");
       taggedText = this.replaceAll(taggedText, acronym.longform, "<longform>" + acronym.longform + "</longform>");
     }
 
@@ -46,8 +43,8 @@ export class AbstractProcessingService {
   }
 
   //replace all occurences of <find> with <replace> in <str>
-  private replaceAll(str, find: string, replace: string) {
+  public replaceAll(str, find: string, replace: string) {
     //console.log(`Replacing ${find} with ${replace}`);
-    return str.replace(new RegExp(find, 'gi'), replace);
+    return str.replace(new RegExp(`\\b${find}\\b`, 'gi'), replace);
   }
 }
