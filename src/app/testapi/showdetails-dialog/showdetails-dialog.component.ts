@@ -47,9 +47,31 @@ export class ShowdetailsDialogComponent {
       var pubdate = basicData.result[this.data.id].pubdate;
       var authors = basicData.result[this.data.id].authors;
 
+      // find an abstract and cut it into separate substring
+      let abIndexStart = this.abstract.indexOf('AB  - ');
+      let abIndexEnd = 0;
+
+      if (this.abstract.indexOf('CI  - ') == -1) {
+        abIndexEnd = this.abstract.indexOf('FAU - ');
+      } else if (this.abstract.indexOf('FAU - ') == -1) {
+        abIndexEnd = this.abstract.indexOf('CI  - ');
+      } else if (this.abstract.indexOf('CI  - ') - abIndexStart < this.abstract.indexOf('FAU - ') - abIndexStart) {
+        abIndexEnd = this.abstract.indexOf('CI  - ');
+      } else {
+        abIndexEnd = this.abstract.indexOf('FAU - ');
+      }
+
+      // get the abstract for acronyms search
+      let abstractForAcronyms = '';
+      if (abIndexStart < abIndexEnd) {
+        abstractForAcronyms = this.abstract.substring(abIndexStart + 6, abIndexEnd);
+      }
+      abstractForAcronyms = abstractForAcronyms.replace(/\s{2,}/g,' '); //swap all multiple spaces with spaces
+
+
       //form acronym list
       this.detailsAcronymList.length = 0;
-      this.detailsAcronymList = this.acronymService.getAcronymList(this.abstract);
+      this.detailsAcronymList = this.acronymService.getAcronymList(abstractForAcronyms);
       //if no acronyms
       if (this.detailsAcronymList.length == 0)
       {
@@ -57,8 +79,8 @@ export class ShowdetailsDialogComponent {
       }
 
       //swap long<->short in abstract
-      let swapText = this.abstractProcessingService.swapAcronyms(this.abstract, this.detailsAcronymList);
-      let tagText = this.abstractProcessingService.tagAcronyms(this.abstract, this.detailsAcronymList);
+      let swapText = this.abstractProcessingService.swapAcronyms(abstractForAcronyms, this.detailsAcronymList);
+      let tagText = this.abstractProcessingService.tagAcronyms(abstractForAcronyms, this.detailsAcronymList);
       for (let i = 0; i < this.detailsAcronymList.length; i++)
       {
         this.detailsAcronymList[i].swapText = swapText;
