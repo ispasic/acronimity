@@ -34,7 +34,7 @@ export class PubmedService {
   public getAbstractByID(id): Observable<any> {
     this.db = "pubmed";
     this.findUrl = baseUrl + "efetch.fcgi?db=" + this.db + "&id=" + id + "&rettype=medline&retmode=text" + "&api_key=" + apiKey;
-    console.log("Get Abstract Url: ", this.findUrl);
+    //console.log("Get Abstract Url: ", this.findUrl);
     return this.http.get(this.findUrl, {responseType: 'text'});
   }
 

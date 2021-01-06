@@ -93,7 +93,7 @@ export class TestapiComponent implements OnInit {
     for (let i = 0; i < searchResult.esearchresult.idlist.length; i++) {
       this.listOfSearchIDs.push(searchResult.esearchresult.idlist[i]);
     }
-    console.log("List of IDs:", this.listOfSearchIDs);
+    //console.log("List of IDs:", this.listOfSearchIDs);
 
     // get the basic data for each result
     await this.getBasicDataResults(this.listOfSearchIDs);
@@ -161,7 +161,6 @@ export class TestapiComponent implements OnInit {
 
       this.listOfSearchResults.push(singleEntry);
     }
-    console.log(dataRes);
     
   }
 
@@ -200,12 +199,21 @@ export class TestapiComponent implements OnInit {
       let abIndexStart = abstracts.indexOf('AB  - ');
       let abIndexEnd = 0;
 
-      if (abstracts.indexOf('CI  - ') - abIndexStart < abstracts.indexOf('FAU - ') - abIndexStart) {
+      if (abstracts.indexOf('CI  - ') == -1) {
+        abIndexEnd = abstracts.indexOf('FAU - ');
+      } else if (abstracts.indexOf('FAU - ') == -1) {
+        abIndexEnd = abstracts.indexOf('CI  - ');
+      } else if (abstracts.indexOf('CI  - ') - abIndexStart < abstracts.indexOf('FAU - ') - abIndexStart) {
         abIndexEnd = abstracts.indexOf('CI  - ');
       } else {
         abIndexEnd = abstracts.indexOf('FAU - ');
       }
-      let abstract = abstracts.substring(abIndexStart + 6, abIndexEnd);
+
+      // get the abstract
+      let abstract = '';
+      if (abIndexStart < abIndexEnd) {
+        abstract = abstracts.substring(abIndexStart + 6, abIndexEnd);
+      }
       abstract = abstract.replace(/\s{2,}/g,' '); //swap all multiple spaces with spaces
 
       // cut all abstracts for the next one

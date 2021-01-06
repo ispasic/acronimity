@@ -69,7 +69,7 @@ export class ShowdetailsDialogComponent {
         this.detailsAcronymList[i].authors = authors;
         this.detailsAcronymList[i].pubdate = pubdate;
       }
-      console.log("Acronym List: ", this.detailsAcronymList);
+      //console.log("Acronym List: ", this.detailsAcronymList);
     }
 
     async getAbstractByID(id) {

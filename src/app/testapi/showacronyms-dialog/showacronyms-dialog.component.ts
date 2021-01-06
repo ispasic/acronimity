@@ -26,7 +26,7 @@ export class ShowacronymsDialogComponent implements OnInit {
 
   ngOnInit(): void {
     this.allAcronymList = this.data;
-    console.log("Acronyms in Dialog: ", this.allAcronymList);
+    //console.log("Acronyms in Dialog: ", this.allAcronymList);
     if (this.allAcronymList.length == 0)
       {
         this.isNoAcronyms = true;

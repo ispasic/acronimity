@@ -231,7 +231,7 @@ export class AcronymService {
 
     d = Math.max(definition.lastIndexOf(" ", d) + 1, definition.lastIndexOf("(", d) + 1, definition.lastIndexOf(")", d) + 1,
       definition.lastIndexOf("/", d) + 1, definition.lastIndexOf("]", d) + 1, definition.lastIndexOf("[", d) + 1,
-      definition.lastIndexOf("}", d) + 1, definition.lastIndexOf("{", d) + 1);
+      definition.lastIndexOf("}", d) + 1, definition.lastIndexOf("{", d) + 1), definition.lastIndexOf('"', d) + 1;
     return definition.substring(d);
   }
 
