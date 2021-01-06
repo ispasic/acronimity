@@ -344,20 +344,36 @@ export class TestapiComponent implements OnInit {
       let singleAcronymList = this.acronymService.getAcronymList(loadResult[i].text);
 
       //swap long<->short in abstract
-      let swapText = this.abstractProcessingService.swapAcronyms(loadResult[i].text, singleAcronymList);
-      let tagText = this.abstractProcessingService.tagAcronyms(loadResult[i].text, singleAcronymList);
+      //let swapText = this.abstractProcessingService.swapAcronyms(loadResult[i].text, singleAcronymList);
+      //let tagText = this.abstractProcessingService.tagAcronyms(loadResult[i].text, singleAcronymList);
+
       for (let j = 0; j < singleAcronymList.length; j++)
       {
-        singleAcronymList[j].swapText = swapText;
-        singleAcronymList[j].tagText = tagText;
+        singleAcronymList[j].swapText = loadResult[i].swapText;
+        singleAcronymList[j].tagText = loadResult[i].tagText;
         singleAcronymList[j].pubMedId = loadResult[i].pubmed_id;
         singleAcronymList[j].title = loadResult[i].title;
         singleAcronymList[j].journal = loadResult[i].journal;
         singleAcronymList[j].authors = JSON.parse(loadResult[i].authors);
         singleAcronymList[j].pubdate = loadResult[i].pubdate;
       }
-      //push acronyms to main acronym list
-      this.acronymList = this.acronymList.concat(singleAcronymList);
+
+      //push acronyms to main acronym list with duplicates
+      //this.acronymList = this.acronymList.concat(singleAcronymList);
+
+      //push acronyms to main acronym list with removing duplicates
+      for (let j = 0; j < singleAcronymList.length; j++) {
+        let isPresent = false;
+        for (let k = 0; k < this.acronymList.length; k++) {
+          if (this.acronymList[k].shortform.toLowerCase() == singleAcronymList[j].shortform.toLowerCase()) {
+            isPresent = true;
+            break;
+          }
+        }
+        if (!isPresent) {
+          this.acronymList.push(singleAcronymList[j]);
+        }
+      }
     }
 
     console.log("List of loaded results: ", this.listOfSearchResults);
@@ -375,6 +391,8 @@ export class TestapiComponent implements OnInit {
     for (let i = 0; i < Math.min(10, this.listOfSearchResults.length); i++) {
       this.listOfDisplayResults.push(this.listOfSearchResults[i]);
     }
+
+    this.resultsNumber = loadResult.length;
 
     this.isLoaded = true;
   }
