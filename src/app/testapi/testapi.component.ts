@@ -51,25 +51,19 @@ export class TestapiComponent implements OnInit {
   paginatorResultsNumber: number;
 
   ngOnInit(): void {
-    let testText = 'University,university, university, UNIVERSITY, UNI (United Nation Influence), (UNI)';
-    console.log("test Text", testText);
-    let replaceText = this.abstractProcessingService.replaceAll(testText, 'UNI', 'United Nation Influence');
-    console.log("replace text", replaceText);
-    let acronymList = this.acronymService.getAcronymList(testText);
-    console.log("Acronym list", acronymList);
-    let tagText = this.abstractProcessingService.tagAcronyms(testText, acronymList);
-    console.log("Tag text", tagText);
-    let swapText = this.abstractProcessingService.swapAcronyms(testText, acronymList);
-    console.log("Swap Text", swapText);
   }
 
   ngOnDestroy() {
   }
 
   async searchButtonClick(query, number): Promise<void> {
+
+    // null previous results
+
     this.listOfSearchIDs.length = 0;
     this.listOfSearchResults.length = 0;
     this.listOfDisplayResults.length = 0;
+    this.acronymList.length = 0;
     this.isTested = true;
     this.isSearched = false;
     this.isLoaded = false;
@@ -77,71 +71,35 @@ export class TestapiComponent implements OnInit {
     this.searchProgress = "Searching PubMed Database..";
 
     console.log("Query:", query);
+
+    // search the database with an API call
+    await this.sleep(1000);
     var searchResult = await this.searchDatabase(query, number);
     console.log("Search Result:", searchResult);
+    // if no search results
     if (searchResult.esearchresult.count == 0)
     {
       this.searchProgress = "The search yielded no results";
       return;
     }
 
+    // adjust the pagination
     if (searchResult.esearchresult.idlist.length < this.resultsNumber)
     {
       this.resultsNumber = searchResult.esearchresult.idlist.length;
     }
 
-    //console.log("Test:", searchResult.esearchresult.)
-
-    var i = 0;
-    for(var id of searchResult.esearchresult.idlist)
-    {
-      i++;
-      this.searchProgress = `Search done. Fetching basic data for ${i} result out of ${this.resultsNumber} result(s)`;
-      this.listOfSearchIDs.push(id);
-      await this.sleep(500);
-      var basicDataResult = await this.getBasicDataByID(id);
-      //console.log("basicDataResult = ", basicDataResult);
-      var title = basicDataResult.result[id].title;
-      var journal = basicDataResult.result[id].fulljournalname;
-      var pubdate = basicDataResult.result[id].pubdate;
-      var authors = basicDataResult.result[id].authors;
-      //console.log("Authors = ", authors);
-      var displayAuthors = this.formDisplayAuthors(authors);
-
-      var singleEntry = {
-        "id": id,
-        "title": title,
-        "journal": journal,
-        "pubdate": pubdate,
-        "authors": authors,
-        "displayauthors": displayAuthors
-      }; //generate single entry and push it into the list of results
-
-      this.listOfSearchResults.push(singleEntry);
+    // form the list of IDs
+    for (let i = 0; i < searchResult.esearchresult.idlist.length; i++) {
+      this.listOfSearchIDs.push(searchResult.esearchresult.idlist[i]);
     }
-
-    console.log("List of search results: ", this.listOfSearchResults);
     console.log("List of IDs:", this.listOfSearchIDs);
 
-
-    //get all abstracts instantly
-    // this.result = this.listOfSearchIDs.toString().split(",").join('\n');
-
-    // //get all acronyms into list
-    // var IDs;
-    // //console.log("listOfSearchResults:", this.listOfSearchResults);
-    // for (var entry of this.listOfSearchResults)
-    // {
-    //   IDs = IDs + entry.id + ",";
-    // }
-    // var abstracts = await this.getAbstractByID(IDs);
-    // //console.log("abstracts = ", abstracts);
-
-    // this.acronymList.length = 0; //empty the acronym list
-    // this.acronymList = this.acronymService.getAcronymList(abstracts); //get acronyms from abstracts
+    // get the basic data for each result
+    await this.getBasicDataResults(this.listOfSearchIDs);
+    console.log("List of search results: ", this.listOfSearchResults);
 
     //get acronyms from each abstract one by one
-    this.acronymList.length = 0; //empty the acronym list
     await this.getAcronymsFromAbstracts(this.listOfSearchIDs);
 
     //search is done
@@ -150,7 +108,7 @@ export class TestapiComponent implements OnInit {
 
     console.log("Acronyms from abstracts: ", this.acronymList);
 
-    //if less results then requested
+    //if less results then requested adjust paginator
     if (this.listOfSearchResults.length < this.resultsNumber)
     {
       this.paginatorResultsNumber = this.listOfSearchResults.length;
@@ -166,20 +124,95 @@ export class TestapiComponent implements OnInit {
     }
   }
 
-  async getAcronymsFromAbstracts(listOfIDs): Promise<any> {
+  async getBasicDataResults(listOfIDs): Promise<any> {
+    await this.sleep(1000);
+    this.searchProgress = `Fetching basic data for ${this.resultsNumber} result(s)`;
+
+    // form the list of IDs
+    let allIDs = '';
     for (let i = 0; i < listOfIDs.length; i++) {
-      await this.sleep(500);
-      this.searchProgress = `Fetching abstract for ${i + 1} result out of ${this.resultsNumber} result(s)`;
-      let abstract = await this.getAbstractByID(listOfIDs[i]);
-      if (!abstract)
-      {
-        this.searchProgress = `Request limit to pubmed exceeded`;
-        return;
+      if (i == 0) {
+        allIDs = allIDs + listOfIDs[i];
+      } else {
+        allIDs = allIDs + ',' + listOfIDs[i];
       }
+    }
+
+    // get all basic data
+    let dataRes = await this.getBasicDataByID(allIDs);
+
+    for (let i = 0; i < listOfIDs.length; i++) {
+      let id = listOfIDs[i];
+      let title = dataRes.result[id].title;
+      let journal = dataRes.result[id].fulljournalname;
+      let pubdate = dataRes.result[id].pubdate;
+      let authors = dataRes.result[id].authors;
+      //console.log("Authors = ", authors);
+      let displayAuthors = this.formDisplayAuthors(authors);
+
+      let singleEntry = {
+        "id": id,
+        "title": title,
+        "journal": journal,
+        "pubdate": pubdate,
+        "authors": authors,
+        "displayauthors": displayAuthors
+      }; //generate single entry and push it into the list of results
+
+      this.listOfSearchResults.push(singleEntry);
+    }
+    console.log(dataRes);
+    
+  }
+
+  async getAcronymsFromAbstracts(listOfIDs): Promise<any> {
+    await this.sleep(1000);
+    this.searchProgress = `Fetching all abstracts for ${this.resultsNumber} result(s)`;
+    // form the list of IDs
+    let allIDs = '';
+    for (let i = 0; i < listOfIDs.length; i++) {
+      if (i == 0) {
+        allIDs = allIDs + listOfIDs[i];
+      } else {
+        allIDs = allIDs + ',' + listOfIDs[i];
+      }
+    }
+
+    // get all the abstracts
+    let abstractsRes = await this.getAbstractByID(allIDs);
+    let abstracts = '';
+    abstracts = abstracts + abstractsRes;
+
+    // separate abstracts
+    for (let i = 0; i < listOfIDs.length; i++) {
+
+      // find position of abstract
+      let abstractFound = false;
+      if (abstracts.indexOf(listOfIDs[i]) != -1) {
+        abstractFound = true;
+      }
+      // if abstract found cut everything before
+      if (abstractFound) {
+        abstracts = abstracts.substring(abstracts.indexOf(listOfIDs[i]));
+      }
+
+      // find an abstract and cut it into separate substring
+      let abIndexStart = abstracts.indexOf('AB  - ');
+      let abIndexEnd = 0;
+
+      if (abstracts.indexOf('CI  - ') - abIndexStart < abstracts.indexOf('FAU - ') - abIndexStart) {
+        abIndexEnd = abstracts.indexOf('CI  - ');
+      } else {
+        abIndexEnd = abstracts.indexOf('FAU - ');
+      }
+      let abstract = abstracts.substring(abIndexStart + 6, abIndexEnd);
+      abstract = abstract.replace(/\s{2,}/g,' '); //swap all multiple spaces with spaces
+
+      // cut all abstracts for the next one
+      abstracts = abstracts.substring(abIndexEnd);
 
       //form single acronym list
       let singleAcronymList = this.acronymService.getAcronymList(abstract);
-
       //swap long<->short in abstract
       let swapText = this.abstractProcessingService.swapAcronyms(abstract, singleAcronymList);
       let tagText = this.abstractProcessingService.tagAcronyms(abstract, singleAcronymList);
@@ -193,8 +226,22 @@ export class TestapiComponent implements OnInit {
         singleAcronymList[j].authors = this.listOfSearchResults[i].authors;
         singleAcronymList[j].pubdate = this.listOfSearchResults[i].pubdate;
       }
-      //push acronyms to main acronym list
-      this.acronymList = this.acronymList.concat(singleAcronymList);
+      //push acronyms to main acronym list without removing duplicates
+      //this.acronymList = this.acronymList.concat(singleAcronymList);
+      
+      //push acronyms to main acronym list with removing duplicates
+      for (let j = 0; j < singleAcronymList.length; j++) {
+        let isPresent = false;
+        for (let k = 0; k < this.acronymList.length; k++) {
+          if (this.acronymList[k].shortform.toLowerCase() == singleAcronymList[j].shortform.toLowerCase()) {
+            isPresent = true;
+            break;
+          }
+        }
+        if (!isPresent) {
+          this.acronymList.push(singleAcronymList[j]);
+        }
+      }
     }
   }
 
@@ -418,6 +465,37 @@ export class TestapiComponent implements OnInit {
 
     return event;
 
+  }
+
+  async getAcronymsFromAbstractsOld(listOfIDs): Promise<any> {
+    for (let i = 0; i < listOfIDs.length; i++) {
+      await this.sleep(500);
+      this.searchProgress = `Fetching abstract for ${i + 1} result out of ${this.resultsNumber} result(s)`;
+      let abstract = await this.getAbstractByID(listOfIDs[i]);
+      if (!abstract)
+      {
+        this.searchProgress = `Request limit to pubmed exceeded`;
+        return;
+      }
+
+      //form single acronym list
+      let singleAcronymList = this.acronymService.getAcronymList(abstract);
+      //swap long<->short in abstract
+      let swapText = this.abstractProcessingService.swapAcronyms(abstract, singleAcronymList);
+      let tagText = this.abstractProcessingService.tagAcronyms(abstract, singleAcronymList);
+      for (let j = 0; j < singleAcronymList.length; j++)
+      {
+        singleAcronymList[j].swapText = swapText;
+        singleAcronymList[j].tagText = tagText;
+        singleAcronymList[j].pubMedId = listOfIDs[i];
+        singleAcronymList[j].title = this.listOfSearchResults[i].title;
+        singleAcronymList[j].journal = this.listOfSearchResults[i].journal;
+        singleAcronymList[j].authors = this.listOfSearchResults[i].authors;
+        singleAcronymList[j].pubdate = this.listOfSearchResults[i].pubdate;
+      }
+      //push acronyms to main acronym list
+      this.acronymList = this.acronymList.concat(singleAcronymList);
+    }
   }
 
 }
