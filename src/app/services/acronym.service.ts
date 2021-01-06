@@ -148,6 +148,11 @@ export class AcronymService {
           //check if acronym is in () or definition
           var splitted = acronym.split(" "); //split the acronym into parts separated by " "
 
+          //check if definition ends with "
+          if (definition.lastIndexOf('"') == definition.trim().length - 1) {
+            definition = definition.substring(0, definition.trim().length - 1) //cut that " at the end
+          }
+
           //if more than 2 parts in acronym and acronym is longer than definition
           if(splitted.length > 2 || acronym.length > definition.length) 
           {
@@ -209,6 +214,8 @@ export class AcronymService {
     for( ; a >= 0; a--)
     {
       let c = acronym.charAt(a).toLowerCase();
+      //console.log(`c = ${c}`);
+      //console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
 
       if(this.isLetterOrDigit(c))
       {
@@ -218,6 +225,7 @@ export class AcronymService {
           )
         {
           d--;
+          //console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
         }
 
         if(d < 0)
@@ -225,13 +233,17 @@ export class AcronymService {
           return null;
         }
         d--;
+        //console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
       }
 
     }
 
+    //console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
     d = Math.max(definition.lastIndexOf(" ", d) + 1, definition.lastIndexOf("(", d) + 1, definition.lastIndexOf(")", d) + 1,
       definition.lastIndexOf("/", d) + 1, definition.lastIndexOf("]", d) + 1, definition.lastIndexOf("[", d) + 1,
-      definition.lastIndexOf("}", d) + 1, definition.lastIndexOf("{", d) + 1), definition.lastIndexOf('"', d) + 1;
+      definition.lastIndexOf("}", d) + 1, definition.lastIndexOf("{", d) + 1, definition.lastIndexOf('"', d) + 1);
+    //console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
+    //console.log(definition.substring(d));
     return definition.substring(d);
   }
 
@@ -241,6 +253,7 @@ export class AcronymService {
     var acronym = '';
     var definition = '';
     var isInList = false;
+    //console.log("candidate list: ", candidateList);
 
     //cycle through the whole candidate list 
     for (var cand of candidateList)
