@@ -31,7 +31,7 @@ export class TestapiComponent implements OnInit {
   isSearched = false;
   isLoaded = false;
   query = "";
-  resultsNumber = 1;
+  resultsNumber = 100;
   listOfSearchIDs = [];
   searchProgress = "";
   abstracts;
