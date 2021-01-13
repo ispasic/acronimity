@@ -258,11 +258,8 @@ export class TestapiComponent implements OnInit {
         // get extra information about abstract for acronym
 
         //swap long<->short in abstract
-        // let swapText = this.abstractProcessingService.swapAcronyms(abstract, singleAcronymList);
-        // let tagText = this.abstractProcessingService.tagAcronyms(abstract, singleAcronymList);
-
-        let swapText = abstract;
-        let tagText = abstract;
+        let swapText = this.abstractProcessingService.swapAcronyms(abstract, singleAcronymList);
+        let tagText = this.abstractProcessingService.tagAcronyms(abstract, singleAcronymList);
 
         // find basic data for abstract from listOfSearchResults
         let title = '';
@@ -378,6 +375,11 @@ export class TestapiComponent implements OnInit {
   async downloadAbstractsClick(): Promise<void> {
     var blob = new Blob([JSON.stringify(this.listOfAbstracts, null, 2)], {type: "text/plain;charset=utf-8"});
     FileSaver.saveAs(blob, "Abstracts.json");
+  }
+
+  openPubmedHelpClick() {
+    let url = "https://pubmed.ncbi.nlm.nih.gov/help/";
+    window.open(url, "_blank", "noopener");
   }
 
   async getAllAcronymsDatabase() {
