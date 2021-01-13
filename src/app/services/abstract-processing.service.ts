@@ -49,6 +49,30 @@ export class AbstractProcessingService {
     return taggedText;
   }
 
+  public tagAcronymsSense(text: string, acronymList: any[]): string {
+    
+    let taggedText = text;
+    taggedText = taggedText.replace(/\n/g, " "); //swap all endlines by spaces
+    taggedText = taggedText.replace(/\u00A0/g, " "); //swap all non-breaking spaces by spaces
+    taggedText = taggedText.replace(/\s{2,}/g,' '); //swap all multiple spaces with spaces
+
+    for (let acronym of acronymList) {
+      // transform `longform (shortform)` strings into `shortform`
+      taggedText = taggedText.split(acronym.longform + " (" + acronym.shortform + ")").join(acronym.shortform);
+      taggedText = taggedText.split(acronym.longform + "(" + acronym.shortform + ")").join(acronym.shortform);
+      // transform `shortform (longform)` string into `shortform`
+      taggedText = taggedText.split(acronym.shortform + " (" + acronym.longform + ")").join(acronym.shortform);
+      taggedText = taggedText.split(acronym.shortform + "(" + acronym.longform + ")").join(acronym.shortform);
+      // transform `(shortform) longform` string into `shortform`
+      taggedText = taggedText.split("(" + acronym.shortform + ") " + acronym.longform).join(acronym.shortform);
+      taggedText = taggedText.split("(" + acronym.shortform + ")" + acronym.longform).join(acronym.shortform);
+      // transform `shortform` into `<acronym sense=longform>shortform</acronym>
+      taggedText = taggedText.split(acronym.shortform).join("<acronym sense=" + acronym.longform + ">" + acronym.shortform + "</acronym>");
+    }
+
+    return taggedText;
+  }
+
   //replace all occurences of <find> with <replace> in <str>
   public replaceAll(str, find: string, replace: string) {
     //console.log(`Replacing ${find} with ${replace}`);

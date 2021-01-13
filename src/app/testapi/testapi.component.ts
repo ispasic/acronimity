@@ -12,6 +12,8 @@ import { ShowacronymsDialogComponent } from './showacronyms-dialog/showacronyms-
 import * as FileSaver from 'file-saver';
 import { PageEvent } from '@angular/material/paginator';
 
+var Tokenizer = require('sentence-tokenizer');
+
 @Component({
   selector: 'app-testapi',
   templateUrl: './testapi.component.html',
@@ -318,12 +320,25 @@ export class TestapiComponent implements OnInit {
           abstractAcronyms.push(singlePair);
         }
 
+        // split abstract into sentences
+        let tokenizer = new Tokenizer();
+        tokenizer.setEntry(abstract);
+        let sentences = tokenizer.getSentences();
+
+        for (let k = 0; k < sentences.length; k++) {
+          sentences[k] = this.abstractProcessingService.tagAcronymsSense(sentences[k], singleAcronymList);
+        }
+
+        //console.log(sentences);
+
         let singleAbstract = {
           "title": title,
           "journal": journal,
           "pubdate": pubdate,
           "authors": authors,
+          "pubmed_id": stepIDsList[j],
           "text": abstract,
+          "sentences": sentences,
           "acronyms": abstractAcronyms
         };
         this.listOfAbstracts.push(singleAbstract);
@@ -471,10 +486,13 @@ export class TestapiComponent implements OnInit {
       for (let k = 0; k < singleAcronymList.length; k++) {
         let singlePair = {
           "shortform": singleAcronymList[k].shortform,
-          "longform": singleAcronymList[k].longform
+          "longform": singleAcronymList[k].longform.toLowerCase()
         };
         abstractAcronyms.push(singlePair);
       }
+
+      // split abstract into sentences
+
 
       let singleAbstract = {
         "title": loadResult[i].title,
