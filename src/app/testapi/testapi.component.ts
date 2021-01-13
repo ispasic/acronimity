@@ -34,7 +34,6 @@ export class TestapiComponent implements OnInit {
   resultsNumber = 100;
   listOfSearchIDs = [];
   searchProgress = "";
-  abstracts;
 
   acronymList = [];
   acronymListFromDatabase;
@@ -52,6 +51,8 @@ export class TestapiComponent implements OnInit {
 
   fetchStep = 400;
 
+  listOfAbstracts = [];
+
   ngOnInit(): void {
   }
 
@@ -65,6 +66,7 @@ export class TestapiComponent implements OnInit {
     this.listOfSearchIDs.length = 0;
     this.listOfSearchResults.length = 0;
     this.listOfDisplayResults.length = 0;
+    this.listOfAbstracts.length = 0;
     this.acronymList.length = 0;
     this.isTested = true;
     this.isSearched = false;
@@ -108,6 +110,7 @@ export class TestapiComponent implements OnInit {
     this.searchProgress = '';
 
     console.log("Acronyms from abstracts: ", this.acronymList);
+    console.log("Abstracts: ", this.listOfAbstracts);
 
     //if less results then requested adjust paginator
     if (this.listOfSearchResults.length < this.resultsNumber)
@@ -278,6 +281,7 @@ export class TestapiComponent implements OnInit {
           }
         }
 
+        // attach extra info to each acronym pair
         for (let k = 0; k < singleAcronymList.length; k++)
         {
           singleAcronymList[k].swapText = swapText;
@@ -288,6 +292,26 @@ export class TestapiComponent implements OnInit {
           singleAcronymList[k].authors = authors;
           singleAcronymList[k].pubdate = pubdate;
         }
+
+        // form list of acronyms without additional info
+        let abstractAcronyms = [];
+        for (let k = 0; k < singleAcronymList.length; k++) {
+          let singlePair = {
+            "shortform": singleAcronymList[k].shortform,
+            "longform": singleAcronymList[k].longform
+          };
+          abstractAcronyms.push(singlePair);
+        }
+
+        let singleAbstract = {
+          "title": title,
+          "journal": journal,
+          "pubdate": pubdate,
+          "authors": authors,
+          "text": abstract,
+          "acronyms": abstractAcronyms
+        };
+        this.listOfAbstracts.push(singleAbstract);
 
         //push acronyms to main acronym list without removing duplicates
         //this.acronymList = this.acronymList.concat(singleAcronymList);
