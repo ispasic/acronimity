@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { URLSearchParams } from 'url';
 
 const baseUrl = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
 const apiKey = "842007c31c1ec561c1d418abf9f279f21408"; 
@@ -19,23 +20,44 @@ export class PubmedService {
   public searchDatabase(query, retmax): Observable<any> {
     this.db = "pubmed";
     query = encodeURIComponent(query);
-    this.findUrl = baseUrl + "esearch.fcgi?db=" + this.db + "&term=" + query + "&retmode=" + this.retmode + "&retmax=" + retmax + "&api_key=" + apiKey;
+    this.findUrl = baseUrl + "esearch.fcgi";
+    let headers = new HttpHeaders();
+    let params = new HttpParams();
+    params = params.set('db', this.db);
+    params = params.set('term', query);
+    params = params.set('retmode', this.retmode);
+    params = params.set('retmax', retmax);
+    params = params.set('api_key', apiKey);
     //console.log("Search Database Url: ", this.findUrl);
-    return this.http.get(this.findUrl)
+    return this.http.get(this.findUrl, {headers: headers, params: params});
   }
 
   public getBasicDataByID(id): Observable<any> {
     this.db = "pubmed";
-    this.findUrl = baseUrl + "esummary.fcgi?db=" + this.db + "&id=" + id + "&retmode=" + this.retmode + "&api_key=" + apiKey;
+    this.findUrl = baseUrl + "esummary.fcgi";
+    let headers = new HttpHeaders();
+    let params = new HttpParams();
+    params = params.set('db', this.db);
+    params = params.set('id', id);
+    params = params.set('retmode', this.retmode);
+    params = params.set('api_key', apiKey);
     //console.log("Get Basic Data Url: ", this.findUrl);
-    return this.http.get(this.findUrl);
+    return this.http.post(this.findUrl, null, {headers: headers, params: params});
   }
 
   public getAbstractByID(id): Observable<any> {
     this.db = "pubmed";
-    this.findUrl = baseUrl + "efetch.fcgi?db=" + this.db + "&id=" + id + "&rettype=medline&retmode=text" + "&api_key=" + apiKey;
     //console.log("Get Abstract Url: ", this.findUrl);
-    return this.http.get(this.findUrl, {responseType: 'text'});
+    this.findUrl = baseUrl + "efetch.fcgi";
+    let headers = new HttpHeaders();
+    let params = new HttpParams();
+    params = params.set('db', this.db);
+    params = params.set('id', id);
+    params = params.set('rettype', 'medline')
+    params = params.set('retmode', 'text');
+    params = params.set('api_key', apiKey);
+    return this.http.post(this.findUrl, null, {headers: headers, params: params, responseType: 'text'});
+
   }
 
 }
