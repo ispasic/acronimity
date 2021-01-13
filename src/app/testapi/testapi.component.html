@@ -1,18 +1,25 @@
 <mat-card class="normal-card">
     <mat-card-content class="centeralign">
         <div fxLayout="column">
-            <div class="normal-label">Number of Results:</div>
+            <div class="normal-label">PubMed query:</div>
+            <div fxLayout="row">
+                <div>
+                    <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
+                        <mat-label style="margin-top: 0px !important;">Query</mat-label>
+                        <input matInput type="text" [(ngModel)]="query" class="normal-text">  
+                    </mat-form-field>
+                </div>
+                <div class="help-icon-container">
+                    <mat-icon class="help-icon">help_outline</mat-icon>
+                </div>
+            </div>
+
+
+            <div class="normal-label"></div>
 
             <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline">
                 <mat-label style="margin-top: 0px !important;">Number of results</mat-label>
                 <input matInput type="text" [(ngModel)]="resultsNumber" class="normal-text">  
-            </mat-form-field>
-
-            <div class="normal-label">PubMed query:</div>
-
-            <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
-                <mat-label style="margin-top: 0px !important;">Query</mat-label>
-                <input matInput type="text" [(ngModel)]="query" class="normal-text">  
             </mat-form-field>
 
             <!-- <div *ngIf="isSearched" class="normal-label">Search results:</div> -->
