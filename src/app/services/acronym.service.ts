@@ -305,7 +305,7 @@ export class AcronymService {
 
       var foundPair = {
         "shortform": acronym,
-        "longform": bestLongForm
+        "longform": bestLongForm.toLowerCase()
       }; //set up a pair of acronym - long form JSON
   
       //check if the pair is in List already

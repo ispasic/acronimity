@@ -486,7 +486,7 @@ export class TestapiComponent implements OnInit {
       for (let k = 0; k < singleAcronymList.length; k++) {
         let singlePair = {
           "shortform": singleAcronymList[k].shortform,
-          "longform": singleAcronymList[k].longform.toLowerCase()
+          "longform": singleAcronymList[k].longform
         };
         abstractAcronyms.push(singlePair);
       }
