@@ -8,6 +8,8 @@ import { AbstractProcessingService } from '../../services/abstract-processing.se
 
 import * as FileSaver from 'file-saver';
 
+var Tokenizer = require('sentence-tokenizer');
+
 @Component({
   selector: 'app-showdetails-dialog',
   templateUrl: './showdetails-dialog.component.html',
@@ -22,7 +24,7 @@ export class ShowdetailsDialogComponent {
     private acronymsDatabaseService: AcronymsDatabaseService,
     private abstractProcessingService: AbstractProcessingService) { }
 
-    abstract;
+    abstractRes;
     status;
     isAbstractFormed = false;
     isNoAcronyms = false;
@@ -31,6 +33,7 @@ export class ShowdetailsDialogComponent {
     insertObject;
 
     detailsAcronymList = [];
+    detailsAbstractList = [];
 
     onNoClick(): void {
       this.dialogRef.close();
@@ -38,9 +41,8 @@ export class ShowdetailsDialogComponent {
 
     async ngOnInit() {
       //get abstract with pubmed query
-      this.abstract = await this.getAbstractByID(this.data.id, 0);
+      this.abstractRes = await this.getAbstractByID(this.data.id, 0);
       this.isAbstractFormed = true;
-      await this.sleep(500);
       let basicData = await this.getBasicDataByID(this.data.id, 0);
       var title = basicData.result[this.data.id].title;
       var journal = basicData.result[this.data.id].fulljournalname;
@@ -48,30 +50,29 @@ export class ShowdetailsDialogComponent {
       var authors = basicData.result[this.data.id].authors;
 
       // find an abstract and cut it into separate substring
-      let abIndexStart = this.abstract.indexOf('AB  - ');
+      let abIndexStart = this.abstractRes.indexOf('AB  - ');
       let abIndexEnd = 0;
 
-      if (this.abstract.indexOf('CI  - ') == -1) {
-        abIndexEnd = this.abstract.indexOf('FAU - ');
-      } else if (this.abstract.indexOf('FAU - ') == -1) {
-        abIndexEnd = this.abstract.indexOf('CI  - ');
-      } else if (this.abstract.indexOf('CI  - ') - abIndexStart < this.abstract.indexOf('FAU - ') - abIndexStart) {
-        abIndexEnd = this.abstract.indexOf('CI  - ');
+      if (this.abstractRes.indexOf('CI  - ') == -1) {
+        abIndexEnd = this.abstractRes.indexOf('FAU - ');
+      } else if (this.abstractRes.indexOf('FAU - ') == -1) {
+        abIndexEnd = this.abstractRes.indexOf('CI  - ');
+      } else if (this.abstractRes.indexOf('CI  - ') - abIndexStart < this.abstractRes.indexOf('FAU - ') - abIndexStart) {
+        abIndexEnd = this.abstractRes.indexOf('CI  - ');
       } else {
-        abIndexEnd = this.abstract.indexOf('FAU - ');
+        abIndexEnd = this.abstractRes.indexOf('FAU - ');
       }
 
       // get the abstract for acronyms search
-      let abstractForAcronyms = '';
+      let abstract = '';
       if (abIndexStart < abIndexEnd) {
-        abstractForAcronyms = this.abstract.substring(abIndexStart + 6, abIndexEnd);
+        abstract = this.abstractRes.substring(abIndexStart + 6, abIndexEnd);
       }
-      abstractForAcronyms = abstractForAcronyms.replace(/\s{2,}/g,' '); //swap all multiple spaces with spaces
-
+      abstract = abstract.replace(/\s{2,}/g,' '); //swap all multiple spaces with spaces
 
       //form acronym list
       this.detailsAcronymList.length = 0;
-      this.detailsAcronymList = this.acronymService.getAcronymList(abstractForAcronyms);
+      this.detailsAcronymList = this.acronymService.getAcronymList(abstract);
       //if no acronyms
       if (this.detailsAcronymList.length == 0)
       {
@@ -79,8 +80,9 @@ export class ShowdetailsDialogComponent {
       }
 
       //swap long<->short in abstract
-      let swapText = this.abstractProcessingService.swapAcronyms(abstractForAcronyms, this.detailsAcronymList);
-      let tagText = this.abstractProcessingService.tagAcronyms(abstractForAcronyms, this.detailsAcronymList);
+      let swapText = this.abstractProcessingService.swapAcronyms(abstract, this.detailsAcronymList);
+      let tagText = this.abstractProcessingService.tagAcronyms(abstract, this.detailsAcronymList);
+
       for (let i = 0; i < this.detailsAcronymList.length; i++)
       {
         this.detailsAcronymList[i].swapText = swapText;
@@ -91,15 +93,52 @@ export class ShowdetailsDialogComponent {
         this.detailsAcronymList[i].authors = authors;
         this.detailsAcronymList[i].pubdate = pubdate;
       }
-      //console.log("Acronym List: ", this.detailsAcronymList);
+
+      // form abstract with sentences and acronyms
+
+      // form list of acronyms without additional info
+      let abstractAcronyms = [];
+      for (let k = 0; k < this.detailsAcronymList.length; k++) {
+        let singlePair = {
+          "shortform": this.detailsAcronymList[k].shortform,
+          "longform": this.detailsAcronymList[k].longform
+        };
+        abstractAcronyms.push(singlePair);
+      }
+
+      // split abstract into sentences
+      let tokenizer = new Tokenizer();
+      tokenizer.setEntry(abstract);
+      let sentences = tokenizer.getSentences();
+
+      for (let k = 0; k < sentences.length; k++) {
+        sentences[k] = this.abstractProcessingService.tagAcronymsSense(sentences[k], this.detailsAcronymList);
+      }
+
+      let abstractWithInfo = {
+        "title": title,
+        "journal": journal,
+        "pubdate": pubdate,
+        "authors": authors,
+        "pubmed_id": this.data.id,
+        "text": abstract,
+        "sentences": sentences,
+        "acronyms": abstractAcronyms
+      };
+      this.detailsAbstractList.push(abstractWithInfo);
+
+      console.log("Acronym List: ", this.detailsAcronymList);
+      console.log("Abstract with all info: ", this.detailsAbstractList);
     }
 
     async getAbstractByID(id, start) {
+      await this.sleep(500);
       const result = await this.pubmedService.getAbstractByID(id, start).toPromise().catch(error => console.log(error));
       return result;
     }
 
     async getBasicDataByID(id, start) {
+      await this.sleep(500);
       const res = await this.pubmedService.getBasicDataByID(id, start).toPromise().catch(error => console.log(error));
       return res;
     }
@@ -108,8 +147,8 @@ export class ShowdetailsDialogComponent {
     }
 
     downloadDetailsClick(): void {
-      var blob = new Blob([JSON.stringify(this.detailsAcronymList, null, 2)], {type: "text/plain;charset=utf-8"});
-      FileSaver.saveAs(blob, "Acronyms.json");
+      var blob = new Blob([JSON.stringify(this.detailsAbstractList, null, 2)], {type: "text/plain;charset=utf-8"});
+      FileSaver.saveAs(blob, "Abstract.json");
     }
 
     async insertAcronymsClick(): Promise<void> {
@@ -127,7 +166,7 @@ export class ShowdetailsDialogComponent {
 
     swapAcronymsClick(): void{
       if (!this.isSwapped) {
-        this.abstract = this.abstractProcessingService.swapAcronyms(this.abstract, this.detailsAcronymList);
+        this.abstractRes = this.abstractProcessingService.swapAcronyms(this.abstractRes, this.detailsAcronymList);
         this.isSwapped = true;
       }
       else {
@@ -138,7 +177,7 @@ export class ShowdetailsDialogComponent {
 
     tagAcronymsClick(): void{
       if (!this.isTagged) {
-        this.abstract = this.abstractProcessingService.tagAcronyms(this.abstract, this.detailsAcronymList);
+        this.abstractRes = this.abstractProcessingService.tagAcronyms(this.abstractRes, this.detailsAcronymList);
         this.isTagged = true;
       }
       else {
