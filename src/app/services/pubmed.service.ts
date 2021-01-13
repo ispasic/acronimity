@@ -19,7 +19,7 @@ export class PubmedService {
 
   public searchDatabase(query, retmax): Observable<any> {
     this.db = "pubmed";
-    query = encodeURIComponent(query);
+    //query = encodeURIComponent(query);
     this.findUrl = baseUrl + "esearch.fcgi";
     let headers = new HttpHeaders();
     let params = new HttpParams();
