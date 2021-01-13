@@ -10,17 +10,32 @@
                     </mat-form-field>
                 </div>
                 <div class="help-icon-container">
-                    <mat-icon class="help-icon">help_outline</mat-icon>
+                    <mat-icon class="help-icon"
+                        #tooltip="matTooltip"
+                        matTooltip="Click to open PubMed Query Help"
+                        (click)="openPubmedHelpClick()">
+                        help_outline
+                    </mat-icon>
                 </div>
             </div>
 
 
-            <div class="normal-label"></div>
-
-            <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline">
-                <mat-label style="margin-top: 0px !important;">Number of results</mat-label>
-                <input matInput type="text" [(ngModel)]="resultsNumber" class="normal-text">  
-            </mat-form-field>
+            <!-- <div class="normal-label"></div> -->
+            <div fxLayout="row">
+                <div>
+                    <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline">
+                        <mat-label style="margin-top: 0px !important;">Number of results</mat-label>
+                        <input matInput type="text" [(ngModel)]="resultsNumber" class="normal-text">  
+                    </mat-form-field>
+                </div>
+                <div class="help-icon-container">
+                    <mat-icon class="help-icon"
+                        #tooltip="matTooltip"
+                        matTooltip="Specify a number if you would like to limit the amount of search results returned. (default: 100)">
+                        help_outline
+                    </mat-icon>
+                </div>
+            </div>
 
             <!-- <div *ngIf="isSearched" class="normal-label">Search results:</div> -->
 
