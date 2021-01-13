@@ -35,7 +35,8 @@ export class TestapiComponent implements OnInit {
   listOfSearchIDs = [];
   searchProgress = "";
 
-  acronymList = [];
+  listOfAcronyms = [];
+  listOfAcronymsDuplicates = [];
   acronymListFromDatabase;
   insertObject;
   listOfSearchResults = [];
@@ -67,7 +68,8 @@ export class TestapiComponent implements OnInit {
     this.listOfSearchResults.length = 0;
     this.listOfDisplayResults.length = 0;
     this.listOfAbstracts.length = 0;
-    this.acronymList.length = 0;
+    this.listOfAcronyms.length = 0;
+    this.listOfAcronymsDuplicates.length = 0;
     this.isTested = true;
     this.isSearched = false;
     this.isLoaded = false;
@@ -109,7 +111,7 @@ export class TestapiComponent implements OnInit {
     this.isSearched = true;
     this.searchProgress = '';
 
-    console.log("Acronyms from abstracts: ", this.acronymList);
+    console.log("Acronyms from abstracts: ", this.listOfAcronyms);
     console.log("Abstracts: ", this.listOfAbstracts);
 
     //if less results then requested adjust paginator
@@ -131,18 +133,20 @@ export class TestapiComponent implements OnInit {
   async getBasicDataResults(listOfIDs): Promise<any> {
 
     let step = this.fetchStep;
-    //get the number of fetching needed (STEP each time)
+    //get the number of steps needed (STEP each time)
     let number = Math.ceil(listOfIDs.length/step);
 
-    // do searches
+    // do searches/each step
     for (let i = 0; i < number; i++) {
-      // form the list of IDs
+      // form the list of IDs for this step
       let processed = 0;
       let stepIDsParam = '';
       let stepIDsList = [];
 
+      // create a string of IDs separated by coma. Stop when processed = step
       for (let j = i * step; j < listOfIDs.length; j++) {
         this.searchProgress = `Fetching basic data for ${i*step + 1} - ${j + 1} out of ${this.resultsNumber} result(s)`;
+
         if (j == i * step) {
           stepIDsParam = stepIDsParam + listOfIDs[j];
         } else {
@@ -160,22 +164,15 @@ export class TestapiComponent implements OnInit {
       // get all basic data
       let dataRes = await this.getBasicDataByID(stepIDsParam, 0);
 
+      // push each entry one by one
       for (let j = 0; j < stepIDsList.length; j++) {
-        let id = stepIDsList[j];
-        let title = dataRes.result[id].title;
-        let journal = dataRes.result[id].fulljournalname;
-        let pubdate = dataRes.result[id].pubdate;
-        let authors = dataRes.result[id].authors;
-        //console.log("Authors = ", authors);
-        let displayAuthors = this.formDisplayAuthors(authors);
-
         let singleEntry = {
-          "id": id,
-          "title": title,
-          "journal": journal,
-          "pubdate": pubdate,
-          "authors": authors,
-          "displayauthors": displayAuthors
+          "id": stepIDsList[j],
+          "title": dataRes.result[stepIDsList[j]].title,
+          "journal": dataRes.result[stepIDsList[j]].fulljournalname,
+          "pubdate": dataRes.result[stepIDsList[j]].pubdate,
+          "authors": dataRes.result[stepIDsList[j]].authors,
+          "displayauthors": this.formDisplayAuthors(dataRes.result[stepIDsList[j]].authors)
         }; //generate single entry and push it into the list of results
 
         this.listOfSearchResults.push(singleEntry);
@@ -191,11 +188,12 @@ export class TestapiComponent implements OnInit {
 
     // cycle through each step
     for (let i = 0; i < number; i++) {
-      // form the list of IDs
+      // form the list of IDs for this step
       let processed = 0;
       let stepIDsParam = '';
       let stepIDsList = [];
 
+      // create a string of IDs separated by coma. Stop when processed = step
       for (let j = i * step; j < listOfIDs.length; j++) {
         this.searchProgress = `Processing abstracts for ${i*step + 1} - ${j + 1} out of ${this.resultsNumber} result(s)`;
         if (j == i * step) {
@@ -217,7 +215,7 @@ export class TestapiComponent implements OnInit {
       let abstracts = '';
       abstracts = abstracts + abstractsRes;
 
-      // cycle through IDs, get abstract separate abstracts
+      // cycle through IDs, separate each abstract and process it
       for (let j = 0; j < stepIDsList.length; j++) {
 
         // find position of abstract
@@ -266,10 +264,12 @@ export class TestapiComponent implements OnInit {
         let swapText = abstract;
         let tagText = abstract;
 
+        // find basic data for abstract from listOfSearchResults
         let title = '';
         let journal = '';
         let authors = [];
         let pubdate = '';
+
         for (let k = 0; k < this.listOfSearchResults.length; k++) {
           if (this.listOfSearchResults[k].id == stepIDsList[j]) {
             title = this.listOfSearchResults[k].title;
@@ -293,6 +293,24 @@ export class TestapiComponent implements OnInit {
           singleAcronymList[k].pubdate = pubdate;
         }
 
+        //push acronyms to main acronym list without removing duplicates
+        this.listOfAcronymsDuplicates = this.listOfAcronymsDuplicates.concat(singleAcronymList);
+        
+        //push acronyms to main acronym list with removing duplicates
+        for (let l = 0; l < singleAcronymList.length; l++) {
+          let isPresent = false;
+          for (let k = 0; k < this.listOfAcronyms.length; k++) {
+            if (this.listOfAcronyms[k].shortform.toLowerCase() == singleAcronymList[l].shortform.toLowerCase()) {
+              isPresent = true;
+              break;
+            }
+          }
+          if (!isPresent) {
+            this.listOfAcronyms.push(singleAcronymList[l]);
+          }
+        }
+
+        
         // form list of acronyms without additional info
         let abstractAcronyms = [];
         for (let k = 0; k < singleAcronymList.length; k++) {
@@ -312,23 +330,6 @@ export class TestapiComponent implements OnInit {
           "acronyms": abstractAcronyms
         };
         this.listOfAbstracts.push(singleAbstract);
-
-        //push acronyms to main acronym list without removing duplicates
-        //this.acronymList = this.acronymList.concat(singleAcronymList);
-        
-        //push acronyms to main acronym list with removing duplicates
-        for (let l = 0; l < singleAcronymList.length; l++) {
-          let isPresent = false;
-          for (let k = 0; k < this.acronymList.length; k++) {
-            if (this.acronymList[k].shortform.toLowerCase() == singleAcronymList[l].shortform.toLowerCase()) {
-              isPresent = true;
-              break;
-            }
-          }
-          if (!isPresent) {
-            this.acronymList.push(singleAcronymList[l]);
-          }
-        }
       }
     }
   }
@@ -341,7 +342,7 @@ export class TestapiComponent implements OnInit {
   }
 
   //download all abstracts as a single file
-  async downloadAbstractsClick(): Promise<void> {
+  async downloadSearchResultsClick(): Promise<void> {
     var IDs;
     console.log("listOfSearchResults:", this.listOfSearchResults);
     for (var entry of this.listOfSearchResults)
@@ -369,8 +370,14 @@ export class TestapiComponent implements OnInit {
 
   //download all acronyms from results as single file
   async downloadAcronymsClick(): Promise<void> {
-    var blob = new Blob([JSON.stringify(this.acronymList, null, 2)], {type: "text/plain;charset=utf-8"});
+    var blob = new Blob([JSON.stringify(this.listOfAcronyms, null, 2)], {type: "text/plain;charset=utf-8"});
     FileSaver.saveAs(blob, "Acronyms.json");
+  }
+
+  //download all abstracts from results as single file
+  async downloadAbstractsClick(): Promise<void> {
+    var blob = new Blob([JSON.stringify(this.listOfAbstracts, null, 2)], {type: "text/plain;charset=utf-8"});
+    FileSaver.saveAs(blob, "Abstracts.json");
   }
 
   async getAllAcronymsDatabase() {
@@ -383,7 +390,9 @@ export class TestapiComponent implements OnInit {
     this.listOfSearchIDs.length = 0;
     this.listOfSearchResults.length = 0;
     this.listOfDisplayResults.length = 0;
-    this.acronymList.length = 0;
+    this.listOfAcronyms.length = 0;
+    this.listOfAcronymsDuplicates.length = 0;
+    this.listOfAbstracts.length = 0;
     this.isTested = true;
     this.isSearched = false;
     this.isLoaded = false;
@@ -394,7 +403,7 @@ export class TestapiComponent implements OnInit {
     const abstracts = await this.getAllAbstractsDatabase();
     var loadResult = JSON.parse(JSON.stringify(abstracts));
 
-    console.log("Load Result:", loadResult);
+    //console.log("Load Result:", loadResult);
     if (loadResult.length == 0)
     {
       this.searchProgress = "No data in the database";
@@ -439,31 +448,52 @@ export class TestapiComponent implements OnInit {
       }
 
       //push acronyms to main acronym list with duplicates
-      //this.acronymList = this.acronymList.concat(singleAcronymList);
+      this.listOfAcronymsDuplicates = this.listOfAcronymsDuplicates.concat(singleAcronymList);
 
       //push acronyms to main acronym list with removing duplicates
       for (let j = 0; j < singleAcronymList.length; j++) {
         let isPresent = false;
-        for (let k = 0; k < this.acronymList.length; k++) {
-          if (this.acronymList[k].shortform.toLowerCase() == singleAcronymList[j].shortform.toLowerCase()) {
+        for (let k = 0; k < this.listOfAcronyms.length; k++) {
+          if (this.listOfAcronyms[k].shortform.toLowerCase() == singleAcronymList[j].shortform.toLowerCase()) {
             isPresent = true;
             break;
           }
         }
         if (!isPresent) {
-          this.acronymList.push(singleAcronymList[j]);
+          this.listOfAcronyms.push(singleAcronymList[j]);
         }
       }
+
+      // form list of acronyms without additional info
+      let abstractAcronyms = [];
+      for (let k = 0; k < singleAcronymList.length; k++) {
+        let singlePair = {
+          "shortform": singleAcronymList[k].shortform,
+          "longform": singleAcronymList[k].longform
+        };
+        abstractAcronyms.push(singlePair);
+      }
+
+      let singleAbstract = {
+        "title": loadResult[i].title,
+        "journal": loadResult[i].journal,
+        "pubdate": loadResult[i].pubdate,
+        "authors": authors,
+        "text": loadResult[i].text,
+        "acronyms": abstractAcronyms
+      };
+      this.listOfAbstracts.push(singleAbstract);
     }
 
     console.log("List of loaded results: ", this.listOfSearchResults);
     console.log("List of loaded IDs:", this.listOfSearchIDs);
+    console.log("Abstracts: ", this.listOfAbstracts);
 
     //search is done
     this.isSearched = true;
     this.searchProgress = '';
 
-    console.log("Acronyms from abstracts: ", this.acronymList);
+    console.log("Acronyms from abstracts: ", this.listOfAcronyms);
 
     this.paginatorResultsNumber = this.listOfSearchResults.length;
 
@@ -485,7 +515,7 @@ export class TestapiComponent implements OnInit {
   //get all acronyms and insert them into database
   async insertAllAcronymsClick(): Promise<void> {
     //insert one by one
-    for (var acronym of this.acronymList)
+    for (var acronym of this.listOfAcronyms)
     {
       console.log("Insert acronym", acronym);
       this.insertObject = await this.insertAcronym(acronym);
@@ -503,7 +533,7 @@ export class TestapiComponent implements OnInit {
 
   async showAllAcronymsClick(): Promise<void> {
     const dialogRef = this.dialog.open(ShowacronymsDialogComponent, {
-      data: this.acronymList
+      data: this.listOfAcronyms
     });
   }
 

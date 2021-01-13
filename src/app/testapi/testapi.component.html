@@ -59,7 +59,7 @@
     <mat-card-actions class="centeralign">
         <button mat-raised-button color="primary" (click)="searchButtonClick(query, resultsNumber)" class="normal-button">{{testButtonText}}</button>
         <button mat-stroked-button [disabled]="isLoaded" color="primary" (click)="showDatabaseClick()" class="normal-button">LOAD DATABASE</button>
-        <button mat-stroked-button color="primary" (click)="downloadAcronymsClick()" class="normal-button">DOWNLOAD ALL</button>
+        <button mat-stroked-button color="primary" (click)="downloadAbstractsClick()" class="normal-button">DOWNLOAD ALL</button>
         <button mat-stroked-button *ngIf="isSearched" color="primary" (click)="showAllAcronymsClick()" class="normal-button">SHOW ACRONYMS</button>
         <!-- <button mat-stroked-button *ngIf="isSearched" color="primary" (click)="insertAllAcronymsClick()" class="normal-button">PROCESS ACRONYMS</button> -->
     </mat-card-actions>
