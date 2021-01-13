@@ -492,14 +492,22 @@ export class TestapiComponent implements OnInit {
       }
 
       // split abstract into sentences
+      let tokenizer = new Tokenizer();
+      tokenizer.setEntry(loadResult[i].text);
+      let sentences = tokenizer.getSentences();
 
+      for (let k = 0; k < sentences.length; k++) {
+        sentences[k] = this.abstractProcessingService.tagAcronymsSense(sentences[k], singleAcronymList);
+      }
 
       let singleAbstract = {
         "title": loadResult[i].title,
         "journal": loadResult[i].journal,
         "pubdate": loadResult[i].pubdate,
         "authors": authors,
+        "pubmed_id": loadResult[i].pubmed_id,
         "text": loadResult[i].text,
+        "sentences": sentences,
         "acronyms": abstractAcronyms
       };
       this.listOfAbstracts.push(singleAbstract);
