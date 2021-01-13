@@ -32,7 +32,7 @@ export class PubmedService {
     return this.http.get(this.findUrl, {headers: headers, params: params});
   }
 
-  public getBasicDataByID(id): Observable<any> {
+  public getBasicDataByID(id, start): Observable<any> {
     this.db = "pubmed";
     this.findUrl = baseUrl + "esummary.fcgi";
     let headers = new HttpHeaders();
@@ -40,12 +40,13 @@ export class PubmedService {
     params = params.set('db', this.db);
     params = params.set('id', id);
     params = params.set('retmode', this.retmode);
+    params = params.set('retstart', start);
     params = params.set('api_key', apiKey);
     //console.log("Get Basic Data Url: ", this.findUrl);
     return this.http.post(this.findUrl, null, {headers: headers, params: params});
   }
 
-  public getAbstractByID(id): Observable<any> {
+  public getAbstractByID(id, start): Observable<any> {
     this.db = "pubmed";
     //console.log("Get Abstract Url: ", this.findUrl);
     this.findUrl = baseUrl + "efetch.fcgi";
@@ -55,6 +56,7 @@ export class PubmedService {
     params = params.set('id', id);
     params = params.set('rettype', 'medline')
     params = params.set('retmode', 'text');
+    params = params.set('retstart', start);
     params = params.set('api_key', apiKey);
     return this.http.post(this.findUrl, null, {headers: headers, params: params, responseType: 'text'});
 

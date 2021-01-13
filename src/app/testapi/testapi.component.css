@@ -54,3 +54,12 @@
     width: 700px !important;
     height: auto !important;
   }
+
+  .help-icon-container {
+    margin-left: 10px;
+    margin-top: 20px;
+  }
+
+  .help-icon {
+    cursor: pointer;
+  }

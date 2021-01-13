@@ -38,10 +38,10 @@ export class ShowdetailsDialogComponent {
 
     async ngOnInit() {
       //get abstract with pubmed query
-      this.abstract = await this.getAbstractByID(this.data.id);
+      this.abstract = await this.getAbstractByID(this.data.id, 0);
       this.isAbstractFormed = true;
       await this.sleep(500);
-      let basicData = await this.getBasicDataByID(this.data.id);
+      let basicData = await this.getBasicDataByID(this.data.id, 0);
       var title = basicData.result[this.data.id].title;
       var journal = basicData.result[this.data.id].fulljournalname;
       var pubdate = basicData.result[this.data.id].pubdate;
@@ -94,13 +94,13 @@ export class ShowdetailsDialogComponent {
       //console.log("Acronym List: ", this.detailsAcronymList);
     }
 
-    async getAbstractByID(id) {
-      const result = await this.pubmedService.getAbstractByID(id).toPromise().catch(error => console.log(error));
+    async getAbstractByID(id, start) {
+      const result = await this.pubmedService.getAbstractByID(id, start).toPromise().catch(error => console.log(error));
       return result;
     }
 
-    async getBasicDataByID(id) {
-      const res = await this.pubmedService.getBasicDataByID(id).toPromise().catch(error => console.log(error));
+    async getBasicDataByID(id, start) {
+      const res = await this.pubmedService.getBasicDataByID(id, start).toPromise().catch(error => console.log(error));
       return res;
     }
 
