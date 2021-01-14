@@ -304,7 +304,7 @@ export class AcronymService {
       }
 
       var foundPair = {
-        "shortform": acronym,
+        "shortform": acronym.toUpperCase(),
         "longform": bestLongForm.toLowerCase()
       }; //set up a pair of acronym - long form JSON
   
