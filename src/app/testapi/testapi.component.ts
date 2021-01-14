@@ -491,6 +491,7 @@ export class TestapiComponent implements OnInit {
     this.isTested = true;
     this.isSearched = false;
     this.isLoaded = false;
+    this.dataSource = null;
 
     this.searchProgress = "Loading MaridDB Database..";
 
@@ -590,6 +591,41 @@ export class TestapiComponent implements OnInit {
       };
       this.listOfAbstracts.push(singleAbstract);
     }
+
+    // generate sense inventory table
+    this.searchProgress = "Generating Sense Inventory";
+    
+    let listOfAcronymsTable = [];
+    for (let i = 0; i < this.listOfAcronyms.length; i++) {
+      let frequency = 0;
+      // count the amount of times acronym mentioned
+      for (let j = 0; j < this.listOfAcronymsDuplicates.length; j++) {
+        if (this.listOfAcronyms[i].shortform == this.listOfAcronymsDuplicates[j].shortform) {
+          frequency++;
+        }
+      }
+      let singleEntry = {
+        "acronym": this.listOfAcronyms[i].shortform,
+        "sense": this.listOfAcronyms[i].longform,
+        "cui": 'XXXXXX',
+        "frequency": frequency
+      }
+      listOfAcronymsTable.push(singleEntry);
+    }
+    this.dataSource = new MatTableDataSource<senseInventory>(listOfAcronymsTable);
+    this.changeDetectorRef.detectChanges();
+    // default sort
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = (item, property): string | number => {
+      switch(property) {
+        case 'acronym': return item.acronym;
+        case 'sense': return item.sense;
+        case 'cui': return item.cui;
+        case 'frequency': return item.frequency;
+        default: return item[property];
+      }
+    };
 
     console.log("List of loaded results: ", this.listOfSearchResults);
     console.log("List of loaded IDs:", this.listOfSearchIDs);
