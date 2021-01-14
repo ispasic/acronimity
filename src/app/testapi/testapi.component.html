@@ -21,7 +21,7 @@
             </div>
             <div fxLayout="row" class="centeralign">
                 <div>
-                    <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline">
+                    <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
                         <mat-label style="margin-top: 0px !important;">Number of results</mat-label>
                         <input matInput type="text" [(ngModel)]="resultsNumber" class="normal-text">  
                     </mat-form-field>
@@ -62,7 +62,7 @@
                 </div>
                 <div fxLayout="row" class="centeralign">
                     <div>
-                        <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline">
+                        <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
                             <mat-label style="margin-top: 0px !important;">Number of results</mat-label>
                             <input matInput type="text" [(ngModel)]="resultsNumber" class="normal-text">  
                         </mat-form-field>
@@ -112,7 +112,8 @@
                         <mat-label>Filter</mat-label>
                         <input matInput (keyup)="applyFilter($event)" #input>
                     </mat-form-field>
-                    <mat-table class="senseinventory-table" [dataSource]="dataSource" matSort>
+                    <mat-table class="senseinventory-table" [dataSource]="dataSource"
+                        matSort matSortActive="acronym" matSortDirection="asc" matSortDisableClear>
                         <ng-container matColumnDef="acronym">
                             <mat-header-cell *matHeaderCellDef mat-sort-header> Acronym </mat-header-cell>
                             <mat-cell *matCellDef="let res"> {{res.acronym}} </mat-cell>

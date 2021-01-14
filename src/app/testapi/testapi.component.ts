@@ -7,7 +7,7 @@ import { AbstractProcessingService } from '../services/abstract-processing.servi
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, MatSortable } from '@angular/material/sort';
 
 import { ShowdetailsDialogComponent } from './showdetails-dialog/showdetails-dialog.component';
 import { ShowacronymsDialogComponent } from './showacronyms-dialog/showacronyms-dialog.component';
@@ -407,9 +407,9 @@ export class TestapiComponent implements OnInit {
       }
       listOfAcronymsTable.push(singleEntry);
     }
-    console.log("1");
     this.dataSource = new MatTableDataSource<senseInventory>(listOfAcronymsTable);
     this.changeDetectorRef.detectChanges();
+    // default sort
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.dataSource.sortingDataAccessor = (item, property): string | number => {
