@@ -168,10 +168,20 @@ export class TestapiComponent implements OnInit {
 
       // push each entry one by one
       for (let j = 0; j < stepIDsList.length; j++) {
+
+        let title = dataRes.result[stepIDsList[j]].title;
+        if (title == '') {
+          title = 'Undefined Title';
+        }
+        let journal = dataRes.result[stepIDsList[j]].fulljournalname;
+        if (journal == '') {
+          journal = 'Undefined Journal';
+        }
+
         let singleEntry = {
           "id": stepIDsList[j],
-          "title": dataRes.result[stepIDsList[j]].title,
-          "journal": dataRes.result[stepIDsList[j]].fulljournalname,
+          "title": title,
+          "journal": journal,
           "pubdate": dataRes.result[stepIDsList[j]].pubdate,
           "authors": dataRes.result[stepIDsList[j]].authors,
           "displayauthors": this.formDisplayAuthors(dataRes.result[stepIDsList[j]].authors)
