@@ -115,19 +115,31 @@
                     <mat-table class="senseinventory-table" [dataSource]="dataSource"
                         matSort matSortActive="acronym" matSortDirection="asc" matSortDisableClear>
                         <ng-container matColumnDef="acronym">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header> Acronym </mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef mat-sort-header
+                                #tooltip="matTooltip" matTooltip="All acronyms that were automatically extracted.">
+                                Acronym
+                            </mat-header-cell> 
                             <mat-cell *matCellDef="let res"> {{res.acronym}} </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="sense">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header> Sense </mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef mat-sort-header
+                                #tooltip="matTooltip" matTooltip="All sense (i.e. longforms) that were automatically extracted.">
+                                Sense
+                            </mat-header-cell>
                             <mat-cell *matCellDef="let res"> {{res.sense}} </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="cui">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header> CUI </mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef mat-sort-header
+                                #tooltip="matTooltip" matTooltip="Concept Unique Identifier (CUI) of the long form (sense) in the Unified Medical Language System (UMLS).">
+                                CUI
+                            </mat-header-cell>
                             <mat-cell *matCellDef="let res"> {{res.cui}} </mat-cell>
                         </ng-container>
                         <ng-container matColumnDef="frequency">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header> Frequency </mat-header-cell>
+                            <mat-header-cell *matHeaderCellDef mat-sort-header
+                                #tooltip="matTooltip" matTooltip="The number of times an acronym was mentioned.">
+                                Frequency
+                            </mat-header-cell>
                             <mat-cell *matCellDef="let res"> {{res.frequency}} </mat-cell>
                         </ng-container>
                         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
