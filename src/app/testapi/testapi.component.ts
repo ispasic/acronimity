@@ -5,7 +5,7 @@ import { AcronymService } from '../services/acronym.service';
 import { AcronymsDatabaseService } from '../services/acronyms-database.service';
 import { AbstractProcessingService } from '../services/abstract-processing.service';
 import { MatDialog } from '@angular/material/dialog';
-import { PageEvent, MatPaginator } from '@angular/material/paginator';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 
@@ -79,14 +79,16 @@ export class TestapiComponent implements OnInit {
   insertObject;
   listOfSearchResults = [];
   listOfDisplayResults = [];
+  listOfAbstracts = [];
 
   searchButtonText = "SEARCH";
   startIndex = 1;
 
+  // how many IDs are processed each time
   fetchStep = 400;
 
-  listOfAbstracts = [];
 
+  // paginator settings
   page: number = 1;
   maxSize: number = 10;
   paginationConfig: PaginationInstance = {
