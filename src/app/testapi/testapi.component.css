@@ -20,6 +20,7 @@
   .normal-label {
     font-size: 15px;
     color: darkslategrey;
+    margin-left: -625px;
   }
 
   .database-progress {
@@ -55,9 +56,90 @@
     height: auto !important;
   }
 
+  .right-pane {
+    margin-left: 20px;
+  }
+
+  .filter-form-field {
+    width: 50% !important;
+    margin-left: 20px;
+  }
+
+  mat-table {
+    width: 100% !important;
+  }
+
+  .mat-column-acronyms {
+    word-wrap: break-word !important;
+    white-space: unset !important;
+    flex: 0 0 20% !important;
+    width: 20% !important;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    padding-right: 10px;
+  
+    word-break: break-word;
+  
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+  }
+
+  .mat-column-sense {
+    word-wrap: break-word !important;
+    white-space: unset !important;
+    flex: 0 0 40% !important;
+    width: 40% !important;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    padding-right: 10px;
+  
+    word-break: break-word;
+  
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+  }
+
+  .mat-column-cui {
+    word-wrap: break-word !important;
+    white-space: unset !important;
+    flex: 0 0 20% !important;
+    width: 20% !important;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    padding-right: 10px;
+  
+    word-break: break-word;
+  
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+  }
+
+  .mat-column-frequency {
+    word-wrap: break-word !important;
+    white-space: unset !important;
+    flex: 0 0 20% !important;
+    width: 20% !important;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    padding-right: 10px;
+  
+    word-break: break-word;
+  
+    -ms-hyphens: auto;
+    -moz-hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphens: auto;
+  }
+
   .help-icon-container {
     margin-left: 10px;
-    margin-top: 20px;
+    margin-bottom: 15px;
   }
 
   .help-icon {

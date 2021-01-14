@@ -1,8 +1,9 @@
 <mat-card class="normal-card">
-    <mat-card-content class="centeralign">
-        <div fxLayout="column">
-            <div class="normal-label">PubMed query:</div>
-            <div fxLayout="row">
+    <mat-card-content>
+        <!-- initial search design -->
+        <div fxLayout="column" *ngIf="!isSearched">
+            <div class="normal-label centeralign">PubMed query:</div>
+            <div fxLayout="row" class="centeralign">
                 <div>
                     <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
                         <mat-label style="margin-top: 0px !important;">Query</mat-label>
@@ -18,10 +19,7 @@
                     </mat-icon>
                 </div>
             </div>
-
-
-            <!-- <div class="normal-label"></div> -->
-            <div fxLayout="row">
+            <div fxLayout="row" class="centeralign">
                 <div>
                     <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline">
                         <mat-label style="margin-top: 0px !important;">Number of results</mat-label>
@@ -37,36 +35,103 @@
                 </div>
             </div>
 
-            <!-- <div *ngIf="isSearched" class="normal-label">Search results:</div> -->
+            <div class="database-progress centeralign">{{searchProgress}}</div>
+        </div>
 
-            <div class="database-progress">{{searchProgress}}</div>
+        <!-- when search is done, two panes - search results and sense inventory table -->
 
-            <mat-list *ngIf="isSearched">
-                <div mat-subheader>Search results:</div>
-                <mat-list-item class="result-list-item" *ngFor="let entry of listOfDisplayResults, let i = index">
-                    <!-- <div>{{i + 1}})&nbsp;</div> -->
-                    <div fxLayout="column">
-                        <div class="title-text" (click)="moreDetailsClick(entry)">{{entry.title}}</div>
-                        <div class="journal-title-text">Journal:&nbsp;{{entry.journal}}</div>
-                        <div class="authors-text">Authors:&nbsp;{{entry.displayauthors}}</div>
+        <div fxLayout="row" *ngIf="isSearched">
+            <!-- search form fields -->
+            <div fxLayout="column" fxFlex="50">
+                <div class="normal-label centeralign">PubMed query:</div>
+                <div fxLayout="row" class="centeralign">
+                    <div>
+                        <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
+                            <mat-label style="margin-top: 0px !important;">Query</mat-label>
+                            <input matInput type="text" [(ngModel)]="query" class="normal-text">  
+                        </mat-form-field>
                     </div>
-                </mat-list-item>
-            </mat-list>
+                    <div class="help-icon-container">
+                        <mat-icon class="help-icon"
+                            #tooltip="matTooltip"
+                            matTooltip="Click to open PubMed Query Help"
+                            (click)="openPubmedHelpClick()">
+                            help_outline
+                        </mat-icon>
+                    </div>
+                </div>
+                <div fxLayout="row" class="centeralign">
+                    <div>
+                        <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline">
+                            <mat-label style="margin-top: 0px !important;">Number of results</mat-label>
+                            <input matInput type="text" [(ngModel)]="resultsNumber" class="normal-text">  
+                        </mat-form-field>
+                    </div>
+                    <div class="help-icon-container">
+                        <mat-icon class="help-icon"
+                            #tooltip="matTooltip"
+                            matTooltip="Specify a number if you would like to limit the amount of search results returned. (default: 100)">
+                            help_outline
+                        </mat-icon>
+                    </div>
+                </div>
 
-            <mat-paginator *ngIf="isSearched" [length]="paginatorResultsNumber"
-              [pageSize]="pageSize"
-              [showFirstLastButtons]="true"
-              [pageSizeOptions]="[10, 20, 30, 40, 50]"
-              [pageIndex]="currentPage"
-              (page)="pageEvent = getDisplayResults($event)">
-            </mat-paginator>
+                <div class="database-progress centeralign">{{searchProgress}}</div>
 
-            <!-- <mat-form-field *ngIf="isSearched" class="input-form-field" style="width: 700px !important;">
-                <textarea matInput rows="5" cols="1" type="text" class="normal-text" [(ngModel)]="result" readonly="true"></textarea>
-            </mat-form-field> -->
+                <!-- search results -->
 
+                <mat-list *ngIf="isSearched">
+                    <div mat-subheader>Search results:</div>
+                    <mat-list-item class="result-list-item" *ngFor="let entry of listOfDisplayResults, let i = index">
+                        <!-- <div>{{i + 1}})&nbsp;</div> -->
+                        <div fxLayout="column">
+                            <div class="title-text" (click)="moreDetailsClick(entry)">{{entry.title}}</div>
+                            <div class="journal-title-text">Journal:&nbsp;{{entry.journal}}</div>
+                            <div class="authors-text">Authors:&nbsp;{{entry.displayauthors}}</div>
+                        </div>
+                    </mat-list-item>
+                </mat-list>
+    
+                <mat-paginator #searchPaginator *ngIf="isSearched" [length]="paginatorResultsNumber"
+                  [pageSize]="pageSize"
+                  [showFirstLastButtons]="true"
+                  [pageSizeOptions]="[10, 20, 30, 40, 50]"
+                  [pageIndex]="currentPage"
+                  (page)="pageEvent = getDisplayResults($event)">
+                </mat-paginator>
+            </div>
 
-
+            <!-- sense inventory in the right pane -->
+            <div fxLayout="column" fxFlex="50" class="right-pane">
+                <div class="normal-label centeralign">Sense Inventory</div>
+                <div>
+                    <mat-form-field class="filter-form-field">
+                        <mat-label>Filter</mat-label>
+                        <input matInput (keyup)="applyFilter($event)" #input>
+                    </mat-form-field>
+                    <mat-table class="senseinventory-table" [dataSource]="dataSource" matSort>
+                        <ng-container matColumnDef="acronym">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header> Acronym </mat-header-cell>
+                            <mat-cell *matCellDef="let res"> {{res.acronym}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="sense">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header> Sense </mat-header-cell>
+                            <mat-cell *matCellDef="let res"> {{res.sense}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="cui">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header> CUI </mat-header-cell>
+                            <mat-cell *matCellDef="let res"> {{res.cui}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="frequency">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header> Frequency </mat-header-cell>
+                            <mat-cell *matCellDef="let res"> {{res.frequency}} </mat-cell>
+                        </ng-container>
+                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                    </mat-table>
+                    <mat-paginator #paginator [pageSizeOptions]="[10, 20, 30, 40, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+                </div>
+            </div>
 
         </div>
     </mat-card-content>

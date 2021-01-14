@@ -21,6 +21,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
+import { MatSortModule } from '@angular/material/sort';
+
 
 @NgModule({
    imports: [
@@ -44,6 +46,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
       MatCardModule,
       MatDividerModule,
       MatSlideToggleModule,
+      MatSortModule
    ],
    exports: [
       MatButtonModule,
@@ -65,6 +68,7 @@ import { MatSlideToggleModule } from '@angular/material/slide-toggle';
       MatCardModule,
       MatDividerModule,
       MatSlideToggleModule,
+      MatSortModule
    ],
    providers: [
       MatDatepickerModule,

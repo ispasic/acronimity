@@ -1,18 +1,28 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, ViewChild, ViewChildren } from '@angular/core';
 import { Router } from '@angular/router';
 import { PubmedService } from '../services/pubmed.service';
 import { AcronymService } from '../services/acronym.service';
 import { AcronymsDatabaseService } from '../services/acronyms-database.service';
 import { AbstractProcessingService } from '../services/abstract-processing.service';
 import { MatDialog } from '@angular/material/dialog';
+import { PageEvent, MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
 
 import { ShowdetailsDialogComponent } from './showdetails-dialog/showdetails-dialog.component';
 import { ShowacronymsDialogComponent } from './showacronyms-dialog/showacronyms-dialog.component';
 
 import * as FileSaver from 'file-saver';
-import { PageEvent } from '@angular/material/paginator';
 
 import Tokenizer from "../../../node_modules/sentence-tokenizer/lib/tokenizer"
+
+//interface for sense inventory table
+export interface senseInventory {
+  "acronym": string,
+  "sense": string,
+  "cui": string,
+  "frequency": string
+}
 
 @Component({
   selector: 'app-testapi',
@@ -26,14 +36,38 @@ export class TestapiComponent implements OnInit {
     private acronymService: AcronymService,
     private acronymsDatabaseService: AcronymsDatabaseService,
     private abstractProcessingService: AbstractProcessingService,
-    private dialog: MatDialog) { }
+    private dialog: MatDialog,
+    private changeDetectorRef: ChangeDetectorRef) { }
 
+  // Sense Inventory Table declarations
+
+  dataSource = new MatTableDataSource<senseInventory>();
+  displayedColumns = ['acronym', 'sense', 'cui', 'frequency'];
+
+  private paginator: MatPaginator;
+  private sort: MatSort;
+  @ViewChild(MatSort) set matSort(ms: MatSort) {
+    this.sort = ms;
+    this.setDataSourceAttributes();
+  }
+
+  @ViewChild(MatPaginator) set matPaginator(mp: MatPaginator) {
+    this.paginator = mp;
+    this.setDataSourceAttributes();
+  }
+  
+  setDataSourceAttributes() {
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+  }
+
+  // Global variables declarations
   testButtonText = "SEARCH";
   isTested = false;
   isSearched = false;
   isLoaded = false;
   query = "";
-  resultsNumber = 100;
+  resultsNumber = 10;
   listOfSearchIDs = [];
   searchProgress = "";
 
@@ -75,6 +109,7 @@ export class TestapiComponent implements OnInit {
     this.isTested = true;
     this.isSearched = false;
     this.isLoaded = false;
+    this.dataSource = null;
 
     this.searchProgress = "Searching PubMed Database..";
 
@@ -354,6 +389,41 @@ export class TestapiComponent implements OnInit {
         this.listOfAbstracts.push(singleAbstract);
       }
     }
+    // generate sense inventory table
+    this.searchProgress = "Generating Sense Inventory";
+    
+    let listOfAcronymsTable = [];
+    for (let i = 0; i < this.listOfAcronyms.length; i++) {
+      let frequency = 0;
+      // count the amount of times acronym mentioned
+      for (let j = 0; j < this.listOfAcronymsDuplicates.length; j++) {
+        if (this.listOfAcronyms[i].shortform == this.listOfAcronymsDuplicates[j].shortform) {
+          frequency++;
+        }
+      }
+      let singleEntry = {
+        "acronym": this.listOfAcronyms[i].shortform,
+        "sense": this.listOfAcronyms[i].longform,
+        "cui": 'XXXXXX',
+        "frequency": frequency
+      }
+      listOfAcronymsTable.push(singleEntry);
+    }
+    console.log("1");
+    this.dataSource = new MatTableDataSource<senseInventory>(listOfAcronymsTable);
+    this.changeDetectorRef.detectChanges();
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
+    this.dataSource.sortingDataAccessor = (item, property): string | number => {
+      switch(property) {
+        case 'acronym': return item.acronym;
+        case 'sense': return item.sense;
+        case 'cui': return item.cui;
+        case 'frequency': return item.frequency;
+        default: return item[property];
+      }
+    };
+    //console.log(this.dataSource);
   }
 
   //open details dialog
@@ -642,5 +712,10 @@ export class TestapiComponent implements OnInit {
 
     return event;
 
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
   }
 }
