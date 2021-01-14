@@ -8,7 +8,7 @@ import { AbstractProcessingService } from '../../services/abstract-processing.se
 
 import * as FileSaver from 'file-saver';
 
-var Tokenizer = require('sentence-tokenizer');
+import Tokenizer from "../../../../node_modules/sentence-tokenizer/lib/tokenizer"
 
 @Component({
   selector: 'app-showdetails-dialog',

@@ -67,7 +67,7 @@ export class AbstractProcessingService {
       taggedText = taggedText.split("(" + acronym.shortform + ") " + acronym.longform).join(acronym.shortform);
       taggedText = taggedText.split("(" + acronym.shortform + ")" + acronym.longform).join(acronym.shortform);
       // transform `shortform` into `<acronym sense=longform>shortform</acronym>
-      taggedText = taggedText.split(' ' + acronym.shortform + ' ').join(" <acronym sense=" + acronym.longform + ">" + acronym.shortform + "</acronym> ");
+      taggedText = taggedText.split(' ' + acronym.shortform + ' ').join(" <acronym sense='" + acronym.longform + "'>" + acronym.shortform + "</acronym> ");
     }
 
     return taggedText;

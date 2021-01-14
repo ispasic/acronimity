@@ -12,7 +12,7 @@ import { ShowacronymsDialogComponent } from './showacronyms-dialog/showacronyms-
 import * as FileSaver from 'file-saver';
 import { PageEvent } from '@angular/material/paginator';
 
-var Tokenizer = require('sentence-tokenizer');
+import Tokenizer from "../../../node_modules/sentence-tokenizer/lib/tokenizer"
 
 @Component({
   selector: 'app-testapi',
