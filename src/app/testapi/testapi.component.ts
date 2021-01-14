@@ -16,6 +16,8 @@ import * as FileSaver from 'file-saver';
 
 import Tokenizer from "../../../node_modules/sentence-tokenizer/lib/tokenizer"
 
+import { PaginationInstance } from 'ngx-pagination';
+
 //interface for sense inventory table
 export interface senseInventory {
   "acronym": string,
@@ -55,7 +57,7 @@ export class TestapiComponent implements OnInit {
     this.paginator = mp;
     this.setDataSourceAttributes();
   }
-  
+
   setDataSourceAttributes() {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
@@ -78,17 +80,32 @@ export class TestapiComponent implements OnInit {
   listOfSearchResults = [];
   listOfDisplayResults = [];
 
-  pageEvent: PageEvent;
-  currentPage: number;
-  pageSize = 10;
-
   searchButtonText = "SEARCH";
   startIndex = 1;
-  paginatorResultsNumber: number;
 
   fetchStep = 400;
 
   listOfAbstracts = [];
+
+  page: number = 1;
+  maxSize: number = 10;
+  paginationConfig: PaginationInstance = {
+    id: 'search',
+    itemsPerPage: 10,
+    currentPage: 1
+  };
+  labels: any = {
+    previousLabel: 'Previous',
+    nextLabel: 'Next',
+    screenReaderPaginationLabel: 'Pagination',
+    screenReaderPageLabel: 'page',
+    screenReaderCurrentLabel: `You're on page`
+  };
+
+  onPageChange(number: number) {
+    this.paginationConfig.currentPage = number;
+    console.log("Page changed to: ", number);
+  }
 
   ngOnInit(): void {
   }
@@ -125,12 +142,6 @@ export class TestapiComponent implements OnInit {
       return;
     }
 
-    // adjust the pagination
-    if (searchResult.esearchresult.idlist.length < this.resultsNumber)
-    {
-      this.resultsNumber = searchResult.esearchresult.idlist.length;
-    }
-
     // form the list of IDs
     for (let i = 0; i < searchResult.esearchresult.idlist.length; i++) {
       this.listOfSearchIDs.push(searchResult.esearchresult.idlist[i]);
@@ -150,21 +161,6 @@ export class TestapiComponent implements OnInit {
 
     console.log("Acronyms from abstracts: ", this.listOfAcronyms);
     console.log("Abstracts: ", this.listOfAbstracts);
-
-    //if less results then requested adjust paginator
-    if (this.listOfSearchResults.length < this.resultsNumber)
-    {
-      this.paginatorResultsNumber = this.listOfSearchResults.length;
-    }
-    else
-    {
-      this.paginatorResultsNumber = this.resultsNumber;
-    }
-
-    //form initial list of display results
-    for (let i = 0; i < Math.min(10, this.listOfSearchResults.length); i++) {
-      this.listOfDisplayResults.push(this.listOfSearchResults[i]);
-    }
   }
 
   async getBasicDataResults(listOfIDs): Promise<any> {
@@ -603,13 +599,6 @@ export class TestapiComponent implements OnInit {
 
     console.log("Acronyms from abstracts: ", this.listOfAcronyms);
 
-    this.paginatorResultsNumber = this.listOfSearchResults.length;
-
-    //form initial list of display results
-    for (let i = 0; i < Math.min(10, this.listOfSearchResults.length); i++) {
-      this.listOfDisplayResults.push(this.listOfSearchResults[i]);
-    }
-
     this.resultsNumber = loadResult.length;
 
     this.isLoaded = true;
@@ -691,27 +680,6 @@ export class TestapiComponent implements OnInit {
         result = authors[0].name;
       }
     return result;
-  }
-
-  public getDisplayResults(event?:PageEvent) {
-
-    //clear list of display results
-    this.listOfDisplayResults.length = 0;
-
-    //get page index and size
-    this.currentPage = event.pageIndex;
-    this.pageSize = event.pageSize;
-
-    //console.log("Current Page", this.currentPage);
-    //console.log("Current Display Size", this.pageSize);
-
-    //form list of display results
-    for (let i = this.currentPage * this.pageSize; i < Math.min(this.currentPage * this.pageSize + this.pageSize, this.listOfSearchResults.length); i++) {
-      this.listOfDisplayResults.push(this.listOfSearchResults[i]);
-    }
-
-    return event;
-
   }
 
   applyFilter(event: Event) {

@@ -82,8 +82,8 @@
 
                 <mat-list *ngIf="isSearched">
                     <div mat-subheader>Search results:</div>
-                    <mat-list-item class="result-list-item" *ngFor="let entry of listOfDisplayResults, let i = index">
-                        <!-- <div>{{i + 1}})&nbsp;</div> -->
+                    <mat-list-item class="result-list-item" *ngFor="let entry of listOfSearchResults | paginate: paginationConfig">
+
                         <div fxLayout="column">
                             <div class="title-text" (click)="moreDetailsClick(entry)">{{entry.title}}</div>
                             <div class="journal-title-text">Journal:&nbsp;{{entry.journal}}</div>
@@ -91,19 +91,31 @@
                         </div>
                     </mat-list-item>
                 </mat-list>
+                <div class="pagination-style">
+                    <pagination-controls [id]="paginationConfig.id"
+                        [maxSize]="maxSize"
+                        [previousLabel]="labels.previousLabel"
+                        [nextLabel]="labels.nextLabel"
+                        [screenReaderPaginationLabel]="labels.screenReaderPaginationLabel"
+                        [screenReaderPageLabel]="labels.screenReaderPageLabel"
+                        [screenReaderCurrentLabel]="labels.screenReaderCurrentLabel"
+                        (pageChange)="onPageChange($event)">
+                    </pagination-controls>
+                </div>
+
     
-                <mat-paginator #searchPaginator *ngIf="isSearched" [length]="paginatorResultsNumber"
+                <!-- <mat-paginator #searchPaginator *ngIf="isSearched" [length]="paginatorResultsNumber"
                   [pageSize]="pageSize"
                   [showFirstLastButtons]="true"
                   [pageSizeOptions]="[10, 20, 30, 40, 50]"
                   [pageIndex]="currentPage"
                   (page)="pageEvent = getDisplayResults($event)">
-                </mat-paginator>
+                </mat-paginator> -->
             </div>
 
             <!-- sense inventory in the right pane -->
             <div fxLayout="column" fxFlex="50" class="right-pane">
-                <div class="normal-label centeralign">Sense Inventory</div>
+                <div class="normal-label-right-pane centeralign">Sense Inventory</div>
                 <div>
                     <mat-form-field class="filter-form-field">
                         <mat-label>Filter</mat-label>

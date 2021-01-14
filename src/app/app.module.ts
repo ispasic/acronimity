@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 import { AngularMaterialModule } from './material.module';
 import { FormsModule } from '@angular/forms';
@@ -28,7 +29,8 @@ import { ShowacronymsDialogComponent } from './testapi/showacronyms-dialog/showa
     FormsModule,
     HttpClientModule,
     AngularMaterialModule,
-    FlexLayoutModule
+    FlexLayoutModule,
+    NgxPaginationModule
   ],
   providers: [],
   bootstrap: [AppComponent]

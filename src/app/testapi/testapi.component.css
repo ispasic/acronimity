@@ -60,6 +60,12 @@
     margin-left: 20px;
   }
 
+  .normal-label-right-pane {
+    font-size: 15px;
+    color: darkslategrey;
+    margin-left: -600px;
+  }
+
   .filter-form-field {
     width: 50% !important;
     margin-left: 20px;
@@ -144,4 +150,8 @@
 
   .help-icon {
     cursor: pointer;
+  }
+
+  .pagination-style /deep/ .ngx-pagination .current {
+    background:#673ab7;
   }

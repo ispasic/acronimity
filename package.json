@@ -15,6 +15,7 @@
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "mysql": "^2.18.1",
+    "ngx-pagination": "^5.0.0",
     "sentence-tokenizer": "^1.0.1"
   },
   "devDependencies": {
