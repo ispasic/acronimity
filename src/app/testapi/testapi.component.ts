@@ -397,8 +397,6 @@ export class TestapiComponent implements OnInit {
           acronymMentions = acronymMentions + sentences[k].split('acronym sense').length - 1;
         }
 
-        //console.log(sentences);
-
         let singleAbstract = {
           "title": title,
           "journal": journal,
@@ -413,158 +411,13 @@ export class TestapiComponent implements OnInit {
         this.listOfAbstracts.push(singleAbstract);
       }
     }
+
     // generate sense inventory table
-    this.searchProgress = "Generating Sense Inventory";
-    
-    let listOfAcronymsTable = [];
-    for (let i = 0; i < this.listOfAcronymsDuplicates.length; i++) {
-      // check if same shortform + longform is already listed
-      let item = this.listOfAcronymsDuplicates[i];
-
-      let isListed = false;
-      for (let j = 0; j < listOfAcronymsTable.length; j++) {
-        if (item.shortform == listOfAcronymsTable[j].acronym) {
-          // found same shortform. Check if longform is the same
-          if (item.longform == listOfAcronymsTable[j].sense) {
-            // found exact same pair, no need to put it into sense inventory
-            isListed = true;
-            break;
-          }
-        }
-      }
-      // add to the table only if same acronym-sense pair is not listed
-      if (!isListed) {
-        // count the amount of times acronym mentioned
-        let frequency = 0;
-        for (let j = 0; j < this.listOfAcronymsDuplicates.length; j++) {
-          if (item.shortform == this.listOfAcronymsDuplicates[j].shortform) {
-            frequency++;
-          }
-        }
-        let singleEntry = {
-          "acronym": item.shortform,
-          "sense": item.longform,
-          "cui": 'XXXXXX',
-          "frequency": frequency
-        }
-        listOfAcronymsTable.push(singleEntry);
-      }
-    }
-
-    this.dataSource = new MatTableDataSource<senseInventory>(listOfAcronymsTable);
-    this.changeDetectorRef.detectChanges();
-    // default sort
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-    this.dataSource.sortingDataAccessor = (item, property): string | number => {
-      switch(property) {
-        case 'acronym': return item.acronym;
-        case 'sense': return item.sense;
-        case 'cui': return item.cui;
-        case 'frequency': return item.frequency;
-        default: return item[property];
-      }
-    };
+    let listOfAcronymsTable = this.generateSenseInventory();
+    this.generateSenseInventoryTable(listOfAcronymsTable);
 
     // generate summary sense tables
-    // calculate totals
-    // total number of acronyms is the length of the list of acronyms without duplicates
-    let acronymsTotal = this.listOfAcronyms.length;
-    // total number of sense is the length of the list of acronyms created for table that includes different senses of the same acronym
-    let sensesTotal = listOfAcronymsTable.length;
-    let cuisTotal = listOfAcronymsTable.length;
-    // total number of mentions is just a sum of all acronymMentions of every abstract in the list of abstracts
-    let acronymMentionsTotal = 0;
-    for (let i = 0; i < this.listOfAbstracts.length; i++) {
-      acronymMentionsTotal = acronymMentionsTotal + this.listOfAbstracts[i].acronymMentions;
-    }
-    // assign the table data
-    let senseInventoryTotalData = [
-      {"measure": "Acronyms", "value": acronymsTotal.toFixed(0)},
-      {"measure": "Senses", "value": sensesTotal.toFixed(0)},
-      {"measure": "CUIs", "value": cuisTotal.toFixed(0)},
-      {"measure": "Acronym mentions", "value": acronymMentionsTotal.toFixed(0)}
-    ];
-    this.senseInventoryTotal = new MatTableDataSource<senseInventorySummary>(senseInventoryTotalData);
-    this.changeDetectorRef.detectChanges();
-
-    // calculate averages
-    // acronyms per document
-    let acronymsPerDocument = this.listOfAcronymsDuplicates.length/this.listOfAbstracts.length;
-
-    // senses per acronym
-    let sensesPerAcronym = sensesTotal / acronymsTotal;
-
-    // cuis per acronym
-    let cuisPerAcronym = cuisTotal / acronymsTotal;
-
-    // acronym mentions per document
-    let acronymMentionsPerDocument = acronymMentionsTotal/this.listOfAbstracts.length;
-
-    let senseInventoryAverageData = [
-      {"measure": "Acronyms per document", "value": acronymsPerDocument.toFixed(3)},
-      {"measure": "Senses per acronym", "value": sensesPerAcronym.toFixed(3)},
-      {"measure": "CUIs per acronym", "value": cuisPerAcronym.toFixed(3)},
-      {"measure": "Acronym mentions per document", "value": acronymMentionsPerDocument.toFixed(3)}
-    ];
-    this.senseInventoryAverage = new MatTableDataSource<senseInventorySummary>(senseInventoryAverageData);
-    this.changeDetectorRef.detectChanges();
-  }
-
-  //open details dialog
-  async moreDetailsClick(entry): Promise<void> {
-    const dialogRef = this.dialog.open(ShowdetailsDialogComponent, {
-      data: entry
-    });
-  }
-
-  //download all abstracts as a single file
-  async downloadSearchResultsClick(): Promise<void> {
-    var IDs;
-    console.log("listOfSearchResults:", this.listOfSearchResults);
-    for (var entry of this.listOfSearchResults)
-    {
-      IDs = IDs + entry.id + ",";
-    }
-    const abstracts = await this.getAbstractByID(IDs, 0);
-    var blob = new Blob([abstracts], {type: "text/plain;charset=utf-8"});
-    FileSaver.saveAs(blob, "Search Results.txt");
-  }
-
-  //download all acronyms from database as a single file
-  async downloadAcronymsDatabaseClick(): Promise<void> {
-    const acronymsResult = await this.getAllAcronymsDatabase();
-    let acronymsJson = JSON.parse(JSON.stringify(acronymsResult));
-    for (let i = 0; i < acronymsJson.length; i++)
-    {
-      if (acronymsJson[i].authors.length > 0) {
-        acronymsJson[i].authors = JSON.parse(acronymsJson[i].authors);
-      } 
-    }
-    var blob = new Blob([JSON.stringify(acronymsJson, null, 2)], {type: "text/plain;charset=utf-8"});
-    FileSaver.saveAs(blob, "Acronyms.json");
-  }
-
-  //download all acronyms from results as single file
-  async downloadAcronymsClick(): Promise<void> {
-    var blob = new Blob([JSON.stringify(this.listOfAcronyms, null, 2)], {type: "text/plain;charset=utf-8"});
-    FileSaver.saveAs(blob, "Acronyms.json");
-  }
-
-  //download all abstracts from results as single file
-  async downloadAbstractsClick(): Promise<void> {
-    var blob = new Blob([JSON.stringify(this.listOfAbstracts, null, 2)], {type: "text/plain;charset=utf-8"});
-    FileSaver.saveAs(blob, "Abstracts.json");
-  }
-
-  openPubmedHelpClick() {
-    let url = "https://pubmed.ncbi.nlm.nih.gov/help/";
-    window.open(url, "_blank", "noopener");
-  }
-
-  async getAllAcronymsDatabase() {
-    const result = await this.acronymsDatabaseService.getAllAcronyms().toPromise().catch(error => console.log(error));
-    return result;
+    this.generateSenseInventorySummaries(listOfAcronymsTable);
   }
 
   async showDatabaseClick(): Promise<void> {
@@ -647,6 +500,7 @@ export class TestapiComponent implements OnInit {
         }
       }
 
+      // process abstract and add to the list of abstracts
       // form list of acronyms without additional info
       let abstractAcronyms = [];
       for (let k = 0; k < singleAcronymList.length; k++) {
@@ -661,9 +515,11 @@ export class TestapiComponent implements OnInit {
       let tokenizer = new Tokenizer();
       tokenizer.setEntry(loadResult[i].text);
       let sentences = tokenizer.getSentences();
-
+      
+      let acronymMentions = 0;
       for (let k = 0; k < sentences.length; k++) {
         sentences[k] = this.abstractProcessingService.tagAcronymsSense(sentences[k], singleAcronymList);
+        acronymMentions = acronymMentions + sentences[k].split('acronym sense').length - 1;
       }
 
       let singleAbstract = {
@@ -674,31 +530,73 @@ export class TestapiComponent implements OnInit {
         "pubmed_id": loadResult[i].pubmed_id,
         "text": loadResult[i].text,
         "sentences": sentences,
-        "acronyms": abstractAcronyms
+        "acronyms": abstractAcronyms,
+        "acronymMentions": acronymMentions
       };
       this.listOfAbstracts.push(singleAbstract);
     }
 
     // generate sense inventory table
-    this.searchProgress = "Generating Sense Inventory";
+    let listOfAcronymsTable = this.generateSenseInventory();
+    this.generateSenseInventoryTable(listOfAcronymsTable);
+
+    // generate summary sense tables
+    this.generateSenseInventorySummaries(listOfAcronymsTable);
+
+    //load is done (so search is done as well)  
+    this.isLoaded = true;
+    this.isSearched = true;
+    this.searchProgress = '';
+
+    console.log("List of loaded results: ", this.listOfSearchResults);
+    console.log("List of loaded IDs:", this.listOfSearchIDs);
+    console.log("Abstracts: ", this.listOfAbstracts);
+    console.log("Acronyms from abstracts: ", this.listOfAcronyms);
+  }
+
+  generateSenseInventory(): any[] {
+    this.searchProgress = "Generating sense inventor.y";
     
     let listOfAcronymsTable = [];
-    for (let i = 0; i < this.listOfAcronyms.length; i++) {
-      let frequency = 0;
-      // count the amount of times acronym mentioned
-      for (let j = 0; j < this.listOfAcronymsDuplicates.length; j++) {
-        if (this.listOfAcronyms[i].shortform == this.listOfAcronymsDuplicates[j].shortform) {
-          frequency++;
+    for (let i = 0; i < this.listOfAcronymsDuplicates.length; i++) {
+      // check if same shortform + longform is already listed
+      let item = this.listOfAcronymsDuplicates[i];
+
+      let isListed = false;
+      for (let j = 0; j < listOfAcronymsTable.length; j++) {
+        if (item.shortform == listOfAcronymsTable[j].acronym) {
+          // found same shortform. Check if longform is the same
+          if (item.longform == listOfAcronymsTable[j].sense) {
+            // found exact same pair, no need to put it into sense inventory
+            isListed = true;
+            break;
+          }
         }
       }
-      let singleEntry = {
-        "acronym": this.listOfAcronyms[i].shortform,
-        "sense": this.listOfAcronyms[i].longform,
-        "cui": 'XXXXXX',
-        "frequency": frequency
+      // add to the table only if same acronym-sense pair is not listed
+      if (!isListed) {
+        // count the amount of times acronym mentioned
+        let frequency = 0;
+        for (let j = 0; j < this.listOfAcronymsDuplicates.length; j++) {
+          if (item.shortform == this.listOfAcronymsDuplicates[j].shortform) {
+            frequency++;
+          }
+        }
+        let singleEntry = {
+          "acronym": item.shortform,
+          "sense": item.longform,
+          "cui": 'XXXXXX',
+          "frequency": frequency
+        }
+        listOfAcronymsTable.push(singleEntry);
       }
-      listOfAcronymsTable.push(singleEntry);
     }
+    this.searchProgress = "Sense inventory generated.";
+    return listOfAcronymsTable;
+  }
+
+  generateSenseInventoryTable(listOfAcronymsTable): void {
+    this.searchProgress = "Generating sense inventory table.";
     this.dataSource = new MatTableDataSource<senseInventory>(listOfAcronymsTable);
     this.changeDetectorRef.detectChanges();
     // default sort
@@ -713,20 +611,110 @@ export class TestapiComponent implements OnInit {
         default: return item[property];
       }
     };
+    this.searchProgress = "Sense inventory table generated.";
+  }
 
-    console.log("List of loaded results: ", this.listOfSearchResults);
-    console.log("List of loaded IDs:", this.listOfSearchIDs);
-    console.log("Abstracts: ", this.listOfAbstracts);
+  generateSenseInventorySummaries(listOfAcronymsTable): void {
+    this.searchProgress = "Calculating sense inventory totals and averages.";
+    // calculate totals
+    // total number of acronyms is the length of the list of acronyms without duplicates
+    let acronymsTotal = this.listOfAcronyms.length;
+    // total number of sense is the length of the list of acronyms created for table that includes different senses of the same acronym
+    let sensesTotal = listOfAcronymsTable.length;
+    let cuisTotal = listOfAcronymsTable.length;
+    // total number of mentions is just a sum of all acronymMentions of every abstract in the list of abstracts
+    let acronymMentionsTotal = 0;
+    for (let i = 0; i < this.listOfAbstracts.length; i++) {
+      acronymMentionsTotal = acronymMentionsTotal + this.listOfAbstracts[i].acronymMentions;
+    }
+    // assign the table data
+    let senseInventoryTotalData = [
+      {"measure": "Acronyms", "value": acronymsTotal.toFixed(0)},
+      {"measure": "Senses", "value": sensesTotal.toFixed(0)},
+      {"measure": "CUIs", "value": cuisTotal.toFixed(0)},
+      {"measure": "Acronym mentions", "value": acronymMentionsTotal.toFixed(0)}
+    ];
+    this.senseInventoryTotal = new MatTableDataSource<senseInventorySummary>(senseInventoryTotalData);
+    this.changeDetectorRef.detectChanges();
 
-    //search is done
-    this.isSearched = true;
-    this.searchProgress = '';
+    // calculate averages
+    // acronyms per document
+    let acronymsPerDocument = this.listOfAcronymsDuplicates.length/this.listOfAbstracts.length;
 
-    console.log("Acronyms from abstracts: ", this.listOfAcronyms);
+    // senses per acronym
+    let sensesPerAcronym = sensesTotal / acronymsTotal;
 
-    this.resultsNumber = loadResult.length;
+    // cuis per acronym
+    let cuisPerAcronym = cuisTotal / acronymsTotal;
 
-    this.isLoaded = true;
+    // acronym mentions per document
+    let acronymMentionsPerDocument = acronymMentionsTotal/this.listOfAbstracts.length;
+
+    let senseInventoryAverageData = [
+      {"measure": "Acronyms per document", "value": acronymsPerDocument.toFixed(3)},
+      {"measure": "Senses per acronym", "value": sensesPerAcronym.toFixed(3)},
+      {"measure": "CUIs per acronym", "value": cuisPerAcronym.toFixed(3)},
+      {"measure": "Acronym mentions per document", "value": acronymMentionsPerDocument.toFixed(3)}
+    ];
+    this.senseInventoryAverage = new MatTableDataSource<senseInventorySummary>(senseInventoryAverageData);
+    this.changeDetectorRef.detectChanges();
+    this.searchProgress = "Sense inventory totals and averages calculated.";
+  }
+
+  //open details dialog
+  async moreDetailsClick(entry): Promise<void> {
+    const dialogRef = this.dialog.open(ShowdetailsDialogComponent, {
+      data: entry
+    });
+  }
+
+  //download all abstracts as a single file
+  async downloadSearchResultsClick(): Promise<void> {
+    var IDs;
+    console.log("listOfSearchResults:", this.listOfSearchResults);
+    for (var entry of this.listOfSearchResults)
+    {
+      IDs = IDs + entry.id + ",";
+    }
+    const abstracts = await this.getAbstractByID(IDs, 0);
+    var blob = new Blob([abstracts], {type: "text/plain;charset=utf-8"});
+    FileSaver.saveAs(blob, "Search Results.txt");
+  }
+
+  //download all acronyms from database as a single file
+  async downloadAcronymsDatabaseClick(): Promise<void> {
+    const acronymsResult = await this.getAllAcronymsDatabase();
+    let acronymsJson = JSON.parse(JSON.stringify(acronymsResult));
+    for (let i = 0; i < acronymsJson.length; i++)
+    {
+      if (acronymsJson[i].authors.length > 0) {
+        acronymsJson[i].authors = JSON.parse(acronymsJson[i].authors);
+      } 
+    }
+    var blob = new Blob([JSON.stringify(acronymsJson, null, 2)], {type: "text/plain;charset=utf-8"});
+    FileSaver.saveAs(blob, "Acronyms.json");
+  }
+
+  //download all acronyms from results as single file
+  async downloadAcronymsClick(): Promise<void> {
+    var blob = new Blob([JSON.stringify(this.listOfAcronyms, null, 2)], {type: "text/plain;charset=utf-8"});
+    FileSaver.saveAs(blob, "Acronyms.json");
+  }
+
+  //download all abstracts from results as single file
+  async downloadAbstractsClick(): Promise<void> {
+    var blob = new Blob([JSON.stringify(this.listOfAbstracts, null, 2)], {type: "text/plain;charset=utf-8"});
+    FileSaver.saveAs(blob, "Abstracts.json");
+  }
+
+  openPubmedHelpClick() {
+    let url = "https://pubmed.ncbi.nlm.nih.gov/help/";
+    window.open(url, "_blank", "noopener");
+  }
+
+  async getAllAcronymsDatabase() {
+    const result = await this.acronymsDatabaseService.getAllAcronyms().toPromise().catch(error => console.log(error));
+    return result;
   }
 
   async getAllAbstractsDatabase() {
