@@ -5,6 +5,7 @@ import { PubmedService } from '../../services/pubmed.service';
 import { AcronymService } from '../../services/acronym.service';
 import { AcronymsDatabaseService } from '../../services/acronyms-database.service';
 import { AbstractProcessingService } from '../../services/abstract-processing.service';
+import { MongodbService } from '../../services/mongodb.service';
 
 import * as FileSaver from 'file-saver';
 
@@ -22,7 +23,8 @@ export class ShowdetailsDialogComponent {
     private pubmedService: PubmedService,
     private acronymService: AcronymService,
     private acronymsDatabaseService: AcronymsDatabaseService,
-    private abstractProcessingService: AbstractProcessingService) { }
+    private abstractProcessingService: AbstractProcessingService,
+    private mongodbService: MongodbService) { }
 
     abstractRes;
     status;
@@ -188,6 +190,11 @@ export class ShowdetailsDialogComponent {
 
     sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    async instertAbstractMongoDB(abstract) {
+      const result = await this.mongodbService.addOneAbstract(abstract).toPromise().catch(error => console.log(error));
+      return result;
     }
 
 

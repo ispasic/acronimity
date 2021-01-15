@@ -10,7 +10,7 @@ module.exports = app => {
     router.get("/abstracts/findAll", abstracts.findAllAbstracts);
 
     //Count Abstracts
-    router.get("abstracts/count", abstracts.countAbstracts);
+    router.get("/abstracts/count", abstracts.countAbstracts);
 
     //Insert one Abstract
     router.post("/abstracts/addOne", abstracts.addOneAbstract);
