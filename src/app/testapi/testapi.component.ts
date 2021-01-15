@@ -3,11 +3,12 @@ import { Router } from '@angular/router';
 import { PubmedService } from '../services/pubmed.service';
 import { AcronymService } from '../services/acronym.service';
 import { AcronymsDatabaseService } from '../services/acronyms-database.service';
+import { MongodbService } from '../services/mongodb.service';
 import { AbstractProcessingService } from '../services/abstract-processing.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatSort, MatSortable } from '@angular/material/sort';
+import { MatSort } from '@angular/material/sort';
 
 import { ShowdetailsDialogComponent } from './showdetails-dialog/showdetails-dialog.component';
 import { ShowacronymsDialogComponent } from './showacronyms-dialog/showacronyms-dialog.component';
@@ -56,6 +57,7 @@ export class TestapiComponent implements OnInit {
     private pubmedService: PubmedService,
     private acronymService: AcronymService,
     private acronymsDatabaseService: AcronymsDatabaseService,
+    private mongodbService: MongodbService,
     private abstractProcessingService: AbstractProcessingService,
     private dialog: MatDialog,
     private changeDetectorRef: ChangeDetectorRef) { }
@@ -712,6 +714,18 @@ export class TestapiComponent implements OnInit {
     window.open(url, "_blank", "noopener");
   }
 
+  // mongodb database connection
+  async getAllAbstractMongoDB() {
+    const result = await this.mongodbService.findAllAbstracts().toPromise().catch(error => console.log(error));
+    return result;
+  }
+
+  async insertAbstractsMongodb(abstracts) {
+    const result = await this.mongodbService.addMultipleAbstracts(abstracts).toPromise().catch(error => console.log(error));
+    return result;
+  }
+
+  // MySQL database connection
   async getAllAcronymsDatabase() {
     const result = await this.acronymsDatabaseService.getAllAcronyms().toPromise().catch(error => console.log(error));
     return result;
@@ -719,6 +733,11 @@ export class TestapiComponent implements OnInit {
 
   async getAllAbstractsDatabase() {
     const result = await this.acronymsDatabaseService.getAllAbstracts().toPromise().catch(error => console.log(error));
+    return result;
+  }
+  
+  async insertAcronym(acronym) {
+    const result = await this.acronymsDatabaseService.insertAcronym(acronym).toPromise().catch(error => console.log(error));
     return result;
   }
 
@@ -736,17 +755,14 @@ export class TestapiComponent implements OnInit {
     // console.log("Acronyms from database: ", this.acronymListFromDatabase);
   }
 
-  async insertAcronym(acronym) {
-    const result = await this.acronymsDatabaseService.insertAcronym(acronym).toPromise().catch(error => console.log(error));
-    return result;
-  }
-
+  // show all acronyms in a separate dialog
   async showAllAcronymsClick(): Promise<void> {
     const dialogRef = this.dialog.open(ShowacronymsDialogComponent, {
       data: this.listOfAcronyms
     });
   }
 
+  // pubmed database search implementation
   async searchDatabase(query, number) {
     await this.sleep(1000);
     const res = await this.pubmedService.searchDatabase(query, number).toPromise().catch(error => console.log(error));
@@ -765,10 +781,7 @@ export class TestapiComponent implements OnInit {
     return result;
   }
 
-  sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
+  // form list of authors to display in search results
   formDisplayAuthors(authors): String {
     var result;
     if(authors.length == 0)
@@ -795,8 +808,13 @@ export class TestapiComponent implements OnInit {
     return result;
   }
 
+  // sense inventory table filter
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+  }
+  
+  sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
