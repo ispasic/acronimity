@@ -68,7 +68,7 @@ exports.addOneAbstract = async (req, res) => {
 
     var currentDate = new Date();
 
-    console.log("Adding a new entity to search history. Date and time: ", currentDate);
+    console.log("Adding a new entity to abstracts. Date and time: ", currentDate);
 
     //check if same entry already in the database
     var condition = { "pubmed_id": req.body.pubmed_id };
@@ -80,7 +80,7 @@ exports.addOneAbstract = async (req, res) => {
     //if entry is already in the database
     if (findRes.length != 0)
     {
-        console.log("Same entry already exists in the database with pubmed_id = ", entry.searchId);
+        console.log("Same entry already exists in the database with pubmed_id = ", req.body.pubmed_id);
         res.status(400).send({ message: "Same entry already exists in the database!" });
         return;
     }

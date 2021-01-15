@@ -24,11 +24,12 @@ export class MongodbService {
     return this.http.get(this.findUrl, {headers: headers, params: params});
   }
 
-  public findAllAbstract() {
+  public findAllAbstracts() {
     this.findUrl = baseUrl + "abstracts/findAll";
     let headers = new HttpHeaders();
     let params = new HttpParams();
     return this.http.get(this.findUrl, {headers: headers, params: params});
+    //return this.http.get(this.findUrl);
   }
 
   public countAbstract() {
@@ -39,14 +40,14 @@ export class MongodbService {
   }
 
   public addOneAbstract(abstract: any) {
-    this.findUrl = baseUrl + "abstracts/addOneAbstract";
+    this.findUrl = baseUrl + "abstracts/addOne";
     let headers = new HttpHeaders();
     let params = new HttpParams();
     return this.http.post(this.findUrl, abstract, {headers: headers, params: params});
   }
 
   public addMultipleAbstracts(abstracts: any) {
-    this.findUrl = baseUrl + "abstracts/addMultipleAbstracts";
+    this.findUrl = baseUrl + "abstracts/addMultiple";
     let headers = new HttpHeaders();
     let params = new HttpParams();
     return this.http.post(this.findUrl, abstracts, {headers: headers, params: params});

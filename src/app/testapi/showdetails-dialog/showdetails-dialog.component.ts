@@ -112,9 +112,11 @@ export class ShowdetailsDialogComponent {
       let tokenizer = new Tokenizer();
       tokenizer.setEntry(abstract);
       let sentences = tokenizer.getSentences();
+      let acronymMentions = 0;
 
       for (let k = 0; k < sentences.length; k++) {
         sentences[k] = this.abstractProcessingService.tagAcronymsSense(sentences[k], this.detailsAcronymList);
+        acronymMentions = acronymMentions + sentences[k].split('acronym sense').length - 1;
       }
 
       let abstractWithInfo = {
@@ -125,7 +127,8 @@ export class ShowdetailsDialogComponent {
         "pubmed_id": this.data.id,
         "text": abstract,
         "sentences": sentences,
-        "acronyms": abstractAcronyms
+        "acronyms": abstractAcronyms,
+        "acronymMentions": acronymMentions
       };
       this.detailsAbstractList.push(abstractWithInfo);
 
@@ -192,11 +195,13 @@ export class ShowdetailsDialogComponent {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    async instertAbstractMongoDB(abstract) {
+    async insertAbstractClick(): Promise<void> {
+      this.insertObject = await this.insertAbstractMongoDB(this.detailsAbstractList[0]);
+      console.log(this.insertObject);
+    }
+
+    async insertAbstractMongoDB(abstract) {
       const result = await this.mongodbService.addOneAbstract(abstract).toPromise().catch(error => console.log(error));
       return result;
     }
-
-
-
 }
