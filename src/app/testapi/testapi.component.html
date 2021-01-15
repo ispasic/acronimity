@@ -106,7 +106,7 @@
 
             <!-- sense inventory in the right pane -->
             <div fxLayout="column" fxFlex="50" class="right-pane">
-                <div class="normal-label-right-pane centeralign">Sense Inventory</div>
+                <div class="normal-label-right-pane">Sense Inventory</div>
                 <div>
                     <mat-form-field class="filter-form-field">
                         <mat-label>Filter</mat-label>
@@ -146,6 +146,30 @@
                         <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
                     </mat-table>
                     <mat-paginator #paginator [pageSizeOptions]="[10, 20, 30, 40, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+                </div>
+                <div class="normal-label-right-pane right-pane-next">Total</div>
+                <div style = "width: 40%;">
+                    <mat-table class="senseinventorysummary-table" [dataSource]="senseInventoryTotal">
+                        <ng-container matColumnDef="measure">
+                            <mat-cell *matCellDef="let res"> {{res.measure}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="value">
+                            <mat-cell *matCellDef="let res"> {{res.value}} </mat-cell>
+                        </ng-container>
+                        <mat-row *matRowDef="let row; columns: senseInventorySummaryColumns;"></mat-row>
+                    </mat-table>
+                </div>
+                <div class="normal-label-right-pane right-pane-next">Average</div>
+                <div style = "width: 60%;">
+                    <mat-table class="senseinventorysummary-table" [dataSource]="senseInventoryAverage">
+                        <ng-container matColumnDef="measure">
+                            <mat-cell *matCellDef="let res"> {{res.measure}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="value">
+                            <mat-cell *matCellDef="let res"> {{res.value}} </mat-cell>
+                        </ng-container>
+                        <mat-row *matRowDef="let row; columns: senseInventorySummaryColumns;"></mat-row>
+                    </mat-table>
                 </div>
             </div>
 

@@ -24,7 +24,26 @@ export interface senseInventory {
   "sense": string,
   "cui": string,
   "frequency": string
-}
+};
+
+export interface senseInventorySummary {
+  "measure": string,
+  "value": string
+};
+
+export interface senseInventoryTotal {
+  "acronyms": number,
+  "senses": number,
+  "cuis": number,
+  "acronymMentions": number
+};
+
+export interface senseInventoryAverage {
+  "acronymsPerDocument": number,
+  "sensesPerAcronym": number,
+  "cuisPerAcronym": number,
+  "acronymMentionsPerDocument": number
+};
 
 @Component({
   selector: 'app-testapi',
@@ -42,6 +61,10 @@ export class TestapiComponent implements OnInit {
     private changeDetectorRef: ChangeDetectorRef) { }
 
   // Sense Inventory Table declarations
+
+  senseInventoryTotal = null;
+  senseInventoryAverage = null;
+  senseInventorySummaryColumns = ['measure', 'value'];
 
   dataSource = new MatTableDataSource<senseInventory>();
   displayedColumns = ['acronym', 'sense', 'cui', 'frequency'];
@@ -352,7 +375,7 @@ export class TestapiComponent implements OnInit {
           }
         }
 
-        
+        // create list of abstracts
         // form list of acronyms without additional info
         let abstractAcronyms = [];
         for (let k = 0; k < singleAcronymList.length; k++) {
@@ -368,8 +391,10 @@ export class TestapiComponent implements OnInit {
         tokenizer.setEntry(abstract);
         let sentences = tokenizer.getSentences();
 
+        let acronymMentions = 0;
         for (let k = 0; k < sentences.length; k++) {
           sentences[k] = this.abstractProcessingService.tagAcronymsSense(sentences[k], singleAcronymList);
+          acronymMentions = acronymMentions + sentences[k].split('acronym sense').length - 1;
         }
 
         //console.log(sentences);
@@ -382,7 +407,8 @@ export class TestapiComponent implements OnInit {
           "pubmed_id": stepIDsList[j],
           "text": abstract,
           "sentences": sentences,
-          "acronyms": abstractAcronyms
+          "acronyms": abstractAcronyms,
+          "acronymMentions": acronymMentions
         };
         this.listOfAbstracts.push(singleAbstract);
       }
@@ -391,22 +417,40 @@ export class TestapiComponent implements OnInit {
     this.searchProgress = "Generating Sense Inventory";
     
     let listOfAcronymsTable = [];
-    for (let i = 0; i < this.listOfAcronyms.length; i++) {
-      let frequency = 0;
-      // count the amount of times acronym mentioned
-      for (let j = 0; j < this.listOfAcronymsDuplicates.length; j++) {
-        if (this.listOfAcronyms[i].shortform == this.listOfAcronymsDuplicates[j].shortform) {
-          frequency++;
+    for (let i = 0; i < this.listOfAcronymsDuplicates.length; i++) {
+      // check if same shortform + longform is already listed
+      let item = this.listOfAcronymsDuplicates[i];
+
+      let isListed = false;
+      for (let j = 0; j < listOfAcronymsTable.length; j++) {
+        if (item.shortform == listOfAcronymsTable[j].acronym) {
+          // found same shortform. Check if longform is the same
+          if (item.longform == listOfAcronymsTable[j].sense) {
+            // found exact same pair, no need to put it into sense inventory
+            isListed = true;
+            break;
+          }
         }
       }
-      let singleEntry = {
-        "acronym": this.listOfAcronyms[i].shortform,
-        "sense": this.listOfAcronyms[i].longform,
-        "cui": 'XXXXXX',
-        "frequency": frequency
+      // add to the table only if same acronym-sense pair is not listed
+      if (!isListed) {
+        // count the amount of times acronym mentioned
+        let frequency = 0;
+        for (let j = 0; j < this.listOfAcronymsDuplicates.length; j++) {
+          if (item.shortform == this.listOfAcronymsDuplicates[j].shortform) {
+            frequency++;
+          }
+        }
+        let singleEntry = {
+          "acronym": item.shortform,
+          "sense": item.longform,
+          "cui": 'XXXXXX',
+          "frequency": frequency
+        }
+        listOfAcronymsTable.push(singleEntry);
       }
-      listOfAcronymsTable.push(singleEntry);
     }
+
     this.dataSource = new MatTableDataSource<senseInventory>(listOfAcronymsTable);
     this.changeDetectorRef.detectChanges();
     // default sort
@@ -421,7 +465,50 @@ export class TestapiComponent implements OnInit {
         default: return item[property];
       }
     };
-    //console.log(this.dataSource);
+
+    // generate summary sense tables
+    // calculate totals
+    // total number of acronyms is the length of the list of acronyms without duplicates
+    let acronymsTotal = this.listOfAcronyms.length;
+    // total number of sense is the length of the list of acronyms created for table that includes different senses of the same acronym
+    let sensesTotal = listOfAcronymsTable.length;
+    let cuisTotal = listOfAcronymsTable.length;
+    // total number of mentions is just a sum of all acronymMentions of every abstract in the list of abstracts
+    let acronymMentionsTotal = 0;
+    for (let i = 0; i < this.listOfAbstracts.length; i++) {
+      acronymMentionsTotal = acronymMentionsTotal + this.listOfAbstracts[i].acronymMentions;
+    }
+    // assign the table data
+    let senseInventoryTotalData = [
+      {"measure": "Acronyms", "value": acronymsTotal.toFixed(0)},
+      {"measure": "Senses", "value": sensesTotal.toFixed(0)},
+      {"measure": "CUIs", "value": cuisTotal.toFixed(0)},
+      {"measure": "Acronym mentions", "value": acronymMentionsTotal.toFixed(0)}
+    ];
+    this.senseInventoryTotal = new MatTableDataSource<senseInventorySummary>(senseInventoryTotalData);
+    this.changeDetectorRef.detectChanges();
+
+    // calculate averages
+    // acronyms per document
+    let acronymsPerDocument = this.listOfAcronymsDuplicates.length/this.listOfAbstracts.length;
+
+    // senses per acronym
+    let sensesPerAcronym = sensesTotal / acronymsTotal;
+
+    // cuis per acronym
+    let cuisPerAcronym = cuisTotal / acronymsTotal;
+
+    // acronym mentions per document
+    let acronymMentionsPerDocument = acronymMentionsTotal/this.listOfAbstracts.length;
+
+    let senseInventoryAverageData = [
+      {"measure": "Acronyms per document", "value": acronymsPerDocument.toFixed(3)},
+      {"measure": "Senses per acronym", "value": sensesPerAcronym.toFixed(3)},
+      {"measure": "CUIs per acronym", "value": cuisPerAcronym.toFixed(3)},
+      {"measure": "Acronym mentions per document", "value": acronymMentionsPerDocument.toFixed(3)}
+    ];
+    this.senseInventoryAverage = new MatTableDataSource<senseInventorySummary>(senseInventoryAverageData);
+    this.changeDetectorRef.detectChanges();
   }
 
   //open details dialog
