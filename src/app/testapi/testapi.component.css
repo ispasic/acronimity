@@ -9,6 +9,14 @@
     align-items:center;
   }
 
+  .main-input-field {
+    width: 42vw !important;
+  }
+
+  .left-pane-input-field {
+    width: 42vw !important;
+  }
+
   .spacer {
     flex: 1 1 auto;
   }
@@ -20,7 +28,7 @@
   .normal-label {
     font-size: 15px;
     color: darkslategrey;
-    margin-left: -625px;
+    margin-left: 27vw;
   }
 
   .database-progress {
@@ -52,7 +60,7 @@
 
   .result-list-item {
     margin-bottom: 50px;
-    width: 700px !important;
+    width: 42vw !important;
     height: 80px !important;
   }
 
@@ -64,6 +72,12 @@
     font-size: 15px;
     color: darkslategrey;
     margin-left: 20px;
+  }
+
+  .normal-label-left-pane {
+    font-size: 15px;
+    color: darkslategrey;
+    margin-left: 5px;
   }
 
   .right-pane-next {
@@ -182,6 +196,11 @@
   }
 
   .help-icon-container {
+    margin-left: 10px;
+    margin-top: 25px;
+  }
+
+  .help-icon-container-main {
     margin-left: 10px;
     margin-bottom: 15px;
   }

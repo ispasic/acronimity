@@ -2,15 +2,15 @@
     <mat-card-content>
         <!-- initial search design -->
         <div fxLayout="column" *ngIf="!isSearched">
-            <div class="normal-label centeralign">PubMed query:</div>
+            <div class="normal-label">PubMed query:</div>
             <div fxLayout="row" class="centeralign">
                 <div>
-                    <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
+                    <mat-form-field class="main-input-field" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
                         <mat-label style="margin-top: 0px !important;">Query</mat-label>
                         <input matInput type="text" [(ngModel)]="query" class="normal-text">  
                     </mat-form-field>
                 </div>
-                <div class="help-icon-container">
+                <div class="help-icon-container-main">
                     <mat-icon class="help-icon"
                         #tooltip="matTooltip"
                         matTooltip="Click to open PubMed Query Help"
@@ -21,12 +21,12 @@
             </div>
             <div fxLayout="row" class="centeralign">
                 <div>
-                    <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
+                    <mat-form-field class="main-input-field" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
                         <mat-label style="margin-top: 0px !important;">Number of results</mat-label>
                         <input matInput type="text" [(ngModel)]="resultsNumber" class="normal-text">  
                     </mat-form-field>
                 </div>
-                <div class="help-icon-container">
+                <div class="help-icon-container-main">
                     <mat-icon class="help-icon"
                         #tooltip="matTooltip"
                         matTooltip="Specify a number if you would like to limit the amount of search results returned. (default: 100)">
@@ -43,10 +43,10 @@
         <div fxLayout="row" *ngIf="isSearched">
             <!-- search form fields -->
             <div fxLayout="column" fxFlex="50">
-                <div class="normal-label centeralign">PubMed query:</div>
-                <div fxLayout="row" class="centeralign">
+                <div class="normal-label-left-pane">PubMed query:</div>
+                <div fxLayout="row">
                     <div>
-                        <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
+                        <mat-form-field class="left-pane-input-field" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
                             <mat-label style="margin-top: 0px !important;">Query</mat-label>
                             <input matInput type="text" [(ngModel)]="query" class="normal-text">  
                         </mat-form-field>
@@ -60,9 +60,9 @@
                         </mat-icon>
                     </div>
                 </div>
-                <div fxLayout="row" class="centeralign">
+                <div fxLayout="row">
                     <div>
-                        <mat-form-field class="input-form-field" style="width: 700px !important;" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
+                        <mat-form-field class="left-pane-input-field" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
                             <mat-label style="margin-top: 0px !important;">Number of results</mat-label>
                             <input matInput type="text" [(ngModel)]="resultsNumber" class="normal-text">  
                         </mat-form-field>
@@ -83,7 +83,6 @@
                 <mat-list *ngIf="isSearched">
                     <div mat-subheader>Search results:</div>
                     <mat-list-item class="result-list-item" *ngFor="let entry of listOfSearchResults | paginate: paginationConfig">
-
                         <div fxLayout="column">
                             <div class="title-text" (click)="moreDetailsClick(entry)">{{entry.title}}</div>
                             <div class="journal-title-text">Journal:&nbsp;{{entry.journal}}</div>
