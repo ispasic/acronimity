@@ -136,6 +136,7 @@ export class ShowdetailsDialogComponent {
       console.log("Abstract with all info: ", this.detailsAbstractList);
     }
 
+    // connection to pubmed service api
     async getAbstractByID(id, start) {
       await this.sleep(500);
       const result = await this.pubmedService.getAbstractByID(id, start).toPromise().catch(error => console.log(error));
@@ -151,11 +152,13 @@ export class ShowdetailsDialogComponent {
     ngOnDestroy() {
     }
 
+    // download abstract as json
     downloadDetailsClick(): void {
       var blob = new Blob([JSON.stringify(this.detailsAbstractList, null, 2)], {type: "text/plain;charset=utf-8"});
       FileSaver.saveAs(blob, "Abstract.json");
     }
 
+    // insert acronyms into mysql
     async insertAcronymsClick(): Promise<void> {
       for (var acronym of this.detailsAcronymList)
       {
@@ -169,6 +172,7 @@ export class ShowdetailsDialogComponent {
       return result;
     }
 
+    // abstract processing service
     swapAcronymsClick(): void{
       if (!this.isSwapped) {
         this.abstractRes = this.abstractProcessingService.swapAcronyms(this.abstractRes, this.detailsAcronymList);
@@ -195,6 +199,7 @@ export class ShowdetailsDialogComponent {
       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    // mongodb abstract insert implementation
     async insertAbstractClick(): Promise<void> {
       this.insertObject = await this.insertAbstractMongoDB(this.detailsAbstractList[0]);
       console.log(this.insertObject);
