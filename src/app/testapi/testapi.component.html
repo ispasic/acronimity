@@ -176,11 +176,11 @@
     </mat-card-content>
     <mat-divider></mat-divider>
     <mat-card-actions class="centeralign">
-        <button mat-raised-button color="primary" (click)="searchButtonClick(query, resultsNumber)" class="normal-button">{{testButtonText}}</button>
-        <button mat-stroked-button [disabled]="isLoaded" color="primary" (click)="showDatabaseClick()" class="normal-button">LOAD DATABASE</button>
-        <button mat-stroked-button color="primary" (click)="downloadAbstractsClick()" class="normal-button">DOWNLOAD ALL</button>
-        <button mat-stroked-button *ngIf="isSearched" color="primary" (click)="showAllAcronymsClick()" class="normal-button">SHOW ACRONYMS</button>
-        <!-- <button mat-stroked-button *ngIf="isSearched" color="primary" (click)="insertAllAcronymsClick()" class="normal-button">PROCESS ACRONYMS</button> -->
+        <button mat-raised-button color="primary" (click)="searchButtonClick(query, resultsNumber)" class="normal-button">{{mainButtonText}}</button>
+        <button mat-stroked-button [disabled]="isLoaded" color="primary" (click)="showDatabaseMongoClick()" class="normal-button">LOAD DATABASE</button>
+        <button mat-stroked-button *ngIf="isSearched" color="primary" (click)="downloadAbstractsClick()" class="normal-button">DOWNLOAD ALL</button>
+        <button mat-stroked-button *ngIf="isSearched" color="primary" (click)="insertAllAbstractsClick()" class="normal-button">INSERT ABSTRACTS</button>
+        <!-- <button mat-stroked-button *ngIf="isSearched" color="primary" (click)="showAllAcronymsClick()" class="normal-button">SHOW ACRONYMS</button> -->
     </mat-card-actions>
 
 </mat-card>

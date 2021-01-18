@@ -136,7 +136,7 @@ exports.addMultipleAbstracts = async (req, res) => {
     {
         //console.log("inputEntry = ", inputEntry);
         //if not empty entry and entry is correct
-        if (inputEntry.id)
+        if (inputEntry.pubmed_id)
         {
             //check if same entry already in the database
             var condition = { "pubmed_id": inputEntry.pubmed_id };

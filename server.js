@@ -37,6 +37,7 @@ const bodyParser = require('body-parser');
 // const app = express()
 //     .use(events(connection));
 
+// mongodb connection
 const app = express();
 
 var corsOptions = {
@@ -48,11 +49,19 @@ app.use(cors(corsOptions));
 var distDir = "./dist/pubmedapis/";
 app.use(express.static(distDir));
 
-//parse requests of content-type - application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded( {extended: true }));
-
 //parse requests of content-type - application/json
-app.use(bodyParser.json());
+app.use(bodyParser.json({
+  limit: '50mb'
+}));
+
+//parse requests of content-type - application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded( {
+  limit: '50mb',
+  parameterLimit: 100000,
+  extended: true 
+}));
+
+
 
 //use routes
 require("./backend/routes/routes")(app);
