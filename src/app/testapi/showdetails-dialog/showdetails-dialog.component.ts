@@ -45,11 +45,17 @@ export class ShowdetailsDialogComponent {
       //get abstract with pubmed query
       this.abstractRes = await this.getAbstractByID(this.data.id, 0);
       this.isAbstractFormed = true;
-      let basicData = await this.getBasicDataByID(this.data.id, 0);
-      var title = basicData.result[this.data.id].title;
-      var journal = basicData.result[this.data.id].fulljournalname;
-      var pubdate = basicData.result[this.data.id].pubdate;
-      var authors = basicData.result[this.data.id].authors;
+      // get basic data from API
+      // let basicData = await this.getBasicDataByID(this.data.id, 0);
+      // var title = basicData.result[this.data.id].title;
+      // var journal = basicData.result[this.data.id].fulljournalname;
+      // var pubdate = basicData.result[this.data.id].pubdate;
+      // var authors = basicData.result[this.data.id].authors;
+      // get basic data from passed info into the dialog
+      var title = this.data.title;
+      var journal = this.data.fulljournalname;
+      var pubdate = this.data.pubdate;
+      var authors = this.data.authors;
 
       // find an abstract and cut it into separate substring
       let abIndexStart = this.abstractRes.indexOf('AB  - ');
