@@ -35,8 +35,8 @@ export class AbstractProcessingService {
 
   //replace all occurences of <find> with <replace> in <str>
   public replaceAllBoundaries(str, find: string, replace: string) {
-    console.log(`Replacing ${find} with ${replace}`);
-    return str.replace(new RegExp(`[\.\\s]${find}[\.\\s]`, 'gi'), replace);
+    //console.log(`Replacing ${find} with ${replace}`);
+    return str.replace(new RegExp(`[\.\\s]${this.escapeRegExp(find)}[\.\\s]`, 'gi'), replace);
   }
 
   private replaceAll(str, term, replacement) {
