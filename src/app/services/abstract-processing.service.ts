@@ -15,20 +15,28 @@ export class AbstractProcessingService {
     taggedText = taggedText.replace(/\u00A0/g, " "); //swap all non-breaking spaces by spaces
     taggedText = taggedText.replace(/\s{2,}/g,' '); //swap all multiple spaces with spaces
 
+    // preprocess sentence
+
     for (let acronym of acronymList) {
       // transform `longform (shortform)` strings into `shortform`
       taggedText = this.replaceAll(taggedText, acronym.longform + " (" + acronym.shortform + ")", acronym.shortform);
       taggedText = this.replaceAll(taggedText, acronym.longform + "(" + acronym.shortform + ")", acronym.shortform);
-      // transform `longform (shortforms)` strings into `shortform`
-      taggedText = this.replaceAll(taggedText, acronym.longform + " (" + acronym.shortform + "s)", acronym.shortform);
+      // transform `longform (shortform)-` strings into `shortform`
+      taggedText = this.replaceAll(taggedText, acronym.longform + " (" + acronym.shortform + ")", acronym.shortform);
       // transform `shortform (longform)` string into `shortform`
       taggedText = this.replaceAll(taggedText, acronym.shortform + " (" + acronym.longform + ")", acronym.shortform);
       taggedText = this.replaceAll(taggedText, acronym.shortform + "(" + acronym.longform + ")", acronym.shortform);
       // transform `(shortform) longform` string into `shortform`
       taggedText = this.replaceAll(taggedText, "(" + acronym.shortform + ") " + acronym.longform, acronym.shortform);
       taggedText = this.replaceAll(taggedText, "(" + acronym.shortform + ")" + acronym.longform, acronym.shortform);
+    }
+
+    for (let acronym of acronymList) {
+      //console.log(acronym);
+      //console.log(taggedText);
       // transform `shortform` into `<acronym sense=longform>shortform</acronym>
       taggedText = this.replaceAllBoundaries(taggedText, acronym.shortform, "<acronym sense='" + acronym.longform + "'>" + acronym.shortform + "</acronym>");
+      //console.log(taggedText);
     }
     return taggedText;
   }
@@ -37,7 +45,7 @@ export class AbstractProcessingService {
   //replace all occurences of <find> with <replace> in <str>
   public replaceAllBoundaries(str, find: string, replace: string) {
     //console.log(`Replacing ${find} with ${replace}`);
-    return str.replace(new RegExp(`(^| |.|,)${this.escapeRegExp(find)}(^| |.|,|/)`, 'gi'), `$1${replace}$2`);
+    return str.replace(new RegExp(`(^|\\.|\\,|\\s)(${this.escapeRegExp(find)})(^|\\.|\\,|\\/|\\-|\\s)`, 'gi'), `$1${replace}$3`);
   }
 
   private replaceAll(str, term, replacement) {

@@ -242,8 +242,6 @@ export class TestapiComponent implements OnInit {
     //get the number of fetching needed (STEP each time)
     let number = Math.ceil(listOfIDs.length/step);
 
-    let listOfAllSentences = [];
-
     // cycle through each step
     for (let i = 0; i < number; i++) {
       // form the list of IDs for this step
@@ -499,6 +497,8 @@ export class TestapiComponent implements OnInit {
     listOfAcronymsTable.sort((a, b) => (a.acronym > b.acronym) ? 1 : -1);
     for (let i = 0; i < listOfAcronymsTable.length; i++) {
       if (i > 0 && listOfAcronymsTable[i].acronym != listOfAcronymsTable[i-1].acronym) {
+        acronymMentionsTotal = acronymMentionsTotal + listOfAcronymsTable[i].frequency;
+      } else if (i == 0) {
         acronymMentionsTotal = acronymMentionsTotal + listOfAcronymsTable[i].frequency;
       }
     }
