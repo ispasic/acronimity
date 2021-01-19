@@ -70,8 +70,10 @@ export class TestapiComponent implements OnInit {
   }
 
   setDataSourceAttributes() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    if (this.dataSource) {
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    }
   }
 
   // Global variables declarations
