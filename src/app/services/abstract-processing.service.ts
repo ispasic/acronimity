@@ -26,8 +26,7 @@ export class AbstractProcessingService {
       taggedText = this.replaceAll(taggedText, "(" + acronym.shortform + ") " + acronym.longform, acronym.shortform);
       taggedText = this.replaceAll(taggedText, "(" + acronym.shortform + ")" + acronym.longform, acronym.shortform);
       // transform `shortform` into `<acronym sense=longform>shortform</acronym>
-      taggedText = this.replaceAllBoundaries(taggedText, acronym.shortform, " <acronym sense='" + acronym.longform + "'>" + acronym.shortform + "</acronym> ");
-
+      taggedText = this.replaceAllBoundaries(taggedText, acronym.shortform, "<acronym sense='" + acronym.longform + "'>" + acronym.shortform + "</acronym>");
     }
     return taggedText;
   }
@@ -36,7 +35,7 @@ export class AbstractProcessingService {
   //replace all occurences of <find> with <replace> in <str>
   public replaceAllBoundaries(str, find: string, replace: string) {
     //console.log(`Replacing ${find} with ${replace}`);
-    return str.replace(new RegExp(`[.,\s]${this.escapeRegExp(find)}[.,/\\s]`, 'gi'), replace);
+    return str.replace(new RegExp(`(^| |.|,)${this.escapeRegExp(find)}(^| |.|,|/)`, 'gi'), `$1${replace}$2`);
   }
 
   private replaceAll(str, term, replacement) {
