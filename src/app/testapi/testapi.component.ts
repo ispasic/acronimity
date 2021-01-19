@@ -429,6 +429,7 @@ export class TestapiComponent implements OnInit {
       if (!isListed) {
         // count the amount of times acronym mentioned
         let frequency = 0;
+        let frequencyTest = 0;
 
         // calculate frequency based on "at least one acronym mention per abstract"
         // for (let j = 0; j < this.listOfAcronymsDuplicates.length; j++) {
@@ -440,7 +441,8 @@ export class TestapiComponent implements OnInit {
         // calculate frequency based on "total number of current acronym mentions per whole dataset"
         for (let j = 0; j < this.listOfAbstracts.length; j++) {
           for (let k = 0; k < this.listOfAbstracts[j].sentences.length; k++) {
-            frequency = frequency + this.listOfAbstracts[j].sentences[k].split(">" + item.shortform + "<").length - 1;
+            //frequency = frequency + this.listOfAbstracts[j].sentences[k].split(">" + item.shortform + "<").length - 1;
+            frequency = frequency + this.listOfAbstracts[j].sentences[k].split("sense='" + item.longform + "'").length - 1;
           }
         }
         if (frequency == 0) {
