@@ -241,7 +241,8 @@ export class AcronymService {
     //console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
     d = Math.max(definition.lastIndexOf(" ", d) + 1, definition.lastIndexOf("(", d) + 1, definition.lastIndexOf(")", d) + 1,
       definition.lastIndexOf("/", d) + 1, definition.lastIndexOf("]", d) + 1, definition.lastIndexOf("[", d) + 1,
-      definition.lastIndexOf("}", d) + 1, definition.lastIndexOf("{", d) + 1, definition.lastIndexOf('"', d) + 1);
+      definition.lastIndexOf("}", d) + 1, definition.lastIndexOf("{", d) + 1, definition.lastIndexOf('"', d) + 1,
+      definition.lastIndexOf('-', d) + 1);
     //console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
     //console.log(definition.substring(d));
     return definition.substring(d);
@@ -261,8 +262,8 @@ export class AcronymService {
       acronym = cand.shortform;
       definition = cand.longform;
 
-      //console.log("Acronym candidate: ", acronym);
-      //console.log("Definition candidate: ", definition);
+      console.log("Acronym candidate: ", acronym);
+      console.log("Definition candidate: ", definition);
 
       //acronym has to have at least 2 characters
       if (acronym.length < 2)
@@ -319,16 +320,16 @@ export class AcronymService {
         }
       }
 
-      //check if same longform is in List already
-      isInList = false;
-      for (var acr of acronymList)
-      {
-        if (acr.longform == foundPair.longform)
-        {
-          isInList = true;
-          break;
-        }
-      }
+      // //check if same longform is in List already
+      // isInList = false;
+      // for (var acr of acronymList)
+      // {
+      //   if (acr.longform == foundPair.longform)
+      //   {
+      //     isInList = true;
+      //     break;
+      //   }
+      // }
 
       //if not in list
       if(isInList == false)
