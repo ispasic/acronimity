@@ -442,7 +442,7 @@ export class TestapiComponent implements OnInit {
         for (let j = 0; j < this.listOfAbstracts.length; j++) {
           for (let k = 0; k < this.listOfAbstracts[j].sentences.length; k++) {
             //frequency = frequency + this.listOfAbstracts[j].sentences[k].split(">" + item.shortform + "<").length - 1;
-            frequency = frequency + this.listOfAbstracts[j].sentences[k].split("sense='" + item.longform + "'").length - 1;
+            frequency = frequency + this.listOfAbstracts[j].sentences[k].split("sense='" + item.longform + "'>" + item.shortform + "<").length - 1;
           }
         }
         if (frequency == 0) {
