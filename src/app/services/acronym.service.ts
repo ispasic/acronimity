@@ -173,6 +173,12 @@ export class AcronymService {
             }
           }
 
+          // if acronym has a dot at the end
+          if(acronym.charAt(acronym.length-1).toLowerCase() == '.')
+          {
+            acronym = acronym.substring(0, acronym.length - 1);
+          }
+
           if(this.isValidShortForm(acronym)) //if acronym is actually valid short form
           {
             var foundPair = {
@@ -262,8 +268,8 @@ export class AcronymService {
       acronym = cand.shortform;
       definition = cand.longform;
 
-      console.log("Acronym candidate: ", acronym);
-      console.log("Definition candidate: ", definition);
+      //console.log("Acronym candidate: ", acronym);
+      //console.log("Definition candidate: ", definition);
 
       //acronym has to have at least 2 characters
       if (acronym.length < 2)
