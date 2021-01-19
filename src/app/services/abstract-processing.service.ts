@@ -19,6 +19,8 @@ export class AbstractProcessingService {
       // transform `longform (shortform)` strings into `shortform`
       taggedText = this.replaceAll(taggedText, acronym.longform + " (" + acronym.shortform + ")", acronym.shortform);
       taggedText = this.replaceAll(taggedText, acronym.longform + "(" + acronym.shortform + ")", acronym.shortform);
+      // transform `longform (shortforms)` strings into `shortform`
+      taggedText = this.replaceAll(taggedText, acronym.longform + " (" + acronym.shortform + "s)", acronym.shortform);
       // transform `shortform (longform)` string into `shortform`
       taggedText = this.replaceAll(taggedText, acronym.shortform + " (" + acronym.longform + ")", acronym.shortform);
       taggedText = this.replaceAll(taggedText, acronym.shortform + "(" + acronym.longform + ")", acronym.shortform);

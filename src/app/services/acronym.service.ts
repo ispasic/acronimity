@@ -319,6 +319,17 @@ export class AcronymService {
         }
       }
 
+      //check if same longform is in List already
+      isInList = false;
+      for (var acr of acronymList)
+      {
+        if (acr.longform == foundPair.longform)
+        {
+          isInList = true;
+          break;
+        }
+      }
+
       //if not in list
       if(isInList == false)
       {
