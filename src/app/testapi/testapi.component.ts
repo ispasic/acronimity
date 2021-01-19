@@ -240,6 +240,8 @@ export class TestapiComponent implements OnInit {
     //get the number of fetching needed (STEP each time)
     let number = Math.ceil(listOfIDs.length/step);
 
+    let listOfAllSentences = [];
+
     // cycle through each step
     for (let i = 0; i < number; i++) {
       // form the list of IDs for this step
@@ -268,6 +270,7 @@ export class TestapiComponent implements OnInit {
       let abstractsRes = await this.getAbstractByID(stepIDsParam, 0);
       let abstracts = '';
       abstracts = abstracts + abstractsRes;
+
 
       // cycle through IDs, separate each abstract and process it
       for (let j = 0; j < stepIDsList.length; j++) {
@@ -358,13 +361,13 @@ export class TestapiComponent implements OnInit {
 
         // create list of abstracts
         // form list of acronyms without additional info (just pairs shortform - longform)
-        let abstractAcronyms = [];
+        let listOfAbstractAcronyms = [];
         for (let k = 0; k < singleAcronymList.length; k++) {
           let singlePair = {
             "shortform": singleAcronymList[k].shortform,
             "longform": singleAcronymList[k].longform
           };
-          abstractAcronyms.push(singlePair);
+          listOfAbstractAcronyms.push(singlePair);
         }
 
         // split abstract into sentences
@@ -372,11 +375,11 @@ export class TestapiComponent implements OnInit {
         tokenizer.setEntry(abstract);
         let sentences = tokenizer.getSentences();
 
-        let acronymMentions = 0;
+        //let acronymMentions = 0;
         for (let k = 0; k < sentences.length; k++) {
-          sentences[k] = this.abstractProcessingService.tagAcronymsSense(sentences[k], singleAcronymList);
+          sentences[k] = this.abstractProcessingService.tagAcronymsSense(sentences[k], listOfAbstractAcronyms);
           // calculate how many times all acronyms are mentioned in the document overall
-          acronymMentions = acronymMentions + sentences[k].split('acronym sense').length - 1;
+          //acronymMentions = acronymMentions + sentences[k].split('acronym sense').length - 1;
         }
 
         let singleAbstract = {
@@ -387,8 +390,8 @@ export class TestapiComponent implements OnInit {
           "pubmed_id": stepIDsList[j],
           "text": abstract,
           "sentences": sentences,
-          "acronyms": abstractAcronyms,
-          "acronymMentions": acronymMentions
+          "acronyms": listOfAbstractAcronyms
+          //"acronymMentionsTotal": acronymMentions
         };
         this.listOfAbstracts.push(singleAbstract);
       }
@@ -426,11 +429,24 @@ export class TestapiComponent implements OnInit {
       if (!isListed) {
         // count the amount of times acronym mentioned
         let frequency = 0;
-        for (let j = 0; j < this.listOfAcronymsDuplicates.length; j++) {
-          if (item.shortform == this.listOfAcronymsDuplicates[j].shortform) {
-            frequency++;
+
+        // calculate frequency based on "at least one acronym mention per abstract"
+        // for (let j = 0; j < this.listOfAcronymsDuplicates.length; j++) {
+        //   if (item.shortform == this.listOfAcronymsDuplicates[j].shortform) {
+        //     frequency++;
+        //   }
+        // }
+
+        // calculate frequency based on "total number of current acronym mentions per whole dataset"
+        for (let j = 0; j < this.listOfAbstracts.length; j++) {
+          for (let k = 0; k < this.listOfAbstracts[j].sentences.length; k++) {
+            frequency = frequency + this.listOfAbstracts[j].sentences[k].split(">" + item.shortform + "<").length - 1;
           }
         }
+        if (frequency == 0) {
+          console.log(`0 frequency acronym ${item.shortform} and pubmedID: ${item.pubMedId}`)
+        }
+
         let singleEntry = {
           "acronym": item.shortform,
           "sense": item.longform,
@@ -473,8 +489,16 @@ export class TestapiComponent implements OnInit {
     let cuisTotal = listOfAcronymsTable.length;
     // total number of mentions is just a sum of all acronymMentions of every abstract in the list of abstracts
     let acronymMentionsTotal = 0;
-    for (let i = 0; i < this.listOfAbstracts.length; i++) {
-      acronymMentionsTotal = acronymMentionsTotal + this.listOfAbstracts[i].acronymMentions;
+    // calculate based on acronymMentions field of each abstract
+    // for (let i = 0; i < this.listOfAbstracts.length; i++) {
+    //   acronymMentionsTotal = acronymMentionsTotal + this.listOfAbstracts[i].acronymMentionsTotal;
+    // }
+    // calculate based on whole dataset of sentences (better way)
+    listOfAcronymsTable.sort((a, b) => (a.acronym > b.acronym) ? 1 : -1);
+    for (let i = 0; i < listOfAcronymsTable.length; i++) {
+      if (i > 0 && listOfAcronymsTable[i].acronym != listOfAcronymsTable[i-1].acronym) {
+        acronymMentionsTotal = acronymMentionsTotal + listOfAcronymsTable[i].frequency;
+      }
     }
     // assign the table data
     let senseInventoryTotalData = [
@@ -612,7 +636,7 @@ export class TestapiComponent implements OnInit {
       }
 
       // add to the list of abstracts
-      loadResult[i].acronymMentions = Number(loadResult[i].acronymMentions);
+      //loadResult[i].acronymMentionsTotal = Number(loadResult[i].acronymMentionsTotal);
 
       this.listOfAbstracts.push(loadResult[i]);
     }
