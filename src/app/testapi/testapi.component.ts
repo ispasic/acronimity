@@ -6,7 +6,7 @@ import { AcronymsDatabaseService } from '../services/acronyms-database.service';
 import { MongodbService } from '../services/mongodb.service';
 import { AbstractProcessingService } from '../services/abstract-processing.service';
 import { MatDialog } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
 
@@ -101,6 +101,8 @@ export class TestapiComponent implements OnInit {
   // test object for inserting
   insertObject;
 
+  test = "Hello";
+
   // how many IDs are processed each time
   fetchStep = 400;
 
@@ -129,6 +131,10 @@ export class TestapiComponent implements OnInit {
   // do on component initialise and destroy
   ngOnInit(): void {
   }
+
+  // ngAfterViewInit() {
+
+  // }
 
   ngOnDestroy() {
   }
@@ -429,7 +435,6 @@ export class TestapiComponent implements OnInit {
       if (!isListed) {
         // count the amount of times acronym mentioned
         let frequency = 0;
-        let frequencyTest = 0;
 
         // calculate frequency based on "at least one acronym mention per abstract"
         // for (let j = 0; j < this.listOfAcronymsDuplicates.length; j++) {
@@ -441,13 +446,12 @@ export class TestapiComponent implements OnInit {
         // calculate frequency based on "total number of current acronym mentions per whole dataset"
         for (let j = 0; j < this.listOfAbstracts.length; j++) {
           for (let k = 0; k < this.listOfAbstracts[j].sentences.length; k++) {
-            //frequency = frequency + this.listOfAbstracts[j].sentences[k].split(">" + item.shortform + "<").length - 1;
             frequency = frequency + this.listOfAbstracts[j].sentences[k].split("sense='" + item.longform + "'>" + item.shortform + "<").length - 1;
           }
         }
-        if (frequency == 0) {
-          console.log(`0 frequency acronym ${item.shortform} and pubmedID: ${item.pubMedId}`)
-        }
+        // if (frequency == 0) {
+        //   console.log(`0 frequency acronym ${item.shortform} and pubmedID: ${item.pubMedId}`)
+        // }
 
         let singleEntry = {
           "acronym": item.shortform,
@@ -464,6 +468,7 @@ export class TestapiComponent implements OnInit {
 
   generateSenseInventoryTable(listOfAcronymsTable): void {
     this.searchProgress = "Generating sense inventory table.";
+    //listOfAcronymsTable.sort((a, b) => (a.acronym > b.acronym) ? 1 : -1);
     this.dataSource = new MatTableDataSource<senseInventory>(listOfAcronymsTable);
     this.changeDetectorRef.detectChanges();
     // default sort
@@ -478,6 +483,12 @@ export class TestapiComponent implements OnInit {
         default: return item[property];
       }
     };
+    // this.dataSource.paginator.page.subscribe((pageEvent: PageEvent) => {
+    //   const startIndex = pageEvent.pageIndex * pageEvent.pageSize;
+    //   const endIndex = startIndex + pageEvent.pageSize;
+    //   const itemsShowed = this.dataSource.filteredData.slice(startIndex, endIndex);
+    //   console.log(itemsShowed);
+    // });
     this.searchProgress = "Sense inventory table generated.";
   }
 
@@ -496,13 +507,8 @@ export class TestapiComponent implements OnInit {
     //   acronymMentionsTotal = acronymMentionsTotal + this.listOfAbstracts[i].acronymMentionsTotal;
     // }
     // calculate based on whole dataset of sentences (better way)
-    listOfAcronymsTable.sort((a, b) => (a.acronym > b.acronym) ? 1 : -1);
     for (let i = 0; i < listOfAcronymsTable.length; i++) {
-      if (i > 0 && listOfAcronymsTable[i].acronym != listOfAcronymsTable[i-1].acronym) {
-        acronymMentionsTotal = acronymMentionsTotal + listOfAcronymsTable[i].frequency;
-      } else if (i == 0) {
-        acronymMentionsTotal = acronymMentionsTotal + listOfAcronymsTable[i].frequency;
-      }
+      acronymMentionsTotal = acronymMentionsTotal + listOfAcronymsTable[i].frequency;
     }
     // assign the table data
     let senseInventoryTotalData = [
