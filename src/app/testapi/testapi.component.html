@@ -39,140 +39,141 @@
         </div>
 
         <!-- when search is done, two panes - search results and sense inventory table -->
-
-        <div fxLayout="row" *ngIf="isSearched">
-            <!-- search form fields -->
-            <div fxLayout="column" fxFlex="50">
-                <div class="normal-label-left-pane">PubMed query:</div>
-                <div fxLayout="row">
-                    <div>
-                        <mat-form-field class="left-pane-input-field" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
-                            <mat-label style="margin-top: 0px !important;">Query</mat-label>
-                            <input matInput type="text" [(ngModel)]="query" class="normal-text">  
-                        </mat-form-field>
-                    </div>
-                    <div class="help-icon-container">
-                        <mat-icon class="help-icon"
-                            #tooltip="matTooltip"
-                            matTooltip="Click to open PubMed Query Help"
-                            (click)="openPubmedHelpClick()">
-                            help_outline
-                        </mat-icon>
-                    </div>
-                </div>
-                <div fxLayout="row">
-                    <div>
-                        <mat-form-field class="left-pane-input-field" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
-                            <mat-label style="margin-top: 0px !important;">Number of results</mat-label>
-                            <input matInput type="text" [(ngModel)]="resultsNumber" class="normal-text">  
-                        </mat-form-field>
-                    </div>
-                    <div class="help-icon-container">
-                        <mat-icon class="help-icon"
-                            #tooltip="matTooltip"
-                            matTooltip="Specify a number if you would like to limit the amount of search results returned. (default: 100)">
-                            help_outline
-                        </mat-icon>
-                    </div>
-                </div>
-
-                <div class="database-progress centeralign">{{searchProgress}}</div>
-
-                <!-- search results -->
-
-                <mat-list *ngIf="isSearched">
-                    <div mat-subheader>Search results:</div>
-                    <mat-list-item class="result-list-item" *ngFor="let entry of listOfSearchResults | paginate: paginationConfig">
-                        <div fxLayout="column">
-                            <div class="title-text" (click)="moreDetailsClick(entry)">{{entry.title}}</div>
-                            <div class="journal-title-text">Journal:&nbsp;{{entry.journal}}</div>
-                            <div class="authors-text">Authors:&nbsp;{{entry.displayauthors}}</div>
+        <div [hidden]="!isSearched">
+            <div fxLayout="row">
+                <!-- search form fields -->
+                <div fxLayout="column" fxFlex="50">
+                    <div class="normal-label-left-pane">PubMed query:</div>
+                    <div fxLayout="row">
+                        <div>
+                            <mat-form-field class="left-pane-input-field" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
+                                <mat-label style="margin-top: 0px !important;">Query</mat-label>
+                                <input matInput type="text" [(ngModel)]="query" class="normal-text">  
+                            </mat-form-field>
                         </div>
-                    </mat-list-item>
-                </mat-list>
-                <div class="pagination-style">
-                    <pagination-controls [id]="paginationConfig.id"
-                        [maxSize]="maxSize"
-                        [previousLabel]="labels.previousLabel"
-                        [nextLabel]="labels.nextLabel"
-                        [screenReaderPaginationLabel]="labels.screenReaderPaginationLabel"
-                        [screenReaderPageLabel]="labels.screenReaderPageLabel"
-                        [screenReaderCurrentLabel]="labels.screenReaderCurrentLabel"
-                        (pageChange)="onPageChange($event)">
-                    </pagination-controls>
+                        <div class="help-icon-container">
+                            <mat-icon class="help-icon"
+                                #tooltip="matTooltip"
+                                matTooltip="Click to open PubMed Query Help"
+                                (click)="openPubmedHelpClick()">
+                                help_outline
+                            </mat-icon>
+                        </div>
+                    </div>
+                    <div fxLayout="row">
+                        <div>
+                            <mat-form-field class="left-pane-input-field" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
+                                <mat-label style="margin-top: 0px !important;">Number of results</mat-label>
+                                <input matInput type="text" [(ngModel)]="resultsNumber" class="normal-text">  
+                            </mat-form-field>
+                        </div>
+                        <div class="help-icon-container">
+                            <mat-icon class="help-icon"
+                                #tooltip="matTooltip"
+                                matTooltip="Specify a number if you would like to limit the amount of search results returned. (default: 100)">
+                                help_outline
+                            </mat-icon>
+                        </div>
+                    </div>
+    
+                    <div class="database-progress centeralign">{{searchProgress}}</div>
+    
+                    <!-- search results -->
+    
+                    <mat-list>
+                        <div mat-subheader>Search results:</div>
+                        <mat-list-item class="result-list-item" *ngFor="let entry of listOfSearchResults | paginate: paginationConfig">
+                            <div fxLayout="column">
+                                <div class="title-text" (click)="moreDetailsClick(entry)">{{entry.title}}</div>
+                                <div class="journal-title-text">Journal:&nbsp;{{entry.journal}}</div>
+                                <div class="authors-text">Authors:&nbsp;{{entry.displayauthors}}</div>
+                            </div>
+                        </mat-list-item>
+                    </mat-list>
+                    <div class="pagination-style">
+                        <pagination-controls [id]="paginationConfig.id"
+                            [maxSize]="maxSize"
+                            [previousLabel]="labels.previousLabel"
+                            [nextLabel]="labels.nextLabel"
+                            [screenReaderPaginationLabel]="labels.screenReaderPaginationLabel"
+                            [screenReaderPageLabel]="labels.screenReaderPageLabel"
+                            [screenReaderCurrentLabel]="labels.screenReaderCurrentLabel"
+                            (pageChange)="onPageChange($event)">
+                        </pagination-controls>
+                    </div>
+                </div>
+    
+                <!-- sense inventory in the right pane -->
+                <div fxLayout="column" fxFlex="50" class="right-pane">
+                    <div class="normal-label-right-pane">Sense Inventory</div>
+                    <div>
+                        <mat-form-field class="filter-form-field">
+                            <mat-label>Filter</mat-label>
+                            <input matInput (keyup)="applyFilter($event)" #input>
+                        </mat-form-field>
+                        <mat-table class="senseinventory-table" [dataSource]="dataSource"
+                            matSort matSortActive="acronym" matSortDirection="asc" matSortDisableClear>
+                            <ng-container matColumnDef="acronym">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header
+                                    #tooltip="matTooltip" matTooltip="All acronyms that were automatically extracted.">
+                                    Acronym
+                                </mat-header-cell> 
+                                <mat-cell *matCellDef="let res"> {{res.acronym}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="sense">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header
+                                    #tooltip="matTooltip" matTooltip="All sense (i.e. longforms) that were automatically extracted.">
+                                    Sense
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let res"> {{res.sense}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="cui">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header
+                                    #tooltip="matTooltip" matTooltip="Concept Unique Identifier (CUI) of the long form (sense) in the Unified Medical Language System (UMLS).">
+                                    CUI
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let res"> {{res.cui}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="frequency">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header
+                                    #tooltip="matTooltip" matTooltip="The number of times an acronym was mentioned.">
+                                    Frequency
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let res"> {{res.frequency}} </mat-cell>
+                            </ng-container>
+                            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+                        </mat-table>
+                        <mat-paginator #paginator [pageSizeOptions]="[10, 20, 30, 40, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+                    </div>
+                    <div class="normal-label-right-pane right-pane-next">Total</div>
+                    <div style = "width: 40%;">
+                        <mat-table class="senseinventorysummary-table" [dataSource]="senseInventoryTotal">
+                            <ng-container matColumnDef="measure">
+                                <mat-cell *matCellDef="let res"> {{res.measure}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="value">
+                                <mat-cell *matCellDef="let res"> {{res.value}} </mat-cell>
+                            </ng-container>
+                            <mat-row *matRowDef="let row; columns: senseInventorySummaryColumns;"></mat-row>
+                        </mat-table>
+                    </div>
+                    <div class="normal-label-right-pane right-pane-next">Average</div>
+                    <div style = "width: 60%;">
+                        <mat-table class="senseinventorysummary-table" [dataSource]="senseInventoryAverage">
+                            <ng-container matColumnDef="measure">
+                                <mat-cell *matCellDef="let res"> {{res.measure}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="value">
+                                <mat-cell *matCellDef="let res"> {{res.value}} </mat-cell>
+                            </ng-container>
+                            <mat-row *matRowDef="let row; columns: senseInventorySummaryColumns;"></mat-row>
+                        </mat-table>
+                    </div>
                 </div>
             </div>
-
-            <!-- sense inventory in the right pane -->
-            <div fxLayout="column" fxFlex="50" class="right-pane">
-                <div class="normal-label-right-pane">Sense Inventory</div>
-                <div>
-                    <mat-form-field class="filter-form-field">
-                        <mat-label>Filter</mat-label>
-                        <input matInput (keyup)="applyFilter($event)" #input>
-                    </mat-form-field>
-                    <mat-table class="senseinventory-table" [dataSource]="dataSource"
-                        matSort matSortActive="acronym" matSortDirection="asc" matSortDisableClear>
-                        <ng-container matColumnDef="acronym">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header
-                                #tooltip="matTooltip" matTooltip="All acronyms that were automatically extracted.">
-                                Acronym
-                            </mat-header-cell> 
-                            <mat-cell *matCellDef="let res"> {{res.acronym}} </mat-cell>
-                        </ng-container>
-                        <ng-container matColumnDef="sense">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header
-                                #tooltip="matTooltip" matTooltip="All sense (i.e. longforms) that were automatically extracted.">
-                                Sense
-                            </mat-header-cell>
-                            <mat-cell *matCellDef="let res"> {{res.sense}} </mat-cell>
-                        </ng-container>
-                        <ng-container matColumnDef="cui">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header
-                                #tooltip="matTooltip" matTooltip="Concept Unique Identifier (CUI) of the long form (sense) in the Unified Medical Language System (UMLS).">
-                                CUI
-                            </mat-header-cell>
-                            <mat-cell *matCellDef="let res"> {{res.cui}} </mat-cell>
-                        </ng-container>
-                        <ng-container matColumnDef="frequency">
-                            <mat-header-cell *matHeaderCellDef mat-sort-header
-                                #tooltip="matTooltip" matTooltip="The number of times an acronym was mentioned.">
-                                Frequency
-                            </mat-header-cell>
-                            <mat-cell *matCellDef="let res"> {{res.frequency}} </mat-cell>
-                        </ng-container>
-                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-                        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
-                    </mat-table>
-                    <mat-paginator #paginator [pageSizeOptions]="[10, 20, 30, 40, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
-                </div>
-                <div class="normal-label-right-pane right-pane-next">Total</div>
-                <div style = "width: 40%;">
-                    <mat-table class="senseinventorysummary-table" [dataSource]="senseInventoryTotal">
-                        <ng-container matColumnDef="measure">
-                            <mat-cell *matCellDef="let res"> {{res.measure}} </mat-cell>
-                        </ng-container>
-                        <ng-container matColumnDef="value">
-                            <mat-cell *matCellDef="let res"> {{res.value}} </mat-cell>
-                        </ng-container>
-                        <mat-row *matRowDef="let row; columns: senseInventorySummaryColumns;"></mat-row>
-                    </mat-table>
-                </div>
-                <div class="normal-label-right-pane right-pane-next">Average</div>
-                <div style = "width: 60%;">
-                    <mat-table class="senseinventorysummary-table" [dataSource]="senseInventoryAverage">
-                        <ng-container matColumnDef="measure">
-                            <mat-cell *matCellDef="let res"> {{res.measure}} </mat-cell>
-                        </ng-container>
-                        <ng-container matColumnDef="value">
-                            <mat-cell *matCellDef="let res"> {{res.value}} </mat-cell>
-                        </ng-container>
-                        <mat-row *matRowDef="let row; columns: senseInventorySummaryColumns;"></mat-row>
-                    </mat-table>
-                </div>
-            </div>
-
         </div>
+
     </mat-card-content>
     <mat-divider></mat-divider>
     <mat-card-actions class="centeralign">
