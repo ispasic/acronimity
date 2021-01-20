@@ -468,7 +468,13 @@ export class TestapiComponent implements OnInit {
 
   generateSenseInventoryTable(listOfAcronymsTable): void {
     this.searchProgress = "Generating sense inventory table.";
-    //listOfAcronymsTable.sort((a, b) => (a.acronym > b.acronym) ? 1 : -1);
+    
+    // sort the listOfAcronymsTable and assign first 10 CUIs
+    listOfAcronymsTable.sort((a, b) => (a.acronym > b.acronym) ? 1 : -1);
+    for (let i = 0; i < 10; i++) {
+      listOfAcronymsTable[i].cui = "YYYYYY";
+    }
+
     this.dataSource = new MatTableDataSource<senseInventory>(listOfAcronymsTable);
     this.changeDetectorRef.detectChanges();
     // default sort
@@ -483,12 +489,17 @@ export class TestapiComponent implements OnInit {
         default: return item[property];
       }
     };
-    // this.dataSource.paginator.page.subscribe((pageEvent: PageEvent) => {
-    //   const startIndex = pageEvent.pageIndex * pageEvent.pageSize;
-    //   const endIndex = startIndex + pageEvent.pageSize;
-    //   const itemsShowed = this.dataSource.filteredData.slice(startIndex, endIndex);
-    //   console.log(itemsShowed);
-    // });
+    // subscription to the paginator event in order to dynamically acquire CUI IDs
+    this.dataSource.paginator.page.subscribe((pageEvent: PageEvent) => {
+      const startIndex = pageEvent.pageIndex * pageEvent.pageSize;
+      const endIndex = startIndex + pageEvent.pageSize;
+      //const itemsShowed = this.dataSource.filteredData.slice(startIndex, endIndex);
+      //console.log(itemsShowed);
+      for (let item of this.dataSource.filteredData.slice(startIndex, endIndex)) {
+        item.cui = "YYYYYY";
+      }
+
+    });
     this.searchProgress = "Sense inventory table generated.";
   }
 

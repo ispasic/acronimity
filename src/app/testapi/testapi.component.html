@@ -144,7 +144,7 @@
                             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                             <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
                         </mat-table>
-                        <mat-paginator #paginator [pageSizeOptions]="[10, 20, 30, 40, 50]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+                        <mat-paginator #paginator [pageSizeOptions]="[10, 20]" [pageSize]="10" showFirstLastButtons></mat-paginator>
                     </div>
                     <div class="normal-label-right-pane right-pane-next">Total</div>
                     <div style = "width: 40%;">
