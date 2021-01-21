@@ -12,5 +12,6 @@ const connAcronyms = mongoose.createConnection(dbConfig.urlAcronyms, options);
 
 const models = {};
 models.abstractModel = connAcronyms.model('abstracts', require('./abstracts.schema')(mongoose));
+models.umlsModel = connAcronyms.model('umls', require('./umls.schema')(mongoose));
 
 module.exports = models;

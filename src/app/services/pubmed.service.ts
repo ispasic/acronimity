@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { URLSearchParams } from 'url';
+import { environment } from './../../environments/environment';
 
-const baseUrl = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
-const apiKey = "842007c31c1ec561c1d418abf9f279f21408"; 
+const baseUrl = environment.pubmedBaseUrl;
+const apiKey = environment.pubmedApiKey; 
 
 @Injectable({
   providedIn: 'root'

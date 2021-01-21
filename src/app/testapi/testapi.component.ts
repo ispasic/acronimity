@@ -5,6 +5,7 @@ import { AcronymService } from '../services/acronym.service';
 import { AcronymsDatabaseService } from '../services/acronyms-database.service';
 import { MongodbService } from '../services/mongodb.service';
 import { AbstractProcessingService } from '../services/abstract-processing.service';
+import { UmlsService } from '../services/umls.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
@@ -45,6 +46,7 @@ export class TestapiComponent implements OnInit {
     private acronymsDatabaseService: AcronymsDatabaseService,
     private mongodbService: MongodbService,
     private abstractProcessingService: AbstractProcessingService,
+    private UmlsService: UmlsService,
     private dialog: MatDialog,
     private changeDetectorRef: ChangeDetectorRef) { }
 
@@ -101,8 +103,6 @@ export class TestapiComponent implements OnInit {
   // test object for inserting
   insertObject;
 
-  test = "Hello";
-
   // how many IDs are processed each time
   fetchStep = 400;
 
@@ -129,12 +129,10 @@ export class TestapiComponent implements OnInit {
   }
 
   // do on component initialise and destroy
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    let test = await this.UmlsService.findCUI("fracture of the bone");
+    console.log(test);
   }
-
-  // ngAfterViewInit() {
-
-  // }
 
   ngOnDestroy() {
   }
@@ -498,7 +496,6 @@ export class TestapiComponent implements OnInit {
       for (let item of this.dataSource.filteredData.slice(startIndex, endIndex)) {
         item.cui = "YYYYYY";
       }
-
     });
     this.searchProgress = "Sense inventory table generated.";
   }
