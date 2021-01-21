@@ -9,7 +9,7 @@ import { UmlsService } from '../services/umls.service';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { MatSort } from '@angular/material/sort';
+import { MatSort, MatSortable } from '@angular/material/sort';
 
 import { ShowdetailsDialogComponent } from './showdetails-dialog/showdetails-dialog.component';
 import { ShowacronymsDialogComponent } from './showacronyms-dialog/showacronyms-dialog.component';
@@ -128,13 +128,14 @@ export class TestapiComponent implements OnInit {
     console.log("Page changed to: ", number);
   }
 
-  // do on component initialise and destroy
-  async ngOnInit(): Promise<void> {
-    let test = await this.UmlsService.findCUI("fracture of the bone");
-    console.log(test);
+  // do on component initialise
+  ngOnInit() {
   }
 
+  // destroy the subscriptions on app closure
   ngOnDestroy() {
+    this.dataSource.paginator.page.unsubscribe();
+    this.dataSource.sort.sortChange.unsubscribe();
   }
 
   // main searchButtonClick
@@ -454,7 +455,7 @@ export class TestapiComponent implements OnInit {
         let singleEntry = {
           "acronym": item.shortform,
           "sense": item.longform,
-          "cui": 'XXXXXX',
+          "cui": 'SEARCHING',
           "frequency": frequency
         }
         listOfAcronymsTable.push(singleEntry);
@@ -464,13 +465,15 @@ export class TestapiComponent implements OnInit {
     return listOfAcronymsTable;
   }
 
-  generateSenseInventoryTable(listOfAcronymsTable): void {
-    this.searchProgress = "Generating sense inventory table.";
-    
+  async generateSenseInventoryTable(listOfAcronymsTable): Promise<void> {
+
     // sort the listOfAcronymsTable and assign first 10 CUIs
     listOfAcronymsTable.sort((a, b) => (a.acronym > b.acronym) ? 1 : -1);
     for (let i = 0; i < 10; i++) {
-      listOfAcronymsTable[i].cui = "YYYYYY";
+      await this.sleep(50);
+      this.UmlsService.findCUI(listOfAcronymsTable[i].sense).then(data => {
+        listOfAcronymsTable[i].cui = data.result.results[0].ui;
+      });
     }
 
     this.dataSource = new MatTableDataSource<senseInventory>(listOfAcronymsTable);
@@ -488,16 +491,32 @@ export class TestapiComponent implements OnInit {
       }
     };
     // subscription to the paginator event in order to dynamically acquire CUI IDs
-    this.dataSource.paginator.page.subscribe((pageEvent: PageEvent) => {
+    this.dataSource.paginator.page.subscribe(async (pageEvent: PageEvent) => {
       const startIndex = pageEvent.pageIndex * pageEvent.pageSize;
       const endIndex = startIndex + pageEvent.pageSize;
-      //const itemsShowed = this.dataSource.filteredData.slice(startIndex, endIndex);
-      //console.log(itemsShowed);
       for (let item of this.dataSource.filteredData.slice(startIndex, endIndex)) {
-        item.cui = "YYYYYY";
+        if (item.cui == 'SEARCHING') {
+          await this.sleep(50);
+          this.UmlsService.findCUI(item.sense).then(data => {
+            item.cui = data.result.results[0].ui;
+          });
+        }
       }
     });
-    this.searchProgress = "Sense inventory table generated.";
+    // subscription to the sort even in order to dynamically acquire CUI IDs
+    this.dataSource.sort.sortChange.subscribe(async (sortChangeEvent: MatSort) => {
+      const startIndex = this.dataSource.paginator.pageIndex * this.dataSource.paginator.pageSize;
+      const endIndex = startIndex + this.dataSource.paginator.pageSize;
+      let itemsShowed = this.dataSource.sortData(this.dataSource.filteredData, sortChangeEvent).slice(startIndex, endIndex);
+      for (let item of itemsShowed) {
+        if (item.cui == 'SEARCHING') {
+          await this.sleep(50);
+          this.UmlsService.findCUI(item.sense).then(data => {
+            item.cui = data.result.results[0].ui;
+          });
+        }
+      }
+    });
   }
 
   generateSenseInventorySummaries(listOfAcronymsTable): void {
@@ -510,10 +529,6 @@ export class TestapiComponent implements OnInit {
     let cuisTotal = listOfAcronymsTable.length;
     // total number of mentions is just a sum of all acronymMentions of every abstract in the list of abstracts
     let acronymMentionsTotal = 0;
-    // calculate based on acronymMentions field of each abstract
-    // for (let i = 0; i < this.listOfAbstracts.length; i++) {
-    //   acronymMentionsTotal = acronymMentionsTotal + this.listOfAbstracts[i].acronymMentionsTotal;
-    // }
     // calculate based on whole dataset of sentences (better way)
     for (let i = 0; i < listOfAcronymsTable.length; i++) {
       acronymMentionsTotal = acronymMentionsTotal + listOfAcronymsTable[i].frequency;
@@ -749,8 +764,6 @@ export class TestapiComponent implements OnInit {
   sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
-
-
 
   // old code
 

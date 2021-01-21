@@ -71,7 +71,7 @@ export class UmlsService {
   // search umls for CUI
   public async findCUI(query) {
     // small sleep not to exceed 20 searches per second
-    await this.sleep(50);
+    //await this.sleep(50);
     // get tgt
     let tgt = await this.getTgt();
     // get st
