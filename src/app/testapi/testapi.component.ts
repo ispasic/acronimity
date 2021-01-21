@@ -103,6 +103,7 @@ export class TestapiComponent implements OnInit {
 
   // test object for inserting
   insertObject;
+  apiCUIs: number = 0;
   foundCUIs: number = 0;
 
   // how many IDs are processed each time
@@ -474,9 +475,14 @@ export class TestapiComponent implements OnInit {
     for (let i = 0; i < 10; i++) {
       // sleep cause 20 api calls per second
       await this.sleep(50);
-      this.foundCUIs++;
+      this.apiCUIs++;
       this.UmlsService.findCUI(listOfAcronymsTable[i].sense).then(data => {
         listOfAcronymsTable[i].cui = data.result.results[0].ui;
+        // update the sense inventory total and average CUI values
+        if (listOfAcronymsTable[i].cui != "NONE") {
+          this.foundCUIs++;
+          this.updateSenseInventoryCUIs();
+        }
       });
     }
 
@@ -494,6 +500,7 @@ export class TestapiComponent implements OnInit {
         default: return item[property];
       }
     };
+
     // subscription to the paginator event in order to dynamically acquire CUI IDs
     this.dataSource.paginator.page.subscribe(async (pageEvent: PageEvent) => {
       const startIndex = pageEvent.pageIndex * pageEvent.pageSize;
@@ -505,6 +512,11 @@ export class TestapiComponent implements OnInit {
           await this.sleep(50);
           this.UmlsService.findCUI(item.sense).then(data => {
             item.cui = data.result.results[0].ui;
+            // update the sense inventory total and average CUI values
+            if (item.cui != "NONE") {
+              this.foundCUIs++;
+              this.updateSenseInventoryCUIs();
+            }
           });
         }
       }
@@ -520,6 +532,11 @@ export class TestapiComponent implements OnInit {
           await this.sleep(50);
           this.UmlsService.findCUI(item.sense).then(data => {
             item.cui = data.result.results[0].ui;
+            // update the sense inventory total and average CUI values
+            if (item.cui != "NONE") {
+              this.foundCUIs++;
+              this.updateSenseInventoryCUIs();
+            }
           });
         }
       }
@@ -606,9 +623,14 @@ export class TestapiComponent implements OnInit {
         this.UmlsService.findCUI(item.sense).then(data => {
           item.cui = data.result.results[0].ui;
           // add to number of found CUIs for progress spinner
-          this.foundCUIs++;
+          this.apiCUIs++;
+          // add to meaningful CUIs
+          if (item.cui != "NONE") {
+            this.foundCUIs++;
+          }
+          this.updateSenseInventoryCUIs();
           // if found all hide spinner
-          if (this.foundCUIs == this.dataSource.data.length) {
+          if (this.apiCUIs == this.dataSource.data.length) {
             this.areCUIsBeingFound = false;
           }
         });
@@ -616,10 +638,21 @@ export class TestapiComponent implements OnInit {
     }
   }
 
+  // update number of CUIs in tables based on the amount of meaningful CUIs found
+  updateSenseInventoryCUIs() {
+    if (this.senseInventoryTotal) {
+      this.senseInventoryTotal.data[2].value = this.foundCUIs;
+    }
+    if (this.senseInventoryAverage) {
+      this.senseInventoryAverage.data[2].value = (this.foundCUIs / this.senseInventoryTotal.data[0].value).toFixed(3);
+    }
+
+  }
+
   // get progress for a spinner
   getProgressValue() {
     if (this.dataSource) {
-      return ((this.foundCUIs / this.dataSource.data.length) * 100);
+      return ((this.apiCUIs / this.dataSource.data.length) * 100);
     } else {
       return 0;
     }
