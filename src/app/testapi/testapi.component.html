@@ -164,12 +164,18 @@
                         <div class="cuisearch-container cuisearch-help-container">
                             <mat-icon class="help-icon"
                                 #tooltip="matTooltip"
-                                matTooltip="Press the 'GET ALL CUIs' button to acquire CUI for each sense from UMLS. Current total and average values are not final unless the button is inactive (i.e. all CUIs acquired from UMLS).">
+                                matTooltip="Press the 'GET ALL CUIs' button to acquire CUI from UMLS for each sense. Current total and average values are not final unless the button is inactive (i.e. all CUIs acquired from UMLS).">
                                 help_outline
                             </mat-icon>
                         </div>
                         <div class="cuisearch-container">
-                            <button mat-stroked-button color="primary" (click)="findAllCUIs()" class="cuisearch-button">GET ALL CUIs</button>
+                            <button mat-stroked-button
+                                color="primary"
+                                (click)="findAllCUIs()"
+                                class="cuisearch-button"
+                                [disabled]="allCUIsFound">
+                                GET ALL CUIs
+                            </button>
                         </div>
                         <div *ngIf="areCUIsBeingFound" class="cuisearch-container">
                             <mat-progress-spinner
@@ -180,17 +186,28 @@
                         </div>
                     </div>
                     <div class="normal-label-right-pane right-pane-next">Average</div>
-                    <div style = "width: 50%;">
-                        <mat-table class="senseinventorysummary-table" [dataSource]="senseInventoryAverage">
-                            <ng-container matColumnDef="measure">
-                                <mat-cell *matCellDef="let res"> {{res.measure}} </mat-cell>
-                            </ng-container>
-                            <ng-container matColumnDef="value">
-                                <mat-cell *matCellDef="let res"> {{res.value}} </mat-cell>
-                            </ng-container>
-                            <mat-row *matRowDef="let row; columns: senseInventorySummaryColumns;"></mat-row>
-                        </mat-table>
+                    <div fxLayout="row">
+                        <div style = "width: 50%;">
+                            <mat-table class="senseinventorysummary-table" [dataSource]="senseInventoryAverage">
+                                <ng-container matColumnDef="measure">
+                                    <mat-cell *matCellDef="let res"> {{res.measure}} </mat-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="value">
+                                    <mat-cell *matCellDef="let res"> {{res.value}} </mat-cell>
+                                </ng-container>
+                                <mat-row *matRowDef="let row; columns: senseInventorySummaryColumns;"></mat-row>
+                            </mat-table>
+                        </div>
+                        <div class="cuisearch-container cuisearch-help-container">
+                            <mat-icon class="help-icon"
+                                #tooltip="matTooltip"
+                                matTooltip="Press the 'GET ALL CUIs' button to acquire CUI for each sense from UMLS. Current total and average values are not final unless the button is inactive (i.e. all CUIs acquired from UMLS).">
+                                help_outline
+                            </mat-icon>
+                        </div>
+
                     </div>
+                    
                 </div>
             </div>
         </div>

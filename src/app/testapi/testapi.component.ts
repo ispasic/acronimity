@@ -611,6 +611,7 @@ export class TestapiComponent implements OnInit {
           // if found all hide spinner
           if (this.apiCUIs == this.dataSource.data.length) {
             this.areCUIsBeingFound = false;
+            this.allCUIsFound = true;
           }
         });
       }
@@ -641,6 +642,9 @@ export class TestapiComponent implements OnInit {
           if (item.cui != "NONE") {
             this.foundCUIs++;
             this.updateSenseInventoryCUIs();
+          }
+          if (this.apiCUIs == this.dataSource.data.length) {
+            this.allCUIsFound = true;
           }
         });
       }
