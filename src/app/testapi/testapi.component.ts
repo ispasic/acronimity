@@ -470,6 +470,7 @@ export class TestapiComponent implements OnInit {
     // sort the listOfAcronymsTable and assign first 10 CUIs
     listOfAcronymsTable.sort((a, b) => (a.acronym > b.acronym) ? 1 : -1);
     for (let i = 0; i < 10; i++) {
+      // sleep cause 20 api calls per second
       await this.sleep(50);
       this.UmlsService.findCUI(listOfAcronymsTable[i].sense).then(data => {
         listOfAcronymsTable[i].cui = data.result.results[0].ui;
@@ -496,6 +497,7 @@ export class TestapiComponent implements OnInit {
       const endIndex = startIndex + pageEvent.pageSize;
       for (let item of this.dataSource.filteredData.slice(startIndex, endIndex)) {
         if (item.cui == 'SEARCHING') {
+          // sleep cause 20 api calls per second
           await this.sleep(50);
           this.UmlsService.findCUI(item.sense).then(data => {
             item.cui = data.result.results[0].ui;
@@ -510,6 +512,7 @@ export class TestapiComponent implements OnInit {
       let itemsShowed = this.dataSource.sortData(this.dataSource.filteredData, sortChangeEvent).slice(startIndex, endIndex);
       for (let item of itemsShowed) {
         if (item.cui == 'SEARCHING') {
+          // sleep cause 20 api calls per second
           await this.sleep(50);
           this.UmlsService.findCUI(item.sense).then(data => {
             item.cui = data.result.results[0].ui;
@@ -582,6 +585,11 @@ export class TestapiComponent implements OnInit {
 
   openPubmedHelpClick() {
     let url = "https://pubmed.ncbi.nlm.nih.gov/help/";
+    window.open(url, "_blank", "noopener");
+  }
+
+  navigateCUI(cui) {
+    let url = "https://uts.nlm.nih.gov/uts/umls/searchResults?searchString=" + cui;
     window.open(url, "_blank", "noopener");
   }
 

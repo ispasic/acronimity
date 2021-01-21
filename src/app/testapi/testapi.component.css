@@ -144,6 +144,12 @@
     hyphens: auto;
   }
 
+  .cui-link {
+    text-decoration: underline;
+    cursor: pointer;
+    color: #673ab7;
+  }
+
   .mat-column-frequency {
     word-wrap: break-word !important;
     white-space: unset !important;

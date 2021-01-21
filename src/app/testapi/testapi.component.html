@@ -132,7 +132,7 @@
                                     #tooltip="matTooltip" matTooltip="Concept Unique Identifier (CUI) of the long form (sense) in the Unified Medical Language System (UMLS).">
                                     CUI
                                 </mat-header-cell>
-                                <mat-cell *matCellDef="let res"> {{res.cui}} </mat-cell>
+                                <mat-cell *matCellDef="let res" (click)="navigateCUI(res.cui)" [ngClass]="{'cui-link': res.cui != 'SEARCHING' && res.cui != 'NONE'}"> {{res.cui}} </mat-cell>
                             </ng-container>
                             <ng-container matColumnDef="frequency">
                                 <mat-header-cell *matHeaderCellDef mat-sort-header
