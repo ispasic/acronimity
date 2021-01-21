@@ -93,6 +93,7 @@ export class TestapiComponent implements OnInit {
   isSearched = false;
   isLoaded = false;
   areCUIsBeingFound = false;
+  allCUIsFound = false;
 
   // global lists
   listOfSearchResults = [];
@@ -475,8 +476,8 @@ export class TestapiComponent implements OnInit {
     for (let i = 0; i < 10; i++) {
       // sleep cause 20 api calls per second
       await this.sleep(50);
-      this.apiCUIs++;
       this.UmlsService.findCUI(listOfAcronymsTable[i].sense).then(data => {
+        this.apiCUIs++;
         listOfAcronymsTable[i].cui = data.result.results[0].ui;
         // update the sense inventory total and average CUI values
         if (listOfAcronymsTable[i].cui != "NONE") {
@@ -502,44 +503,22 @@ export class TestapiComponent implements OnInit {
     };
 
     // subscription to the paginator event in order to dynamically acquire CUI IDs
-    this.dataSource.paginator.page.subscribe(async (pageEvent: PageEvent) => {
+    this.dataSource.paginator.page.subscribe((pageEvent: PageEvent) => {
+      // acquire visible rows
       const startIndex = pageEvent.pageIndex * pageEvent.pageSize;
       const endIndex = startIndex + pageEvent.pageSize;
       let itemsShown = this.dataSource.filteredData.slice(startIndex, endIndex);
-      for (let item of itemsShown) {
-        if (item.cui == 'SEARCHING') {
-          // sleep cause 20 api calls per second
-          await this.sleep(50);
-          this.UmlsService.findCUI(item.sense).then(data => {
-            item.cui = data.result.results[0].ui;
-            // update the sense inventory total and average CUI values
-            if (item.cui != "NONE") {
-              this.foundCUIs++;
-              this.updateSenseInventoryCUIs();
-            }
-          });
-        }
-      }
+      // update CUIs of visible items
+      this.updateVisibleCUIs(itemsShown);
     });
     // subscription to the sort even in order to dynamically acquire CUI IDs
-    this.dataSource.sort.sortChange.subscribe(async (sortChangeEvent: MatSort) => {
+    this.dataSource.sort.sortChange.subscribe((sortChangeEvent: MatSort) => {
+      // acquire visible rows
       const startIndex = this.dataSource.paginator.pageIndex * this.dataSource.paginator.pageSize;
       const endIndex = startIndex + this.dataSource.paginator.pageSize;
       let itemsShown = this.dataSource.sortData(this.dataSource.filteredData, sortChangeEvent).slice(startIndex, endIndex);
-      for (let item of itemsShown) {
-        if (item.cui == 'SEARCHING') {
-          // sleep cause 20 api calls per second
-          await this.sleep(50);
-          this.UmlsService.findCUI(item.sense).then(data => {
-            item.cui = data.result.results[0].ui;
-            // update the sense inventory total and average CUI values
-            if (item.cui != "NONE") {
-              this.foundCUIs++;
-              this.updateSenseInventoryCUIs();
-            }
-          });
-        }
-      }
+      // update CUIs of visible items
+      this.updateVisibleCUIs(itemsShown);
     });
   }
 
@@ -550,7 +529,7 @@ export class TestapiComponent implements OnInit {
     let acronymsTotal = this.listOfAcronyms.length;
     // total number of sense is the length of the list of acronyms created for table that includes different senses of the same acronym
     let sensesTotal = listOfAcronymsTable.length;
-    let cuisTotal = listOfAcronymsTable.length;
+    let cuisTotal = 0;
     // total number of mentions is just a sum of all acronymMentions of every abstract in the list of abstracts
     let acronymMentionsTotal = 0;
     // calculate based on whole dataset of sentences (better way)
@@ -575,7 +554,7 @@ export class TestapiComponent implements OnInit {
     let sensesPerAcronym = sensesTotal / acronymsTotal;
 
     // cuis per acronym
-    let cuisPerAcronym = cuisTotal / acronymsTotal;
+    let cuisPerAcronym = 0;
 
     // acronym mentions per document
     let acronymMentionsPerDocument = acronymMentionsTotal/this.listOfAbstracts.length;
@@ -646,7 +625,26 @@ export class TestapiComponent implements OnInit {
     if (this.senseInventoryAverage) {
       this.senseInventoryAverage.data[2].value = (this.foundCUIs / this.senseInventoryTotal.data[0].value).toFixed(3);
     }
+  }
 
+  // update visible CUIs in list from subscriptions
+  async updateVisibleCUIs(itemsShown): Promise<void> {
+    for (let item of itemsShown) {
+      if (item.cui == 'SEARCHING') {
+        // sleep cause 20 api calls per second
+        await this.sleep(50);
+        // increase the number of found CUIs
+        this.UmlsService.findCUI(item.sense).then(data => {
+          this.apiCUIs++;
+          item.cui = data.result.results[0].ui;
+          // update the sense inventory total and average CUI values
+          if (item.cui != "NONE") {
+            this.foundCUIs++;
+            this.updateSenseInventoryCUIs();
+          }
+        });
+      }
+    }
   }
 
   // get progress for a spinner
