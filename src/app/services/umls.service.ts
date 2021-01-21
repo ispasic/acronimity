@@ -13,7 +13,7 @@ const apiKey = environment.umlsApiKey;
 })
 export class UmlsService {
 
-  findUrl = "";
+  private findUrl = "";
 
   constructor(private http: HttpClient) { }
 
@@ -70,12 +70,12 @@ export class UmlsService {
 
   // search umls for CUI
   public async findCUI(query) {
+    // small sleep not to exceed 20 searches per second
+    await this.sleep(50);
     // get tgt
     let tgt = await this.getTgt();
-    console.log(tgt);
     // get st
     let st = await this.getStFromUmls(tgt).toPromise().catch(error => console.log(error));
-    console.log(st);
     let result = await this.searchUmls(query, st).toPromise().catch(error => console.log(error));
     return result;
   }
@@ -99,5 +99,9 @@ export class UmlsService {
       await this.addTgtToDatabase(result).toPromise().catch(error => console.log(error));
       return result;
     }
+  }
+
+  private sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
