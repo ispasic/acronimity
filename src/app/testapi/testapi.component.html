@@ -146,17 +146,31 @@
                         </mat-table>
                         <mat-paginator #paginator [pageSizeOptions]="[10, 20]" [pageSize]="10" showFirstLastButtons></mat-paginator>
                     </div>
+
+                    
                     <div class="normal-label-right-pane right-pane-next">Total</div>
-                    <div style = "width: 40%;">
-                        <mat-table class="senseinventorysummary-table" [dataSource]="senseInventoryTotal">
-                            <ng-container matColumnDef="measure">
-                                <mat-cell *matCellDef="let res"> {{res.measure}} </mat-cell>
-                            </ng-container>
-                            <ng-container matColumnDef="value">
-                                <mat-cell *matCellDef="let res"> {{res.value}} </mat-cell>
-                            </ng-container>
-                            <mat-row *matRowDef="let row; columns: senseInventorySummaryColumns;"></mat-row>
-                        </mat-table>
+                    <div fxLayout = "row">
+                        <div style = "width: 40%;">
+                            <mat-table class="senseinventorysummary-table" [dataSource]="senseInventoryTotal">
+                                <ng-container matColumnDef="measure">
+                                    <mat-cell *matCellDef="let res"> {{res.measure}} </mat-cell>
+                                </ng-container>
+                                <ng-container matColumnDef="value">
+                                    <mat-cell *matCellDef="let res"> {{res.value}} </mat-cell>
+                                </ng-container>
+                                <mat-row *matRowDef="let row; columns: senseInventorySummaryColumns;"></mat-row>
+                            </mat-table>
+                        </div>
+                        <div class="cuisearch-container">
+                            <button mat-stroked-button color="primary" (click)="findAllCUIs()" class="cuisearch-button">LOAD ALL CUIs</button>
+                        </div>
+                        <div *ngIf="areCUIsBeingFound" class="cuisearch-container">
+                            <mat-progress-spinner
+                                class="cuisearch-spinner"
+                                diameter="30"
+                                [value]="getProgressValue()">
+                            </mat-progress-spinner>
+                        </div>
                     </div>
                     <div class="normal-label-right-pane right-pane-next">Average</div>
                     <div style = "width: 60%;">

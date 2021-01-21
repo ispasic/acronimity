@@ -20,6 +20,8 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { MatSortModule } from '@angular/material/sort';
 
@@ -46,7 +48,9 @@ import { MatSortModule } from '@angular/material/sort';
       MatCardModule,
       MatDividerModule,
       MatSlideToggleModule,
-      MatSortModule
+      MatSortModule,
+      MatProgressSpinnerModule,
+      MatProgressBarModule
    ],
    exports: [
       MatButtonModule,
@@ -68,7 +72,9 @@ import { MatSortModule } from '@angular/material/sort';
       MatCardModule,
       MatDividerModule,
       MatSlideToggleModule,
-      MatSortModule
+      MatSortModule,
+      MatProgressSpinnerModule,
+      MatProgressBarModule
    ],
    providers: [
       MatDatepickerModule,

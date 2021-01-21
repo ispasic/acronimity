@@ -92,6 +92,7 @@ export class TestapiComponent implements OnInit {
   isTested = false;
   isSearched = false;
   isLoaded = false;
+  areCUIsBeingFound = false;
 
   // global lists
   listOfSearchResults = [];
@@ -102,6 +103,7 @@ export class TestapiComponent implements OnInit {
 
   // test object for inserting
   insertObject;
+  foundCUIs: number = 0;
 
   // how many IDs are processed each time
   fetchStep = 400;
@@ -472,6 +474,7 @@ export class TestapiComponent implements OnInit {
     for (let i = 0; i < 10; i++) {
       // sleep cause 20 api calls per second
       await this.sleep(50);
+      this.foundCUIs++;
       this.UmlsService.findCUI(listOfAcronymsTable[i].sense).then(data => {
         listOfAcronymsTable[i].cui = data.result.results[0].ui;
       });
@@ -495,7 +498,8 @@ export class TestapiComponent implements OnInit {
     this.dataSource.paginator.page.subscribe(async (pageEvent: PageEvent) => {
       const startIndex = pageEvent.pageIndex * pageEvent.pageSize;
       const endIndex = startIndex + pageEvent.pageSize;
-      for (let item of this.dataSource.filteredData.slice(startIndex, endIndex)) {
+      let itemsShown = this.dataSource.filteredData.slice(startIndex, endIndex);
+      for (let item of itemsShown) {
         if (item.cui == 'SEARCHING') {
           // sleep cause 20 api calls per second
           await this.sleep(50);
@@ -509,8 +513,8 @@ export class TestapiComponent implements OnInit {
     this.dataSource.sort.sortChange.subscribe(async (sortChangeEvent: MatSort) => {
       const startIndex = this.dataSource.paginator.pageIndex * this.dataSource.paginator.pageSize;
       const endIndex = startIndex + this.dataSource.paginator.pageSize;
-      let itemsShowed = this.dataSource.sortData(this.dataSource.filteredData, sortChangeEvent).slice(startIndex, endIndex);
-      for (let item of itemsShowed) {
+      let itemsShown = this.dataSource.sortData(this.dataSource.filteredData, sortChangeEvent).slice(startIndex, endIndex);
+      for (let item of itemsShown) {
         if (item.cui == 'SEARCHING') {
           // sleep cause 20 api calls per second
           await this.sleep(50);
@@ -586,6 +590,39 @@ export class TestapiComponent implements OnInit {
   openPubmedHelpClick() {
     let url = "https://pubmed.ncbi.nlm.nih.gov/help/";
     window.open(url, "_blank", "noopener");
+  }
+
+  // button to find all CUIs
+  async findAllCUIs() {
+    // start the process of CUIs find and show spinner
+    this.areCUIsBeingFound = true;
+
+    // cycle through all datasource items
+    for (let item of this.dataSource.data) {
+      // find only those that are not found
+      if (item.cui == 'SEARCHING') {
+        // sleep cause 20 api calls per second
+        await this.sleep(50);
+        this.UmlsService.findCUI(item.sense).then(data => {
+          item.cui = data.result.results[0].ui;
+          // add to number of found CUIs for progress spinner
+          this.foundCUIs++;
+          // if found all hide spinner
+          if (this.foundCUIs == this.dataSource.data.length) {
+            this.areCUIsBeingFound = false;
+          }
+        });
+      }
+    }
+  }
+
+  // get progress for a spinner
+  getProgressValue() {
+    if (this.dataSource) {
+      return ((this.foundCUIs / this.dataSource.data.length) * 100);
+    } else {
+      return 0;
+    }
   }
 
   navigateCUI(cui) {

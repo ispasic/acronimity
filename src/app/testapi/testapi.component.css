@@ -93,6 +93,20 @@
     width: 100% !important;
   }
 
+  .cuisearch-container {
+    margin-top: 105px;
+    margin-left: 10px;
+  }
+
+  .cuisearch-button {
+    font-size: 15px;
+  }
+
+  .cuisearch-spinner {
+    margin: 0 10px;
+    color: #673ab7;
+  }
+
   .mat-column-acronyms {
     word-wrap: break-word !important;
     white-space: unset !important;
@@ -149,6 +163,8 @@
     cursor: pointer;
     color: #673ab7;
   }
+
+
 
   .mat-column-frequency {
     word-wrap: break-word !important;

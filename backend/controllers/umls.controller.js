@@ -5,7 +5,7 @@ const umlsCollection = require("../schemas").umlsModel;
 exports.getTgt = (req, res) => {
     umlsCollection.find()
         .then(data => {
-            console.log(`Got tgt from the database.`);
+            //console.log(`Got tgt from the database.`);
             res.send(data);
         })
         .catch(err => {
