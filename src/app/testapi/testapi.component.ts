@@ -19,6 +19,8 @@ import * as FileSaver from 'file-saver';
 import Tokenizer from "../../../node_modules/sentence-tokenizer/lib/tokenizer"
 
 import { PaginationInstance } from 'ngx-pagination';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 //interface for sense inventory table
 export interface senseInventory {
@@ -72,10 +74,8 @@ export class TestapiComponent implements OnInit {
   }
 
   setDataSourceAttributes() {
-    if (this.dataSource) {
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    }
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
 
   // Global variables declarations
@@ -109,6 +109,9 @@ export class TestapiComponent implements OnInit {
   areCUIsBeingFound = false;
   allCUIsFound = false;
 
+  // notifier that time to unsubscribe
+  notifier = new Subject()
+
   // how many IDs are processed each time
   fetchStep = 400;
 
@@ -131,7 +134,7 @@ export class TestapiComponent implements OnInit {
   // paginator page change function
   onPageChange(number: number) {
     this.paginationConfig.currentPage = number;
-    console.log("Page changed to: ", number);
+    //console.log("Page changed to: ", number);
   }
 
   // do on component initialise
@@ -157,7 +160,17 @@ export class TestapiComponent implements OnInit {
     this.isTested = true;
     this.isSearched = false;
     this.isLoaded = false;
-    this.dataSource = null;
+
+    this.senseInventoryTotal = null;
+    this.senseInventoryAverage = null;
+
+    this.apiCUIs = 0;
+    this.foundCUIs = 0;
+    this.areCUIsBeingFound = false;
+    this.allCUIsFound = false;
+
+    // unsubscribe
+    this.notifier.next();
 
     this.searchProgress = "Searching PubMed Database..";
 
@@ -498,8 +511,12 @@ export class TestapiComponent implements OnInit {
       }
     };
 
+    // this.dataSource.paginator.page.unsubscribe();
+    // this.dataSource.sort.sortChange.unsubscribe();
     // subscription to the paginator event in order to dynamically acquire CUI IDs
-    this.dataSource.paginator.page.subscribe((pageEvent: PageEvent) => {
+    this.dataSource.paginator.page
+    .pipe(takeUntil(this.notifier))
+    .subscribe((pageEvent: PageEvent) => {
       // acquire visible rows
       const startIndex = pageEvent.pageIndex * pageEvent.pageSize;
       const endIndex = startIndex + pageEvent.pageSize;
@@ -508,7 +525,9 @@ export class TestapiComponent implements OnInit {
       this.updateVisibleCUIs(itemsShown);
     });
     // subscription to the sort even in order to dynamically acquire CUI IDs
-    this.dataSource.sort.sortChange.subscribe((sortChangeEvent: MatSort) => {
+    this.dataSource.sort.sortChange
+    .pipe(takeUntil(this.notifier))
+    .subscribe((sortChangeEvent: MatSort) => {
       // acquire visible rows
       const startIndex = this.dataSource.paginator.pageIndex * this.dataSource.paginator.pageSize;
       const endIndex = startIndex + this.dataSource.paginator.pageSize;
@@ -710,6 +729,17 @@ export class TestapiComponent implements OnInit {
     this.isSearched = false;
     this.isLoaded = false;
     this.dataSource = null;
+
+    this.senseInventoryTotal = null;
+    this.senseInventoryAverage = null;
+
+    this.apiCUIs = 0;
+    this.foundCUIs = 0;
+    this.areCUIsBeingFound = false;
+    this.allCUIsFound = false;
+
+    // unsubscribe
+    this.notifier.next();
 
     this.searchProgress = "Loading MongoDB Database..";
 
