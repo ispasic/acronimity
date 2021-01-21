@@ -92,8 +92,6 @@ export class TestapiComponent implements OnInit {
   isTested = false;
   isSearched = false;
   isLoaded = false;
-  areCUIsBeingFound = false;
-  allCUIsFound = false;
 
   // global lists
   listOfSearchResults = [];
@@ -104,8 +102,12 @@ export class TestapiComponent implements OnInit {
 
   // test object for inserting
   insertObject;
-  apiCUIs: number = 0;
-  foundCUIs: number = 0;
+
+  // CUIs found
+  apiCUIs: number = 0; //overall CUIs found
+  foundCUIs: number = 0; //meaningful CUIs found
+  areCUIsBeingFound = false;
+  allCUIsFound = false;
 
   // how many IDs are processed each time
   fetchStep = 400;
@@ -439,22 +441,12 @@ export class TestapiComponent implements OnInit {
         // count the amount of times acronym mentioned
         let frequency = 0;
 
-        // calculate frequency based on "at least one acronym mention per abstract"
-        // for (let j = 0; j < this.listOfAcronymsDuplicates.length; j++) {
-        //   if (item.shortform == this.listOfAcronymsDuplicates[j].shortform) {
-        //     frequency++;
-        //   }
-        // }
-
         // calculate frequency based on "total number of current acronym mentions per whole dataset"
         for (let j = 0; j < this.listOfAbstracts.length; j++) {
           for (let k = 0; k < this.listOfAbstracts[j].sentences.length; k++) {
             frequency = frequency + this.listOfAbstracts[j].sentences[k].split("sense='" + item.longform + "'>" + item.shortform + "<").length - 1;
           }
         }
-        // if (frequency == 0) {
-        //   console.log(`0 frequency acronym ${item.shortform} and pubmedID: ${item.pubMedId}`)
-        // }
 
         let singleEntry = {
           "acronym": item.shortform,
@@ -477,16 +469,20 @@ export class TestapiComponent implements OnInit {
       // sleep cause 20 api calls per second
       await this.sleep(50);
       this.UmlsService.findCUI(listOfAcronymsTable[i].sense).then(data => {
+        // increase the number of overall found CUIs
         this.apiCUIs++;
         listOfAcronymsTable[i].cui = data.result.results[0].ui;
         // update the sense inventory total and average CUI values
         if (listOfAcronymsTable[i].cui != "NONE") {
+          // increase the number of found meaningful CUIs
           this.foundCUIs++;
+          // update the value in Sense Inventory Total and Average tables
           this.updateSenseInventoryCUIs();
         }
       });
     }
 
+    // generate the main sense inventory
     this.dataSource = new MatTableDataSource<senseInventory>(listOfAcronymsTable);
     this.changeDetectorRef.detectChanges();
     // default sort
@@ -570,22 +566,50 @@ export class TestapiComponent implements OnInit {
     this.searchProgress = "Sense inventory totals and averages calculated.";
   }
 
-  //open details dialog
-  async moreDetailsClick(entry): Promise<void> {
-    const dialogRef = this.dialog.open(ShowdetailsDialogComponent, {
-      data: entry
-    });
-  }
-
   //download all abstracts from results as single file
   async downloadAbstractsClick(): Promise<void> {
-    var blob = new Blob([JSON.stringify(this.listOfAbstracts, null, 2)], {type: "text/plain;charset=utf-8"});
+    // download abstracts and sense inventory
+    let downloadJson = {
+      "abstracts": [],
+      "senseInventory": {
+        "data": [],
+        "total": {},
+        "average": {}
+      }
+    };
+    downloadJson.abstracts = JSON.parse(JSON.stringify(this.listOfAbstracts));
+    downloadJson.senseInventory.data = JSON.parse(JSON.stringify(this.dataSource.data));
+    downloadJson.senseInventory.total = {
+      "acronyms": this.senseInventoryTotal.data[0].value,
+      "senses": this.senseInventoryTotal.data[1].value,
+      "cuis": this.senseInventoryTotal.data[2].value.toString(),
+      "acronymMnetions": this.senseInventoryTotal.data[3].value,
+    }
+    downloadJson.senseInventory.average = {
+      "acronymsPerDocument": this.senseInventoryAverage.data[0].value,
+      "sensesPerAcronym": this.senseInventoryAverage.data[1].value,
+      "cuisPerAcronym": this.senseInventoryAverage.data[2].value,
+      "acronymMnetionsPerDocument": this.senseInventoryAverage.data[3].value,
+    }
+    // download only abstracts
+    var blob = new Blob([JSON.stringify(downloadJson, null, 2)], {type: "text/plain;charset=utf-8"});
     FileSaver.saveAs(blob, "Abstracts.json");
+
+    // // download only abstracts
+    // var blob = new Blob([JSON.stringify(this.listOfAbstracts, null, 2)], {type: "text/plain;charset=utf-8"});
+    // FileSaver.saveAs(blob, "Abstracts.json");
   }
 
   openPubmedHelpClick() {
     let url = "https://pubmed.ncbi.nlm.nih.gov/help/";
     window.open(url, "_blank", "noopener");
+  }
+
+  //open details dialog
+  async moreDetailsClick(entry): Promise<void> {
+    const dialogRef = this.dialog.open(ShowdetailsDialogComponent, {
+      data: entry
+    });
   }
 
   // button to find all CUIs
@@ -652,7 +676,7 @@ export class TestapiComponent implements OnInit {
   }
 
   // get progress for a spinner
-  getProgressValue() {
+  getCUIProgressValue() {
     if (this.dataSource) {
       return ((this.apiCUIs / this.dataSource.data.length) * 100);
     } else {
