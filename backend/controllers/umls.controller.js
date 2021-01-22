@@ -32,7 +32,7 @@ exports.addTgt = async (req, res) => {
     //create entry of data model
     const entry = new umlsCollection({
         tgt: req.body.tgt,
-        date: currentDate
+        createdAt: currentDate
     });
 
     //save to database
