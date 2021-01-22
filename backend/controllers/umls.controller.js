@@ -25,6 +25,9 @@ exports.addTgt = async (req, res) => {
         return;
     }
 
+    // set currentDate in order to then set the expiring Index
+    // expiring index is done by creating an index on the umls collection
+    // db.umls.createIndex( { "createdAt": 1 }, { "expireAfterSeconds": X } );
     let currentDate = new Date();
 
     console.log("Adding a new tgt to database. Date and time: ", currentDate);
