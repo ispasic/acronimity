@@ -82,7 +82,7 @@ export class UmlsService {
 
 
   // get tgt checking the database
-  private async getTgt() {
+  public async getTgt() {
     let result = '';
     // get from Database first
     let tgtRes = await this.getTgtFromDatabase().toPromise().catch(error => console.log(error));

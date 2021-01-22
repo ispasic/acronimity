@@ -476,6 +476,9 @@ export class TestapiComponent implements OnInit {
 
   async generateSenseInventoryTable(listOfAcronymsTable): Promise<void> {
 
+    // generate TGT
+    await this.UmlsService.getTgt();
+
     // sort the listOfAcronymsTable and assign first 10 CUIs
     listOfAcronymsTable.sort((a, b) => (a.acronym > b.acronym) ? 1 : -1);
     for (let i = 0; i < 10; i++) {
