@@ -899,6 +899,10 @@ export class TestapiComponent implements OnInit {
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
+    const startIndex = this.dataSource.paginator.pageIndex * this.dataSource.paginator.pageSize;
+    const endIndex = startIndex + this.dataSource.paginator.pageSize;
+    let itemsShown = this.dataSource.filteredData.slice(startIndex, endIndex);
+    this.updateVisibleCUIs(itemsShown);
   }
   
   sleep(ms) {
