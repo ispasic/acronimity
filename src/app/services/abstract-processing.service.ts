@@ -41,6 +41,20 @@ export class AbstractProcessingService {
     return taggedText;
   }
 
+  public countAcronym(text: string, acronym: string): any {
+    let processedText = text;
+    processedText = processedText.replace(/\n/g, " "); //swap all endlines by spaces
+    processedText = processedText.replace(/\u00A0/g, " "); //swap all non-breaking spaces by spaces
+    processedText = processedText.replace(/\s{2,}/g,' '); //swap all multiple spaces with spaces
+
+    let result = 0;
+    let count;
+    if (count = processedText.match(new RegExp(`(\\b)(${this.escapeRegExp(acronym)})(?!\\w)`, 'gi'))) {
+      result = count.length
+    }
+    return result;
+  }
+
 
   //replace all occurences of <find> with <replace> in <str>
   public replaceAllBoundaries(str, find: string, replace: string) {
