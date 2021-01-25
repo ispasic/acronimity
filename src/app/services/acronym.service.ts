@@ -213,6 +213,11 @@ export class AcronymService {
     //     right to left looking for a match
 
     //definition = definition.toLowerCase();
+    // cut last words of definition if they do not have a character that is last from acronym
+    while (definition.lastIndexOf(acronym.charAt(acronym.length-1).toLowerCase()) < definition.lastIndexOf(" "))
+    {
+      definition = definition.substring(0, definition.lastIndexOf(" "));
+    }
 
     let a = acronym.length - 1;
     let d = definition.length - 1;
@@ -220,8 +225,8 @@ export class AcronymService {
     for( ; a >= 0; a--)
     {
       let c = acronym.charAt(a).toLowerCase();
-      //console.log(`c = ${c}`);
-      //console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
+      // console.log(`c = ${c}`);
+      // console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
 
       if(this.isLetterOrDigit(c))
       {
@@ -231,7 +236,7 @@ export class AcronymService {
           )
         {
           d--;
-          //console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
+          // console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
         }
 
         if(d < 0)
@@ -239,18 +244,18 @@ export class AcronymService {
           return null;
         }
         d--;
-        //console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
+        // console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
       }
 
     }
 
-    //console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
+    // console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
     d = Math.max(definition.lastIndexOf(" ", d) + 1, definition.lastIndexOf("(", d) + 1, definition.lastIndexOf(")", d) + 1,
       definition.lastIndexOf("/", d) + 1, definition.lastIndexOf("]", d) + 1, definition.lastIndexOf("[", d) + 1,
       definition.lastIndexOf("}", d) + 1, definition.lastIndexOf("{", d) + 1, definition.lastIndexOf('"', d) + 1,
       definition.lastIndexOf('-', d) + 1);
-    //console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
-    //console.log(definition.substring(d));
+    // console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
+    // console.log(definition.substring(d));
     return definition.substring(d);
   }
 
@@ -268,8 +273,8 @@ export class AcronymService {
       acronym = cand.shortform;
       definition = cand.longform;
 
-      //console.log("Acronym candidate: ", acronym);
-      //console.log("Definition candidate: ", definition);
+      // console.log("Acronym candidate: ", acronym);
+      // console.log("Definition candidate: ", definition);
 
       //acronym has to have at least 2 characters
       if (acronym.length < 2)
