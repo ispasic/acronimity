@@ -454,10 +454,18 @@ export class TestapiComponent implements OnInit {
         // count the amount of times acronym mentioned
         let frequency = 0;
 
-        // calculate frequency based on "total number of current acronym mentions per whole dataset"
         for (let j = 0; j < this.listOfAbstracts.length; j++) {
-          for (let k = 0; k < this.listOfAbstracts[j].sentences.length; k++) {
-            frequency = frequency + this.listOfAbstracts[j].sentences[k].split("sense='" + item.longform + "'>" + item.shortform + "<").length - 1;
+          let abstractHasAcronymSense = false;
+          for (let k = 0; k < this.listOfAbstracts[j].acronyms.length; k++) {
+            let acronym = this.listOfAbstracts[j].acronyms[k];
+            // found the same acronym-sense combination in the abstract
+            if (acronym.shortform == item.shortform && acronym.longform == item.longform) {
+              abstractHasAcronymSense = true;
+              break;
+            }
+          }
+          if (abstractHasAcronymSense) {
+            frequency = frequency + this.abstractProcessingService.countAcronym(this.listOfAbstracts[j].text, item.shortform);
           }
         }
 
@@ -470,6 +478,7 @@ export class TestapiComponent implements OnInit {
         listOfAcronymsTable.push(singleEntry);
       }
     }
+
     this.searchProgress = "Sense inventory generated.";
     return listOfAcronymsTable;
   }
@@ -481,7 +490,7 @@ export class TestapiComponent implements OnInit {
 
     // sort the listOfAcronymsTable and assign first 10 CUIs
     listOfAcronymsTable.sort((a, b) => (a.acronym > b.acronym) ? 1 : -1);
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < Math.min(10, listOfAcronymsTable.length); i++) {
       // if (i == 0) {
       //   await this.sleep(1000);
       // }
