@@ -118,11 +118,9 @@ export class ShowdetailsDialogComponent {
       let tokenizer = new Tokenizer();
       tokenizer.setEntry(abstract);
       let sentences = tokenizer.getSentences();
-      let acronymMentions = 0;
 
       for (let k = 0; k < sentences.length; k++) {
         sentences[k] = this.abstractProcessingService.tagAcronymsSense(sentences[k], this.detailsAcronymList);
-        acronymMentions = acronymMentions + sentences[k].split('acronym sense').length - 1;
       }
 
       let abstractWithInfo = {
@@ -133,8 +131,7 @@ export class ShowdetailsDialogComponent {
         "pubmed_id": this.data.id,
         "text": abstract,
         "sentences": sentences,
-        "acronyms": abstractAcronyms,
-        "acronymMentions": acronymMentions
+        "acronyms": abstractAcronyms
       };
       this.detailsAbstractList.push(abstractWithInfo);
 
