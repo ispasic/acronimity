@@ -491,9 +491,6 @@ export class TestapiComponent implements OnInit {
     // sort the listOfAcronymsTable and assign first 10 CUIs
     listOfAcronymsTable.sort((a, b) => (a.acronym > b.acronym) ? 1 : -1);
     for (let i = 0; i < Math.min(10, listOfAcronymsTable.length); i++) {
-      // if (i == 0) {
-      //   await this.sleep(1000);
-      // }
       // sleep cause 20 api calls per second
       await this.sleep(50);
       this.UmlsService.findCUI(listOfAcronymsTable[i].sense).then(data => {
@@ -506,6 +503,10 @@ export class TestapiComponent implements OnInit {
           this.foundCUIs++;
           // update the value in Sense Inventory Total and Average tables
           this.updateSenseInventoryCUIs();
+        }
+        // if all cuis found
+        if (this.apiCUIs == this.dataSource.data.length) {
+          this.allCUIsFound = true;
         }
       });
     }
@@ -526,8 +527,6 @@ export class TestapiComponent implements OnInit {
       }
     };
 
-    // this.dataSource.paginator.page.unsubscribe();
-    // this.dataSource.sort.sortChange.unsubscribe();
     // subscription to the paginator event in order to dynamically acquire CUI IDs
     this.dataSource.paginator.page
     .pipe(takeUntil(this.notifier))
