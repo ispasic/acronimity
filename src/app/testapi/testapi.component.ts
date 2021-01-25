@@ -454,6 +454,7 @@ export class TestapiComponent implements OnInit {
         // count the amount of times acronym mentioned
         let frequency = 0;
 
+        // cycle through the list of abstract and find if abstract has same acronym-sense combination
         for (let j = 0; j < this.listOfAbstracts.length; j++) {
           let abstractHasAcronymSense = false;
           for (let k = 0; k < this.listOfAbstracts[j].acronyms.length; k++) {
@@ -464,6 +465,7 @@ export class TestapiComponent implements OnInit {
               break;
             }
           }
+          // if abstract has same acronym-sense combination, count acronyms based on Regex
           if (abstractHasAcronymSense) {
             frequency = frequency + this.abstractProcessingService.countAcronym(this.listOfAbstracts[j].text, item.shortform);
           }
