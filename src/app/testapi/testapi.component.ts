@@ -359,7 +359,7 @@ export class TestapiComponent implements OnInit {
         // attach extra info to each acronym pair
         for (let k = 0; k < singleAcronymList.length; k++)
         {
-          singleAcronymList[k].pubMedId = stepIDsList[j];
+          singleAcronymList[k].pubmed_id = stepIDsList[j];
           singleAcronymList[k].title = title;
           singleAcronymList[k].journal = journal;
           singleAcronymList[k].authors = authors;
@@ -794,7 +794,7 @@ export class TestapiComponent implements OnInit {
 
       for (let j = 0; j < singleAcronymList.length; j++)
       {
-        singleAcronymList[j].pubMedId = loadResult[i].pubmed_id;
+        singleAcronymList[j].pubmed_id = loadResult[i].pubmed_id;
         singleAcronymList[j].title = loadResult[i].title;
         singleAcronymList[j].journal = loadResult[i].journal;
         singleAcronymList[j].authors = loadResult[i].authors;
@@ -1014,7 +1014,7 @@ export class TestapiComponent implements OnInit {
       {
         singleAcronymList[j].swapText = loadResult[i].swapText;
         singleAcronymList[j].tagText = loadResult[i].tagText;
-        singleAcronymList[j].pubMedId = loadResult[i].pubmed_id;
+        singleAcronymList[j].pubmed_id = loadResult[i].pubmed_id;
         singleAcronymList[j].title = loadResult[i].title;
         singleAcronymList[j].journal = loadResult[i].journal;
         singleAcronymList[j].authors = JSON.parse(loadResult[i].authors);

@@ -95,7 +95,7 @@ export class ShowdetailsDialogComponent {
       {
         this.detailsAcronymList[i].swapText = swapText;
         this.detailsAcronymList[i].tagText = tagText;
-        this.detailsAcronymList[i].pubMedId = this.data.id;
+        this.detailsAcronymList[i].pubmed_id = this.data.id;
         this.detailsAcronymList[i].title = title;
         this.detailsAcronymList[i].journal = journal;
         this.detailsAcronymList[i].authors = authors;
