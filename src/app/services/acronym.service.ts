@@ -65,14 +65,36 @@ export class AcronymService {
     return count;
   }
 
-  //check if that is a valid short form
-
-  private isValidShortForm(str: string): boolean {
-    if (this.hasLetter(str) && (this.isLetterOrDigit(str.charAt(0)) || str.charAt(0) == "("))
-    {
+  // has invalid characters in acronym
+  public hasInvalidChars(str: string): boolean {
+    let countRes = str.match(/[a-z0-9\s\'\/\-]/gi);
+    if (!countRes) {
       return true;
+    } else if (countRes.length != str.length) {
+      return true;
+    } else {
+      return false;
     }
-    return false;
+  }
+
+  // check if that is a valid short form
+  private isValidShortForm(str: string): boolean {
+    if (str.length < 2) {
+      return false; // string is shorter than 2 chars
+    } else if (str.length >= 10) {
+      return false; // string is longer than 8 chars
+    } else if (!this.hasLetter(str)) {
+      return false; // no letters in the string
+    } else if (str[1] == "'") {
+      return false; // second char is ' as in A'
+    } else if (!this.hasCapital(str)) {
+      return false; // no uppercase letter in acronym
+    } else if (!(this.isLetterOrDigit(str.charAt(0)) || (str.charAt(0) == '('))) {
+      return false; // first char is not a letter or digit or '('
+    } else if (this.hasInvalidChars(str)) {
+      return false; // has invalid chars in the string
+    }
+    return true;
   }
 
   public getAcronymList(sentence: string) {
@@ -409,4 +431,18 @@ export class AcronymService {
     //this.acronymList.push(foundPair); //push the pair into the list
     //console.log(acronym + " " + bestLongForm); //print list
   }
+
+
+
+
+  // old code
+
+  // check if that is a valid short form
+  // private isValidShortFormOld(str: string): boolean {
+  //   if (this.hasLetter(str) && (this.isLetterOrDigit(str.charAt(0)) || str.charAt(0) == "("))
+  //   {
+  //     return true;
+  //   }
+  //   return false;
+  // } 
 }
