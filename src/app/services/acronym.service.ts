@@ -7,10 +7,9 @@ export class AcronymService {
 
   constructor() { }
 
-  //schwartz algorithm implementation
+  // service string functions
 
-  //check if string contains a letter
-
+  // check if string contains a letter
   private hasLetter(str: string): boolean {
     for (let s of str)
     {
@@ -22,14 +21,12 @@ export class AcronymService {
     return false;
   }
 
-  //check if symbol is a letter
-
+  // check if symbol is a letter
   private isLetter(str: string): boolean {
     return str.toLowerCase() != str.toUpperCase();
   }
 
-  //check if symbol is a letter or digit
-
+  // check if symbol is a letter or digit
   private isLetterOrDigit(str: string): boolean {
     if(str.match(/[0-9]/i))
     {
@@ -38,8 +35,7 @@ export class AcronymService {
     return str.toLowerCase() != str.toUpperCase();
   }
 
-  //check if string has capital letter
-
+  // check if string has capital letter
   private hasCapital(str: string): boolean {
     for (let s of str)
     {
@@ -51,8 +47,7 @@ export class AcronymService {
     return false;
   }
 
-  //count letters and digits in string
-
+  // count letters and digits in string
   private countLetterAndDigits(str: string): number {
     let count = 0;
     for (let s of str)
@@ -65,8 +60,8 @@ export class AcronymService {
     return count;
   }
 
-  // has invalid characters in acronym
-  public hasInvalidChars(str: string): boolean {
+  // has invalid characters in acronym (anything apart from a-z A-Z 0-9 whitespace ' / -)
+  private hasInvalidChars(str: string): boolean {
     let countRes = str.match(/[a-z0-9\s\'\/\-]/gi);
     if (!countRes) {
       return true;
@@ -97,6 +92,7 @@ export class AcronymService {
     return true;
   }
 
+  // public function to get the full acronym List for the use from other components
   public getAcronymList(sentence: string) {
     var list = [];
     list = this.extractPairs(sentence);
@@ -117,6 +113,10 @@ export class AcronymService {
     var acronymList = [];
 
     let originalSentence = sentence; //save original text
+
+    originalSentence = originalSentence.replace(/\n/g, " "); //swap all endlines by spaces
+    originalSentence = originalSentence.replace(/\u00A0/g, " "); //swap all non-breaking spaces by spaces
+    originalSentence = originalSentence.replace(/\s{2,}/g, ' '); //swap all multiple spaces with spaces
 
     o = sentence.indexOf(" ("); //find open parenthesis
 
@@ -158,16 +158,20 @@ export class AcronymService {
           }
 
           //if separator in candidate acronym then cut acronym
-          if((tmp = acronym.indexOf(", ")) > -1)
-          {
+          if((tmp = acronym.indexOf(", ")) > -1) {
             acronym = acronym.substring(0, tmp);
           }
-          if((tmp = acronym.indexOf("; ")) > -1)
-          {
+          if((tmp = acronym.indexOf("; ")) > -1) {
             acronym = acronym.substring(0, tmp);
           }
+          if((tmp = acronym.indexOf(" or ")) > -1) {
+            acronym = acronym.substring(0, tmp);
+          }
+          // --- (or ...) -> (...)
+          if ((tmp = acronym.indexOf('or ')) == 0) {
+            acronym = acronym.substring(3);
+          } 
 
-          //check if acronym is in () or definition
           var splitted = acronym.split(" "); //split the acronym into parts separated by " "
 
           //check if definition ends with "
@@ -191,6 +195,10 @@ export class AcronymService {
             //validate new acronym
             if(!this.hasCapital(acronym))
             {
+              acronym = ""; //delete invalid acronym
+            }
+            // validate (... definition ...)
+            if (definition.replace(/\\-/g, ' ').split(' ').length > acronym.length + 2) {
               acronym = ""; //delete invalid acronym
             }
           }
@@ -226,59 +234,7 @@ export class AcronymService {
     {
       acronymList[i].text = originalSentence;
     }
-
     return acronymList;
-  }
-
-  private bestLongForm(acronym: string, definition: string): string {
-    // --- go through the acronym & definition character by character,
-    //     right to left looking for a match
-
-    //definition = definition.toLowerCase();
-    // cut last words of definition if they do not have a character that is last from acronym
-    while (definition.lastIndexOf(acronym.charAt(acronym.length-1).toLowerCase()) < definition.lastIndexOf(" "))
-    {
-      definition = definition.substring(0, definition.lastIndexOf(" "));
-    }
-
-    let a = acronym.length - 1;
-    let d = definition.length - 1;
-
-    for( ; a >= 0; a--)
-    {
-      let c = acronym.charAt(a).toLowerCase();
-      // console.log(`c = ${c}`);
-      // console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
-
-      if(this.isLetterOrDigit(c))
-      {
-        while (
-            (d >= 0 && definition.charAt(d).toLowerCase() != c) ||
-            (a == 0 && d > 0 && this.isLetterOrDigit(definition.charAt(d - 1).toLowerCase()))
-          )
-        {
-          d--;
-          // console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
-        }
-
-        if(d < 0)
-        {
-          return null;
-        }
-        d--;
-        // console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
-      }
-
-    }
-
-    // console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
-    d = Math.max(definition.lastIndexOf(" ", d) + 1, definition.lastIndexOf("(", d) + 1, definition.lastIndexOf(")", d) + 1,
-      definition.lastIndexOf("/", d) + 1, definition.lastIndexOf("]", d) + 1, definition.lastIndexOf("[", d) + 1,
-      definition.lastIndexOf("}", d) + 1, definition.lastIndexOf("{", d) + 1, definition.lastIndexOf('"', d) + 1,
-      definition.lastIndexOf('-', d) + 1);
-    // console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
-    // console.log(definition.substring(d));
-    return definition.substring(d);
   }
 
   private matchPairs(candidateList) {
@@ -295,46 +251,70 @@ export class AcronymService {
       acronym = cand.shortform;
       definition = cand.longform;
 
-      // console.log("Acronym candidate: ", acronym);
-      // console.log("Definition candidate: ", definition);
+      //console.log("Acronym candidate: ", acronym);
+      //console.log("Definition candidate: ", definition);
 
       //acronym has to have at least 2 characters
       if (acronym.length < 2)
       {
-        //console.log("ERROR: Acronym length is less than 2");
         continue;
       }
 
-      definition = definition.replace(/\n/g, " "); //swap all endlines by spaces
-      definition = definition.replace(/\u00A0/g, " "); //swap all non-breaking spaces by spaces
-      //console.log("definition after eliminating enters: ", definition);
+      // definition = definition.replace(/\n/g, " "); //swap all endlines by spaces
+      // definition = definition.replace(/\u00A0/g, " "); //swap all non-breaking spaces by spaces
       
+      // get bestLongForm that arrives lowercase
       let bestLongForm = this.bestLongForm(acronym, definition);
-
       //console.log("bestLongForm: ", bestLongForm);
 
+      // if not bestLongForm returned at all
       if (bestLongForm == null)
       {
-        //console.log("ERROR: no bestLongForm determined");
         continue;
       }
       
       //swap \n to " "
 
-      bestLongForm = bestLongForm.replace(/\n/g, " "); //swap all endlines by spaces
+      //bestLongForm = bestLongForm.replace(/\n/g, " "); //swap all endlines by spaces
 
       //check the bestLongForm according to Schwartz algorithm
-      let bestLongFormWords = bestLongForm.split(" ");
+      let bestLongFormWords = bestLongForm.replace(/\\-/g, ' ').split(' ');
 
       let acronymCharsCount = this.countLetterAndDigits(acronym); //number of characters in acronym that are digits or letters
       let defWordsCount = bestLongFormWords.length; //number of words in definition
 
-      if(bestLongForm.length < acronym.length || //if long form is shorter than acronym
-        bestLongForm.indexOf(acronym + " ") > -1 || //if long form containt acronym
-        bestLongForm.endsWith(acronym) || //if long form ends with acronym
-        defWordsCount > 2 * acronymCharsCount || defWordsCount > acronymCharsCount + 5 || acronymCharsCount > 10)
-      {
-        continue;
+      // sanity check
+      // if(bestLongForm.length < acronym.length || //if long form is shorter than acronym
+      //   bestLongForm.indexOf(acronym + " ") > -1 || //if long form containt acronym
+      //   bestLongForm.endsWith(acronym) || //if long form ends with acronym
+      //   defWordsCount > 2 * acronymCharsCount || defWordsCount > acronymCharsCount + 5 || acronymCharsCount > 10)
+      // {
+      //   continue;
+      // }
+
+      if (bestLongForm.length < acronym.length) {
+        continue; // if long form is shorter than acronym
+      } else if (bestLongForm.length < 8) {
+        continue; // long form too short
+      } else if (bestLongForm.indexOf(acronym + ' ') > -1 || bestLongForm.indexOf(' ' + acronym) > -1 || bestLongForm.indexOf(' ' + acronym + ' ') > -1) {
+        continue; // acronym is nested in the long form
+      } else if (defWordsCount > 2 * acronymCharsCount || defWordsCount > acronymCharsCount + 5) {
+        continue; // too many tokens in the long form
+      } else if (acronymCharsCount > 10) {
+        continue; // too many tokens in acronym
+      }
+
+      // if bestlongform actually found
+      // change plural to singular
+      if (acronym.endsWith('s') && bestLongForm.endsWith('s')) {
+        acronym = acronym.substring(0, acronym.length - 2); // cut off s
+        if (acronym.endsWith("'")) {
+          acronym = acronym.substring(0, acronym.length - 2); // cut of ' for those who use possessive for plural (yuk!)
+        }
+        bestLongForm = bestLongForm.substring(0, bestLongForm.length - 2); // cut off s
+        if (bestLongForm.endsWith('ie')) {
+          bestLongForm = bestLongForm.substring(0, bestLongForm.length - 3); // fix stemming ie -> y, memories -> memorie -> memory
+        }
       }
 
       var foundPair = {
@@ -353,18 +333,7 @@ export class AcronymService {
         }
       }
 
-      // //check if same longform is in List already
-      // isInList = false;
-      // for (var acr of acronymList)
-      // {
-      //   if (acr.longform == foundPair.longform)
-      //   {
-      //     isInList = true;
-      //     break;
-      //   }
-      // }
-
-      //if not in list
+      //if not in list push to the list
       if(isInList == false)
       {
         acronymList.push(foundPair); //push the pair into the list
@@ -374,68 +343,132 @@ export class AcronymService {
     }
 
     return acronymList;
-    
   }
 
+  private bestLongForm(acronym: string, definition: string): string {
+    // --- go through the acronym & definition character by character,
+    //     right to left looking for a match
 
-  //old single match Pair function
-  private matchPair(acronym: string, definition: string) {
-    //acronym has to have at least 2 characters
+    // case insensitive matching
+    acronym = acronym.toLowerCase();
+    definition = definition.toLowerCase();
 
-    // console.log("Acronym candidate: ", acronym);
-    // console.log("Definition candidate: ", definition);
-
-    if (acronym.length < 2)
+    // cut last words of definition if they do not have a character that is last from acronym
+    while (definition.lastIndexOf(acronym.charAt(acronym.length-1)) < definition.lastIndexOf(" "))
     {
-      //console.log("ERROR: Acronym length is less than 2");
-      return;
+      definition = definition.substring(0, definition.lastIndexOf(" "));
     }
 
-    definition = definition.replace(/\n/g, " "); //swap all endlines by spaces
+    let a = acronym.length - 1;
+    let d = definition.length - 1;
 
-
-    
-    let bestLongForm = this.bestLongForm(acronym, definition);
-
-    //console.log("bestLongForm: ", bestLongForm);
-
-    if (bestLongForm == null)
+    for( ; a >= 0; a--)
     {
-      //console.log("ERROR: no bestLongForm determined");
-      return;
-    }
-    
-    //swap \n to " "
+      let c = acronym.charAt(a);
+      // console.log(`c = ${c}`);
+      // console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
 
-    bestLongForm = bestLongForm.replace(/\n/g, " "); //swap all endlines by spaces
+      if(this.isLetterOrDigit(c))
+      {
+        while (
+            (d >= 0 && definition.charAt(d) != c) ||
+            (a == 0 && d > 0 && this.isLetterOrDigit(definition.charAt(d - 1)))
+          )
+        {
+          d--;
+          // console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
+        }
 
-    //check the bestLongForm according to Schwartz algorithm
-    let bestLongFormWords = bestLongForm.split(" ");
-
-    let acronymCharsCount = this.countLetterAndDigits(acronym); //number of characters in acronym that are digits or letters
-    let defWordsCount = bestLongFormWords.length; //number of words in definition
-
-    if(bestLongForm.length < acronym.length || //if long form is shorter than acronym
-      bestLongForm.indexOf(acronym + " ") > -1 || //if long form containt acronym
-      bestLongForm.endsWith(acronym) || //if long form ends with acronym
-      defWordsCount > 2 * acronymCharsCount || defWordsCount > acronymCharsCount + 5 || acronymCharsCount > 10)
-    {
-      return;
+        if(d < 0)
+        {
+          return null;
+        }
+        d--;
+        // console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
+      }
     }
 
-    var foundPair = {
-      "shortform": acronym,
-      "longform": bestLongForm
-    }; //set up a pair of acronym - long form JSON
+    // console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
+    d = Math.max(definition.lastIndexOf(" ", d) + 1, definition.lastIndexOf("(", d) + 1, definition.lastIndexOf(")", d) + 1,
+      definition.lastIndexOf("/", d) + 1, definition.lastIndexOf("]", d) + 1, definition.lastIndexOf("[", d) + 1,
+      definition.lastIndexOf("}", d) + 1, definition.lastIndexOf("{", d) + 1, definition.lastIndexOf('"', d) + 1,
+      definition.lastIndexOf('-', d) + 1);
+    // console.log(`d = ${d}, chat = ${definition.charAt(d).toLowerCase()}`);
+    // console.log(definition.substring(d));
+    return definition.substring(d);
 
-    //this.acronymList.push(foundPair); //push the pair into the list
-    //console.log(acronym + " " + bestLongForm); //print list
+    // new implementation
+    // complete the left-most word
+    // d = definition.lastIndexOf(' ', d) + 1;
+    // // delete the surplus text on the left
+    // definition = definition.substring(d).trim();
+    // if (definition.charAt[0] == '[' && definition.charAt[definition.length-1] == ']') {
+    //   definition = definition.substring(1, definition.length - 2);
+    // }
+    // if (definition.charAt[0] == "'" && definition.charAt[definition.length-1] == "'") {
+    //   definition = definition.substring(1, definition.length - 2);
+    // }
+    // return definition;
+
   }
-
-
-
 
   // old code
+
+  // old single match Pair function
+
+  // private matchPair(acronym: string, definition: string) {
+  //   //acronym has to have at least 2 characters
+
+  //   // console.log("Acronym candidate: ", acronym);
+  //   // console.log("Definition candidate: ", definition);
+
+  //   if (acronym.length < 2)
+  //   {
+  //     //console.log("ERROR: Acronym length is less than 2");
+  //     return;
+  //   }
+
+  //   definition = definition.replace(/\n/g, " "); //swap all endlines by spaces
+
+
+    
+  //   let bestLongForm = this.bestLongForm(acronym, definition);
+
+  //   //console.log("bestLongForm: ", bestLongForm);
+
+  //   if (bestLongForm == null)
+  //   {
+  //     //console.log("ERROR: no bestLongForm determined");
+  //     return;
+  //   }
+    
+  //   //swap \n to " "
+
+  //   bestLongForm = bestLongForm.replace(/\n/g, " "); //swap all endlines by spaces
+
+  //   //check the bestLongForm according to Schwartz algorithm
+  //   let bestLongFormWords = bestLongForm.split(" ");
+
+  //   let acronymCharsCount = this.countLetterAndDigits(acronym); //number of characters in acronym that are digits or letters
+  //   let defWordsCount = bestLongFormWords.length; //number of words in definition
+
+  //   if(bestLongForm.length < acronym.length || //if long form is shorter than acronym
+  //     bestLongForm.indexOf(acronym + " ") > -1 || //if long form containt acronym
+  //     bestLongForm.endsWith(acronym) || //if long form ends with acronym
+  //     defWordsCount > 2 * acronymCharsCount || defWordsCount > acronymCharsCount + 5 || acronymCharsCount > 10)
+  //   {
+  //     return;
+  //   }
+
+  //   var foundPair = {
+  //     "shortform": acronym,
+  //     "longform": bestLongForm
+  //   }; //set up a pair of acronym - long form JSON
+
+  //   //this.acronymList.push(foundPair); //push the pair into the list
+  //   //console.log(acronym + " " + bestLongForm); //print list
+  // }
+
 
   // check if that is a valid short form
   // private isValidShortFormOld(str: string): boolean {
