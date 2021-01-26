@@ -307,13 +307,13 @@ export class AcronymService {
       // if bestlongform actually found
       // change plural to singular
       if (acronym.endsWith('s') && bestLongForm.endsWith('s')) {
-        acronym = acronym.substring(0, acronym.length - 2); // cut off s
+        acronym = acronym.substring(0, acronym.length - 1); // cut off s
         if (acronym.endsWith("'")) {
-          acronym = acronym.substring(0, acronym.length - 2); // cut of ' for those who use possessive for plural (yuk!)
+          acronym = acronym.substring(0, acronym.length - 1); // cut of ' for those who use possessive for plural (yuk!)
         }
-        bestLongForm = bestLongForm.substring(0, bestLongForm.length - 2); // cut off s
+        bestLongForm = bestLongForm.substring(0, bestLongForm.length - 1); // cut off s
         if (bestLongForm.endsWith('ie')) {
-          bestLongForm = bestLongForm.substring(0, bestLongForm.length - 3); // fix stemming ie -> y, memories -> memorie -> memory
+          bestLongForm = bestLongForm.substring(0, bestLongForm.length - 2) + 'y'; // fix stemming ie -> y, memories -> memorie -> memory
         }
       }
 
@@ -403,10 +403,10 @@ export class AcronymService {
     // // delete the surplus text on the left
     // definition = definition.substring(d).trim();
     // if (definition.charAt[0] == '[' && definition.charAt[definition.length-1] == ']') {
-    //   definition = definition.substring(1, definition.length - 2);
+    //   definition = definition.substring(1, definition.length - 1);
     // }
     // if (definition.charAt[0] == "'" && definition.charAt[definition.length-1] == "'") {
-    //   definition = definition.substring(1, definition.length - 2);
+    //   definition = definition.substring(1, definition.length - 1);
     // }
     // return definition;
 
