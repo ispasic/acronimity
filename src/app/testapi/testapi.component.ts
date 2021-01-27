@@ -140,8 +140,6 @@ export class TestapiComponent implements OnInit {
 
   // do on component initialise
   ngOnInit() {
-    console.log(pluralize.isPlural('cats dependencies'));
-    console.log(pluralize.singular('cats dependencies'));
   }
 
   // destroy the subscriptions on app closure
@@ -510,7 +508,7 @@ export class TestapiComponent implements OnInit {
           this.updateSenseInventoryCUIs();
         }
         // if all cuis found
-        if (this.apiCUIs == this.dataSource.data.length) {
+        if (this.apiCUIs == listOfAcronymsTable.length) {
           this.allCUIsFound = true;
         }
       });
@@ -531,6 +529,8 @@ export class TestapiComponent implements OnInit {
         default: return item[property];
       }
     };
+
+    console.log(this.dataSource.data);
 
     // subscription to the paginator event in order to dynamically acquire CUI IDs
     this.dataSource.paginator.page
@@ -678,6 +678,58 @@ export class TestapiComponent implements OnInit {
         });
       }
     }
+  }
+
+  // if the same CUI then the one with higher frequency consumes the other ones
+  consumeSameCUIs(): void {
+    
+    let ds = this.dataSource.data; //copy data for processing
+    ds.sort((a, b) => (a.cui > b.cui) ? 1 : -1);
+
+    for (let i = 1; i < ds.length; i++) {
+      if (ds[i].cui != 'SEARCHING' && ds[i].cui != 'NONE') {
+        if (ds[i].cui == ds[i-1].cui) {
+          console.log(`Same cuis. ${i-1}: ${ds[i-1].cui}. ${i}: ${ds[i].cui}`);
+          if (ds[i].frequency >= ds[i-1].frequency) {
+            ds[i].frequency = ds[i].frequency + ds[i-1].frequency;
+            console.log(`Consumed acronym ${ds[i-1].acronym} with sense ${ds[i-1].sense}, ${ds[i-1].cui} and frequency ${ds[i-1].frequency}`);
+            console.log(`Consumer: acronym ${ds[i].acronym} with sense ${ds[i].sense}, ${ds[i].cui} and frequency ${ds[i].frequency}`)
+            ds.splice(i-1, 1);
+            i--;
+          } else {
+            ds[i-1].frequency = ds[i-1].frequency + ds[i].frequency;
+            console.log(`Consumed acronym ${ds[i].acronym} with sense ${ds[i].sense}, ${ds[i].cui} and frequency ${ds[i].frequency}`);
+            console.log(`Consumer: acronym ${ds[i-1].acronym} with sense ${ds[i-1].sense}, ${ds[i-1].cui} and frequency ${ds[i-1].frequency}`)
+            ds.splice(i, 1);
+            i--;
+          }
+          console.log(`dataset length after consumption: ${ds.length}`);
+        }
+      }
+    }
+    ds.sort((a, b) => (a.acronym > b.acronym) ? 1: -1);
+    this.dataSource.data = ds;
+
+    // let sameCUIs = [];
+    // let CUIobject = {};
+
+    // //cycle through the all the data and find same CUIs
+    // for (let i = 0; i < this.dataSource.data.length; i++) {
+    //   let item = this.dataSource.data[i];
+    //   if (!CUIobject[item.cui]) {
+    //     CUIobject[item.cui] = 0;
+    //   }
+    //     CUIobject[item.cui]++;
+    // }
+
+    // // add CUIs with frequency >=2 to the list
+    // for (let item in CUIobject) {
+    //   if(CUIobject[item] >= 2 && item != 'NONE' && item != 'SEARCHING') {
+    //     sameCUIs.push(item);
+    //   }
+    // }
+
+    // console.log(`Same CUIs found: ${sameCUIs}`);
   }
 
   // update number of CUIs in tables based on the amount of meaningful CUIs found

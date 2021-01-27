@@ -111,6 +111,15 @@
     color: #673ab7;
   }
 
+  .senseinventory-buttons-container {
+    margin-top: 25px;
+    margin-left: 25px;
+  }
+
+  .senseinventory-button {
+    margin-right: 10px;
+  }
+
   .mat-column-acronyms {
     word-wrap: break-word !important;
     white-space: unset !important;

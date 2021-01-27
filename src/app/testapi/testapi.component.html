@@ -205,7 +205,21 @@
                                 help_outline
                             </mat-icon>
                         </div>
-
+                    </div>
+                    <div fxLayout="row" class="senseinventory-buttons-container">
+                        <button mat-stroked-button
+                            color="primary"
+                            (click)="consumeSameCUIs()"
+                            class="senseinventory-button">
+                            DOWNLOAD SENSE INVENTORY
+                        </button>
+                        <button mat-stroked-button
+                            color="primary"
+                            (click)="consumeSameCUIs()"
+                            [disabled]="!allCUIsFound"
+                            class="senseinventory-button">
+                            PROCESS SAME CUIs
+                        </button>
                     </div>
                     
                 </div>
