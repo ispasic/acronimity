@@ -638,6 +638,31 @@ export class TestapiComponent implements OnInit {
     // FileSaver.saveAs(blob, "Abstracts.json");
   }
 
+   //download all abstracts from results as single file
+   async downloadSenseInventoryClick(): Promise<void> {
+    // download sense inventory
+    let senseInventory = {
+        "data": [],
+        "total": {},
+        "average": {}
+    };
+    senseInventory.data = JSON.parse(JSON.stringify(this.dataSource.data));
+    senseInventory.total = {
+      "acronyms": this.senseInventoryTotal.data[0].value,
+      "senses": this.senseInventoryTotal.data[1].value,
+      "cuis": this.senseInventoryTotal.data[2].value.toString(),
+      "acronymMnetions": this.senseInventoryTotal.data[3].value,
+    }
+    senseInventory.average = {
+      "acronymsPerDocument": this.senseInventoryAverage.data[0].value,
+      "sensesPerAcronym": this.senseInventoryAverage.data[1].value,
+      "cuisPerAcronym": this.senseInventoryAverage.data[2].value,
+      "acronymMnetionsPerDocument": this.senseInventoryAverage.data[3].value,
+    }
+    var blob = new Blob([JSON.stringify(senseInventory, null, 2)], {type: "text/plain;charset=utf-8"});
+    FileSaver.saveAs(blob, "Sense_Inventory.json");
+  }
+
   openPubmedHelpClick() {
     let url = "https://pubmed.ncbi.nlm.nih.gov/help/";
     window.open(url, "_blank", "noopener");
@@ -682,33 +707,33 @@ export class TestapiComponent implements OnInit {
 
   // if the same CUI then the one with higher frequency consumes the other ones
   consumeSameCUIs(): void {
-    
     let ds = this.dataSource.data; //copy data for processing
-    ds.sort((a, b) => (a.cui > b.cui) ? 1 : -1);
+    ds.sort((a, b) => (a.cui > b.cui) ? 1 : -1); //sort the copied data by CUI
 
+    // go over the data
     for (let i = 1; i < ds.length; i++) {
-      if (ds[i].cui != 'SEARCHING' && ds[i].cui != 'NONE') {
-        if (ds[i].cui == ds[i-1].cui) {
-          console.log(`Same cuis. ${i-1}: ${ds[i-1].cui}. ${i}: ${ds[i].cui}`);
-          if (ds[i].frequency >= ds[i-1].frequency) {
+      if (ds[i].cui != 'SEARCHING' && ds[i].cui != 'NONE') { // skip not found CUIs
+        if (ds[i].cui == ds[i-1].cui && ds[i].acronym == ds[i-1].acronym) { // if same CUI and Acronym
+          //console.log(`Same cuis. ${i-1}: ${ds[i-1].cui}. ${i}: ${ds[i].cui}`);
+          if (ds[i].frequency >= ds[i-1].frequency) { // find which one has higher frequency, consume that frequency
             ds[i].frequency = ds[i].frequency + ds[i-1].frequency;
-            console.log(`Consumed acronym ${ds[i-1].acronym} with sense ${ds[i-1].sense}, ${ds[i-1].cui} and frequency ${ds[i-1].frequency}`);
-            console.log(`Consumer: acronym ${ds[i].acronym} with sense ${ds[i].sense}, ${ds[i].cui} and frequency ${ds[i].frequency}`)
-            ds.splice(i-1, 1);
+            //console.log(`Consumed acronym ${ds[i-1].acronym} with sense ${ds[i-1].sense}, ${ds[i-1].cui} and frequency ${ds[i-1].frequency}`);
+            //console.log(`Consumer: acronym ${ds[i].acronym} with sense ${ds[i].sense}, ${ds[i].cui} and frequency ${ds[i].frequency}`)
+            ds.splice(i-1, 1); // delete the one with lower frequency
             i--;
           } else {
             ds[i-1].frequency = ds[i-1].frequency + ds[i].frequency;
-            console.log(`Consumed acronym ${ds[i].acronym} with sense ${ds[i].sense}, ${ds[i].cui} and frequency ${ds[i].frequency}`);
-            console.log(`Consumer: acronym ${ds[i-1].acronym} with sense ${ds[i-1].sense}, ${ds[i-1].cui} and frequency ${ds[i-1].frequency}`)
+            //console.log(`Consumed acronym ${ds[i].acronym} with sense ${ds[i].sense}, ${ds[i].cui} and frequency ${ds[i].frequency}`);
+            //console.log(`Consumer: acronym ${ds[i-1].acronym} with sense ${ds[i-1].sense}, ${ds[i-1].cui} and frequency ${ds[i-1].frequency}`)
             ds.splice(i, 1);
             i--;
           }
-          console.log(`dataset length after consumption: ${ds.length}`);
+          //console.log(`dataset length after consumption: ${ds.length}`);
         }
       }
     }
-    ds.sort((a, b) => (a.acronym > b.acronym) ? 1: -1);
-    this.dataSource.data = ds;
+    ds.sort((a, b) => (a.acronym > b.acronym) ? 1: -1); // sort data by name again
+    this.dataSource.data = ds; // refresh the table with new data
 
     // let sameCUIs = [];
     // let CUIobject = {};
