@@ -120,6 +120,11 @@
     margin-right: 10px;
   }
 
+  .senseinventory-help-icon {
+    margin-top: 5px;
+    cursor: pointer;
+  }
+
   .mat-column-acronyms {
     word-wrap: break-word !important;
     white-space: unset !important;
