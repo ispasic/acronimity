@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import * as pluralize from '../../../node_modules/pluralize';
 
 @Injectable({
   providedIn: 'root'
@@ -306,16 +307,27 @@ export class AcronymService {
 
       // if bestlongform actually found
       // change plural to singular
-      if (acronym.endsWith('s') && bestLongForm.endsWith('s')) {
-        acronym = acronym.substring(0, acronym.length - 1); // cut off s
-        if (acronym.endsWith("'")) {
-          acronym = acronym.substring(0, acronym.length - 1); // cut of ' for those who use possessive for plural (yuk!)
+      if (pluralize.isPlural(bestLongForm)) { //if bestLongForm is plural
+        console.log(`Initial plural blf: ${acronym} and ${bestLongForm}`);
+        if (acronym.endsWith('s') && bestLongForm.endsWith('s')) { // if both end with S
+          acronym = acronym.substring(0, acronym.length - 1); // cut off s
+          if (acronym.endsWith("'")) {
+            acronym = acronym.substring(0, acronym.length - 1); // cut of ' for those who use possessive for plural (yuk!)
+          }
+          bestLongForm = pluralize.singular(bestLongForm);
         }
-        bestLongForm = bestLongForm.substring(0, bestLongForm.length - 1); // cut off s
-        if (bestLongForm.endsWith('ie')) {
-          bestLongForm = bestLongForm.substring(0, bestLongForm.length - 2) + 'y'; // fix stemming ie -> y, memories -> memorie -> memory
-        }
+        console.log(`Processed plural blf: ${acronym} and ${bestLongForm}`);
       }
+      // if (acronym.endsWith('s') && bestLongForm.endsWith('s')) {
+      //   acronym = acronym.substring(0, acronym.length - 1); // cut off s
+      //   if (acronym.endsWith("'")) {
+      //     acronym = acronym.substring(0, acronym.length - 1); // cut of ' for those who use possessive for plural (yuk!)
+      //   }
+      //   bestLongForm = bestLongForm.substring(0, bestLongForm.length - 1); // cut off s
+      //   if (bestLongForm.endsWith('ie')) {
+      //     bestLongForm = bestLongForm.substring(0, bestLongForm.length - 2) + 'y'; // fix stemming ie -> y, memories -> memorie -> memory
+      //   }
+      // }
 
       var foundPair = {
         "shortform": acronym.toUpperCase(),

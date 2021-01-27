@@ -49,7 +49,7 @@ export class AbstractProcessingService {
 
     let result = 0;
     let count;
-    if (count = processedText.match(new RegExp(`(\\b)(${this.escapeRegExp(acronym)})(?!\\w)`, 'gi'))) {
+    if (count = processedText.match(new RegExp(`(\\b)(${this.escapeRegExp(acronym)})(s|(?!\\w))`, 'gi'))) {
       result = count.length
     }
     return result;
