@@ -729,7 +729,6 @@ export class TestapiComponent implements OnInit {
             i--;
           }
           this.apiCUIs--;
-          this.foundCUIs--;
           //console.log(`dataset length after consumption: ${ds.length}`);
         }
       }
@@ -767,8 +766,7 @@ export class TestapiComponent implements OnInit {
     // total number of acronyms not changed (deleted only same acronym-cui pairs)
     // total number of sense is the length data
     this.senseInventoryTotal.data[1].value = this.dataSource.data.length;
-    // total number of cuis is the value if foundCUIs
-    this.senseInventoryTotal.data[2].value = this.foundCUIs;
+    // total number of meaningful cuis not changed (deleted only same acronym-cui pairs)
     // total number of mentions is not changed (initial dataset is not changed)
 
     // update averages
@@ -776,7 +774,6 @@ export class TestapiComponent implements OnInit {
     // senses per acronym
     this.senseInventoryAverage.data[1].value = (this.senseInventoryTotal.data[1].value / this.senseInventoryTotal.data[0].value).toFixed(3);
     // cuis per acronym
-    this.senseInventoryAverage.data[2].value = (this.senseInventoryTotal.data[2].value / this.senseInventoryTotal.data[0].value).toFixed(3);
     // acronym mentions per document not changed  (deleted only same aconym-cui pairs;
   }
 
