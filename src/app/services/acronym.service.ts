@@ -308,7 +308,7 @@ export class AcronymService {
       // if bestlongform actually found
       // change plural to singular
       if (pluralize.isPlural(bestLongForm)) { //if bestLongForm is plural
-        console.log(`Initial plural blf: ${acronym} and ${bestLongForm}`);
+        //console.log(`Initial plural blf: ${acronym} and ${bestLongForm}`);
         if (acronym.endsWith('s') && bestLongForm.endsWith('s')) { // if both end with S
           acronym = acronym.substring(0, acronym.length - 1); // cut off s
           if (acronym.endsWith("'")) {
@@ -316,7 +316,7 @@ export class AcronymService {
           }
           bestLongForm = pluralize.singular(bestLongForm);
         }
-        console.log(`Processed plural blf: ${acronym} and ${bestLongForm}`);
+        //console.log(`Processed plural blf: ${acronym} and ${bestLongForm}`);
       }
       // if (acronym.endsWith('s') && bestLongForm.endsWith('s')) {
       //   acronym = acronym.substring(0, acronym.length - 1); // cut off s

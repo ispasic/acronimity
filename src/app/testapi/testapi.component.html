@@ -81,7 +81,14 @@
                     <!-- search results -->
     
                     <mat-list>
-                        <div mat-subheader>Search results:</div>
+                        <div fxLayout="row">
+                            <div mat-subheader class="search-results-header">Search results:</div>
+                            <mat-icon class="search-help-icon" #tooltip="matTooltip"
+                                matTooltip="Click on title for further details.">
+                                help_outline
+                            </mat-icon>
+                        </div>
+
                         <mat-list-item class="result-list-item" *ngFor="let entry of listOfSearchResults | paginate: paginationConfig">
                             <div fxLayout="column">
                                 <div class="title-text" (click)="moreDetailsClick(entry)">{{entry.title}}</div>
@@ -105,39 +112,58 @@
     
                 <!-- sense inventory in the right pane -->
                 <div fxLayout="column" fxFlex="50" class="right-pane">
-                    <div class="normal-label-right-pane">Sense Inventory</div>
+                    <div class="normal-header-right-pane">Sense inventory</div>
                     <div>
-                        <mat-form-field class="filter-form-field">
-                            <mat-label>Filter</mat-label>
-                            <input matInput (keyup)="applyFilter($event)" #input>
-                        </mat-form-field>
+                        <div fxLayout="row">
+                            <mat-form-field class="filter-form-field">
+                                <mat-label>Filter</mat-label>
+                                <input matInput (keyup)="applyFilter($event)" #input>
+                            </mat-form-field>
+                            <mat-icon class="filter-help-icon" #tooltip="matTooltip"
+                                matTooltip="Use this filter to search for specific acronyms in the list below. Note that the search is not case sensitive.">
+                                help_outline
+                            </mat-icon>
+                        </div>
+
                         <mat-table class="senseinventory-table" [dataSource]="dataSource"
                             matSort matSortActive="acronym" matSortDirection="asc" matSortDisableClear>
                             <ng-container matColumnDef="acronym">
-                                <mat-header-cell *matHeaderCellDef mat-sort-header
+                                <!-- <mat-header-cell *matHeaderCellDef mat-sort-header
                                     #tooltip="matTooltip" matTooltip="All acronyms that were automatically extracted.">
                                     Acronym
-                                </mat-header-cell> 
+                                </mat-header-cell> -->
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                    Acronym
+                                </mat-header-cell>
                                 <mat-cell *matCellDef="let res"> {{res.acronym}} </mat-cell>
                             </ng-container>
                             <ng-container matColumnDef="sense">
-                                <mat-header-cell *matHeaderCellDef mat-sort-header
-                                    #tooltip="matTooltip" matTooltip="All sense (i.e. longforms) that were automatically extracted.">
-                                    Sense
+                                <!-- <mat-header-cell *matHeaderCellDef mat-sort-header
+                                    #tooltip="matTooltip" matTooltip="All long forms that were automatically extracted.">
+                                    Long form
+                                </mat-header-cell> -->
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                    Long form
                                 </mat-header-cell>
                                 <mat-cell *matCellDef="let res"> {{res.sense}} </mat-cell>
                             </ng-container>
                             <ng-container matColumnDef="cui">
-                                <mat-header-cell *matHeaderCellDef mat-sort-header
-                                    #tooltip="matTooltip" matTooltip="Concept Unique Identifier (CUI) of the long form (sense) in the Unified Medical Language System (UMLS).">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>
                                     CUI
+                                    <mat-icon class="table-header-help-icon"
+                                        #tooltip="matTooltip" matTooltip="Concept Unique Identifier obtained from the Unified Medical Language System (UMLS) by searching for the given long form.">
+                                        help_outline
+                                    </mat-icon>
                                 </mat-header-cell>
                                 <mat-cell *matCellDef="let res" (click)="navigateCUI(res.cui)" [ngClass]="{'cui-link': res.cui != 'SEARCHING' && res.cui != 'NONE'}"> {{res.cui}} </mat-cell>
                             </ng-container>
                             <ng-container matColumnDef="frequency">
-                                <mat-header-cell *matHeaderCellDef mat-sort-header
-                                    #tooltip="matTooltip" matTooltip="The number of times an acronym was mentioned.">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>
                                     Frequency
+                                    <mat-icon class="table-header-help-icon"
+                                        #tooltip="matTooltip" matTooltip="The number of times the given acronym is mentioned in the corpus of retrieved documents.">
+                                        help_outline
+                                    </mat-icon>
                                 </mat-header-cell>
                                 <mat-cell *matCellDef="let res"> {{res.frequency}} </mat-cell>
                             </ng-container>
@@ -147,8 +173,8 @@
                         <mat-paginator #paginator [pageSizeOptions]="[10, 20]" [pageSize]="10" showFirstLastButtons></mat-paginator>
                     </div>
 
-                    
-                    <div class="normal-label-right-pane right-pane-next">Total</div>
+                    <div class="normal-header-right-pane right-pane-next">Summary</div>
+                    <div class="normal-label-right-pane right-pane-next">Total number of...</div>
                     <div fxLayout = "row">
                         <div style = "width: 40%;">
                             <mat-table class="senseinventorysummary-table" [dataSource]="senseInventoryTotal">
@@ -156,12 +182,34 @@
                                     <mat-cell *matCellDef="let res"> {{res.measure}} </mat-cell>
                                 </ng-container>
                                 <ng-container matColumnDef="value">
-                                    <mat-cell *matCellDef="let res"> {{res.value}} </mat-cell>
+                                    <mat-cell *matCellDef="let res">
+                                        <div [hidden]="res.measure != 'CUIs' || allCUIsFound">
+                                            <mat-progress-spinner
+                                                #tooltip="matTooltip"
+                                                matTooltip="Please wait for the UMLS API to return results."
+                                                class="cuisearch-table-spinner"
+                                                diameter="30"
+                                                [value]="getCUIProgressValue()">
+                                            </mat-progress-spinner>
+                                        </div>
+                                        <div [hidden]="res.measure == 'CUIs' && !allCUIsFound">
+                                            {{res.value}}
+                                        </div>
+                                    </mat-cell>
                                 </ng-container>
                                 <mat-row *matRowDef="let row; columns: senseInventorySummaryColumns;"></mat-row>
                             </mat-table>
                         </div>
                         <div class="cuisearch-container cuisearch-help-container">
+                            <mat-icon class="help-icon"
+                                #tooltip="matTooltip"
+                                matTooltip="CUIs are being acquired from UMLS for each long form. Please wait for final total and average CUI values until loading is complete.">
+                                help_outline
+                            </mat-icon>
+                        </div>
+
+                        <!-- separate button for all cuis search -->
+                        <!-- <div class="cuisearch-container cuisearch-help-container">
                             <mat-icon class="help-icon"
                                 #tooltip="matTooltip"
                                 matTooltip="Press the 'GET ALL CUIs' button to acquire CUI from UMLS for each sense. Current total and average values are not final unless the button is inactive (i.e. all CUIs acquired from UMLS).">
@@ -183,9 +231,9 @@
                                 diameter="30"
                                 [value]="getCUIProgressValue()">
                             </mat-progress-spinner>
-                        </div>
+                        </div> -->
                     </div>
-                    <div class="normal-label-right-pane right-pane-next">Average</div>
+                    <div class="normal-label-right-pane right-pane-next">Average number of...</div>
                     <div fxLayout="row">
                         <div style = "width: 50%;">
                             <mat-table class="senseinventorysummary-table" [dataSource]="senseInventoryAverage">
@@ -193,7 +241,20 @@
                                     <mat-cell *matCellDef="let res"> {{res.measure}} </mat-cell>
                                 </ng-container>
                                 <ng-container matColumnDef="value">
-                                    <mat-cell *matCellDef="let res"> {{res.value}} </mat-cell>
+                                    <mat-cell *matCellDef="let res">
+                                        <div [hidden]="res.measure != 'CUIs per acronym' || allCUIsFound">
+                                            <mat-progress-spinner
+                                                #tooltip="matTooltip"
+                                                matTooltip="Please wait for the UMLS API to return results."
+                                                class="cuisearch-table-spinner"
+                                                diameter="30"
+                                                [value]="getCUIProgressValue()">
+                                            </mat-progress-spinner>
+                                        </div>
+                                        <div [hidden]="res.measure == 'CUIs per acronym' && !allCUIsFound">
+                                            {{res.value}}
+                                        </div>
+                                    </mat-cell>
                                 </ng-container>
                                 <mat-row *matRowDef="let row; columns: senseInventorySummaryColumns;"></mat-row>
                             </mat-table>
@@ -201,19 +262,31 @@
                         <div class="cuisearch-container cuisearch-help-container">
                             <mat-icon class="help-icon"
                                 #tooltip="matTooltip"
-                                matTooltip="Press the 'GET ALL CUIs' button to acquire CUI from UMLS for each sense. Current total and average values are not final unless the button is inactive (i.e. all CUIs acquired from UMLS).">
+                                matTooltip="CUIs are being acquired from UMLS for each long form. Please wait for final total and average CUI values until loading is complete.">
                                 help_outline
                             </mat-icon>
                         </div>
+                        <!-- <div class="cuisearch-container cuisearch-help-container">
+                            <mat-icon class="help-icon"
+                                #tooltip="matTooltip"
+                                matTooltip="Press the 'GET ALL CUIs' button to acquire CUI from UMLS for each sense. Current total and average values are not final unless the button is inactive (i.e. all CUIs acquired from UMLS).">
+                                help_outline
+                            </mat-icon>
+                        </div> -->
                     </div>
                     <div fxLayout="row" class="senseinventory-buttons-container">
                         <button mat-stroked-button
                             color="primary"
                             (click)="downloadSenseInventoryClick()"
                             class="senseinventory-button">
-                            DOWNLOAD SENSE INVENTORY
+                            DOWNLOAD
                         </button>
-                        <button mat-stroked-button
+                        <mat-icon class="senseinventory-help-icon"
+                            #tooltip="matTooltip"
+                            matTooltip="Press the 'DOWNLOAD' button to get the json file with the generated sense inventory.">
+                            help_outline
+                        </mat-icon>
+                        <!-- <button mat-stroked-button
                             color="primary"
                             (click)="consumeSameCUIs()"
                             [disabled]="!allCUIsFound"
@@ -224,7 +297,7 @@
                             #tooltip="matTooltip"
                             matTooltip="Press the 'PROCESS SAME CUIs' button to use more frequently used senses with the same Acronym and CUI to consume less frequently used senses. (Note: button is active only when all CUIs acquired from UMLS).">
                             help_outline
-                        </mat-icon>
+                        </mat-icon> -->
                     </div>
                     
                 </div>

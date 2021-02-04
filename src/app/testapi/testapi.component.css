@@ -64,10 +64,25 @@
     height: 100px !important;
   }
 
+  .search-results-header {
+    margin-right: 0;
+  }
+
+  .search-help-icon {
+    cursor: pointer;
+    margin-top: 2px;
+    font-size: 25px;
+  }
+
   .right-pane {
     margin-left: 20px;
   }
 
+  .normal-header-right-pane {
+    font-size: 17px;
+    color: darkslategrey;
+    margin-left: 20px;
+  }
   .normal-label-right-pane {
     font-size: 15px;
     color: darkslategrey;
@@ -89,8 +104,21 @@
     margin-left: 20px;
   }
 
+  .filter-help-icon {
+    cursor: pointer;
+    margin-top: 10px;
+    margin-left: 10px;
+    font-size: 25px;
+  }
+
   mat-table {
     width: 100% !important;
+  }
+
+  .cuisearch-table-spinner {
+    margin: 0px;
+    color: #673ab7;
+    cursor: pointer;
   }
 
   .cuisearch-container {
@@ -122,6 +150,13 @@
 
   .senseinventory-help-icon {
     margin-top: 5px;
+    cursor: pointer;
+  }
+
+  .table-header-help-icon {
+    font-size: 18px;
+    margin-left: 3px;
+    margin-top: 3px;
     cursor: pointer;
   }
 

@@ -199,6 +199,10 @@ export class TestapiComponent implements OnInit {
     // search is done
     this.isSearched = true;
     this.searchProgress = '';
+
+    // small sleep before starting find of all cuis
+    await this.sleep(2000);
+    this.findAllCUIs();
   }
 
   async getBasicDataResults(listOfIDs): Promise<any> {
@@ -530,7 +534,7 @@ export class TestapiComponent implements OnInit {
       }
     };
 
-    console.log(this.dataSource.data);
+    //console.log(this.dataSource.data);
 
     // subscription to the paginator event in order to dynamically acquire CUI IDs
     this.dataSource.paginator.page
@@ -573,7 +577,7 @@ export class TestapiComponent implements OnInit {
     // assign the table data
     let senseInventoryTotalData = [
       {"measure": "Acronyms", "value": acronymsTotal.toFixed(0)},
-      {"measure": "Senses", "value": sensesTotal.toFixed(0)},
+      {"measure": "Long forms", "value": sensesTotal.toFixed(0)},
       {"measure": "CUIs", "value": cuisTotal.toFixed(0)},
       {"measure": "Acronym mentions", "value": acronymMentionsTotal.toFixed(0)}
     ];
@@ -595,7 +599,7 @@ export class TestapiComponent implements OnInit {
 
     let senseInventoryAverageData = [
       {"measure": "Acronyms per document", "value": acronymsPerDocument.toFixed(3)},
-      {"measure": "Senses per acronym", "value": sensesPerAcronym.toFixed(3)},
+      {"measure": "Long forms per acronym", "value": sensesPerAcronym.toFixed(3)},
       {"measure": "CUIs per acronym", "value": cuisPerAcronym.toFixed(3)},
       {"measure": "Acronym mentions per document", "value": acronymMentionsPerDocument.toFixed(3)}
     ];
@@ -699,6 +703,8 @@ export class TestapiComponent implements OnInit {
           if (this.apiCUIs == this.dataSource.data.length) {
             this.areCUIsBeingFound = false;
             this.allCUIsFound = true;
+            // if consume is needed, start the function. If not - comment that
+            this.consumeSameCUIs();
           }
         });
       }
@@ -737,27 +743,6 @@ export class TestapiComponent implements OnInit {
     this.dataSource.data = ds; // refresh the table with new data
 
     this.updateCutSenseInventory();
-
-    // let sameCUIs = [];
-    // let CUIobject = {};
-
-    // //cycle through the all the data and find same CUIs
-    // for (let i = 0; i < this.dataSource.data.length; i++) {
-    //   let item = this.dataSource.data[i];
-    //   if (!CUIobject[item.cui]) {
-    //     CUIobject[item.cui] = 0;
-    //   }
-    //     CUIobject[item.cui]++;
-    // }
-
-    // // add CUIs with frequency >=2 to the list
-    // for (let item in CUIobject) {
-    //   if(CUIobject[item] >= 2 && item != 'NONE' && item != 'SEARCHING') {
-    //     sameCUIs.push(item);
-    //   }
-    // }
-
-    // console.log(`Same CUIs found: ${sameCUIs}`);
   }
 
   // update senseInventory after cutting
@@ -931,10 +916,16 @@ export class TestapiComponent implements OnInit {
     // generate summary sense tables
     this.generateSenseInventorySummaries(listOfAcronymsTable);
 
+
+
     //load is done (so search is done as well)  
     this.isLoaded = true;
     this.isSearched = true;
     this.searchProgress = '';
+
+    // small sleep before starting find of all cuis
+    await this.sleep(2000);
+    this.findAllCUIs();
 
     // console.log("List of loaded results: ", this.listOfSearchResults);
     // console.log("List of loaded IDs:", this.listOfSearchIDs);
