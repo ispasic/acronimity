@@ -43,7 +43,7 @@ export class UmlsService {
       'content-type':  'application/x-www-form-urlencoded'
     });
     let params = new HttpParams();
-    params = params.set("apikey", apiKey);
+    params = params.set("apikey", apiKey); // set api key parameter
     return this.http.post(this.findUrl, null, { headers: headers, params: params, responseType: 'text' });
   }
 
@@ -54,7 +54,7 @@ export class UmlsService {
       'content-type': 'application/x-www-form-urlencoded'
     });
     let params = new HttpParams();
-    params = params.set('service', 'http://umlsks.nlm.nih.gov');
+    params = params.set('service', 'http://umlsks.nlm.nih.gov'); // set the service for the API Call
     return this.http.post(this.findUrl, null, { headers: headers, params: params, responseType: 'text' });
   }
 
@@ -63,45 +63,42 @@ export class UmlsService {
     this.findUrl = baseSearchUrl
     let headers = new HttpHeaders();
     let params = new HttpParams();
-    params = params.set('string', query);
-    params = params.set('ticket', ticket);
+    params = params.set('string', query); // query. i.e. acronym longform
+    params = params.set('ticket', ticket); // service ticket for each query
     return this.http.get(this.findUrl, { headers: headers, params: params } );
   }
 
   // search umls for CUI
   public async findCUI(query) {
-    // small sleep not to exceed 20 searches per second
-    //await this.sleep(50);
     // get tgt
     let tgt = await this.getTgt();
     // get st
     let st = await this.getStFromUmls(tgt).toPromise().catch(error => console.log(error));
+    // get result through UMLS API Call
     let result = await this.searchUmls(query, st).toPromise().catch(error => console.log(error));
     return result;
   }
-
 
   // get tgt checking the database
   public async getTgt() {
     let result = '';
     // get from Database first
     let tgtRes = await this.getTgtFromDatabase().toPromise().catch(error => console.log(error));
-    // check if  in database
+    // check if in database
     let tgtResJson = JSON.parse(JSON.stringify(tgtRes));
     // if in database return it
     if (tgtResJson.length != 0) {
       return tgtRes[0].tgt;
       // if not in the database, get new tgt and add it to the database and return the value
     } else {
+      // get tgt from umls
       tgtRes = await this.getTgtFromUmls().toPromise().catch(error => console.log(error));
+      // cut the actual tgt from the response
       result = tgtRes.substring(tgtRes.indexOf("TGT-"), tgtRes.indexOf("method") - 2);
       // add tgt to database
       await this.addTgtToDatabase(result).toPromise().catch(error => console.log(error));
+      // return the value
       return result;
     }
-  }
-
-  private sleep(ms) {
-    return new Promise(resolve => setTimeout(resolve, ms));
   }
 }
