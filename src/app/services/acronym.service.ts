@@ -77,7 +77,7 @@ export class AcronymService {
   private isValidShortForm(str: string): boolean {
     if (str.length < 2) {
       return false; // string is shorter than 2 chars
-    } else if (str.length >= 10) {
+    } else if (str.length >= 12) {
       return false; // string is longer than 8 chars
     } else if (!this.hasLetter(str)) {
       return false; // no letters in the string
@@ -210,12 +210,16 @@ export class AcronymService {
             acronym = acronym.substring(0, acronym.length - 1);
           }
 
+          //console.log(acronym);
+          //console.log(definition);
+
           if(this.isValidShortForm(acronym)) //if acronym is actually valid short form
           {
             var foundPair = {
               "shortform": acronym.trim(),
               "longform": definition.trim()
             }; //set up a pair for candidate list of acronym - long form JSON
+            //console.log(foundPair);
             candidateList.push(foundPair); //push the pair into candidate list
           }
         }
