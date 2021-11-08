@@ -5,15 +5,14 @@
             <div class="normal-label">PubMed query:</div>
             <div fxLayout="row" class="centeralign">
                 <div>
-                    <mat-form-field class="main-input-field" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
+                    <mat-form-field class="main-input-field" appearance="outline"
+                        (keyup.enter)="searchButtonClick(query, resultsNumber)">
                         <mat-label style="margin-top: 0px !important;">Query</mat-label>
-                        <input matInput type="text" [(ngModel)]="query" class="normal-text">  
+                        <input matInput type="text" [(ngModel)]="query" class="normal-text">
                     </mat-form-field>
                 </div>
                 <div class="help-icon-container-main">
-                    <mat-icon class="help-icon"
-                        #tooltip="matTooltip"
-                        matTooltip="Click to open PubMed Query Help"
+                    <mat-icon class="help-icon" #tooltip="matTooltip" matTooltip="Click to open PubMed Query Help"
                         (click)="openPubmedHelpClick()">
                         help_outline
                     </mat-icon>
@@ -21,14 +20,14 @@
             </div>
             <div fxLayout="row" class="centeralign">
                 <div>
-                    <mat-form-field class="main-input-field" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
+                    <mat-form-field class="main-input-field" appearance="outline"
+                        (keyup.enter)="searchButtonClick(query, resultsNumber)">
                         <mat-label style="margin-top: 0px !important;">Number of results</mat-label>
-                        <input matInput type="text" [(ngModel)]="resultsNumber" class="normal-text">  
+                        <input matInput type="text" [(ngModel)]="resultsNumber" class="normal-text">
                     </mat-form-field>
                 </div>
                 <div class="help-icon-container-main">
-                    <mat-icon class="help-icon"
-                        #tooltip="matTooltip"
+                    <mat-icon class="help-icon" #tooltip="matTooltip"
                         matTooltip="Specify a number if you would like to limit the amount of search results returned. (default: 100)">
                         help_outline
                     </mat-icon>
@@ -46,40 +45,39 @@
                     <div class="normal-label-left-pane">PubMed query:</div>
                     <div fxLayout="row">
                         <div>
-                            <mat-form-field class="left-pane-input-field" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
+                            <mat-form-field class="left-pane-input-field" appearance="outline"
+                                (keyup.enter)="searchButtonClick(query, resultsNumber)">
                                 <mat-label style="margin-top: 0px !important;">Query</mat-label>
-                                <input matInput type="text" [(ngModel)]="query" class="normal-text">  
+                                <input matInput type="text" [(ngModel)]="query" class="normal-text">
                             </mat-form-field>
                         </div>
                         <div class="help-icon-container">
-                            <mat-icon class="help-icon"
-                                #tooltip="matTooltip"
-                                matTooltip="Click to open PubMed Query Help"
-                                (click)="openPubmedHelpClick()">
+                            <mat-icon class="help-icon" #tooltip="matTooltip"
+                                matTooltip="Click to open PubMed Query Help" (click)="openPubmedHelpClick()">
                                 help_outline
                             </mat-icon>
                         </div>
                     </div>
                     <div fxLayout="row">
                         <div>
-                            <mat-form-field class="left-pane-input-field" appearance="outline" (keyup.enter)="searchButtonClick(query, resultsNumber)">
+                            <mat-form-field class="left-pane-input-field" appearance="outline"
+                                (keyup.enter)="searchButtonClick(query, resultsNumber)">
                                 <mat-label style="margin-top: 0px !important;">Number of results</mat-label>
-                                <input matInput type="text" [(ngModel)]="resultsNumber" class="normal-text">  
+                                <input matInput type="text" [(ngModel)]="resultsNumber" class="normal-text">
                             </mat-form-field>
                         </div>
                         <div class="help-icon-container">
-                            <mat-icon class="help-icon"
-                                #tooltip="matTooltip"
+                            <mat-icon class="help-icon" #tooltip="matTooltip"
                                 matTooltip="Specify a number if you would like to limit the amount of search results returned. (default: 100)">
                                 help_outline
                             </mat-icon>
                         </div>
                     </div>
-    
+
                     <div class="database-progress centeralign">{{searchProgress}}</div>
-    
+
                     <!-- search results -->
-    
+
                     <mat-list>
                         <div fxLayout="row">
                             <div mat-subheader class="search-results-header">Search results:</div>
@@ -89,7 +87,8 @@
                             </mat-icon>
                         </div>
 
-                        <mat-list-item class="result-list-item" *ngFor="let entry of listOfSearchResults | paginate: paginationConfig">
+                        <mat-list-item class="result-list-item"
+                            *ngFor="let entry of listOfSearchResults | paginate: paginationConfig">
                             <div fxLayout="column">
                                 <div class="title-text" (click)="moreDetailsClick(entry)">{{entry.title}}</div>
                                 <div class="journal-title-text">Journal:&nbsp;{{entry.journal}}</div>
@@ -98,10 +97,8 @@
                         </mat-list-item>
                     </mat-list>
                     <div class="pagination-style">
-                        <pagination-controls [id]="paginationConfig.id"
-                            [maxSize]="maxSize"
-                            [previousLabel]="labels.previousLabel"
-                            [nextLabel]="labels.nextLabel"
+                        <pagination-controls [id]="paginationConfig.id" [maxSize]="maxSize"
+                            [previousLabel]="labels.previousLabel" [nextLabel]="labels.nextLabel"
                             [screenReaderPaginationLabel]="labels.screenReaderPaginationLabel"
                             [screenReaderPageLabel]="labels.screenReaderPageLabel"
                             [screenReaderCurrentLabel]="labels.screenReaderCurrentLabel"
@@ -109,7 +106,7 @@
                         </pagination-controls>
                     </div>
                 </div>
-    
+
                 <!-- sense inventory in the right pane -->
                 <div fxLayout="column" fxFlex="50" class="right-pane">
                     <div class="normal-header-right-pane">Sense inventory</div>
@@ -125,8 +122,8 @@
                             </mat-icon>
                         </div>
 
-                        <mat-table class="senseinventory-table" [dataSource]="dataSource"
-                            matSort matSortActive="acronym" matSortDirection="asc" matSortDisableClear>
+                        <mat-table class="senseinventory-table" [dataSource]="dataSource" matSort
+                            matSortActive="acronym" matSortDirection="asc" matSortDisableClear>
                             <ng-container matColumnDef="acronym">
                                 <!-- <mat-header-cell *matHeaderCellDef mat-sort-header
                                     #tooltip="matTooltip" matTooltip="All acronyms that were automatically extracted.">
@@ -150,18 +147,20 @@
                             <ng-container matColumnDef="cui">
                                 <mat-header-cell *matHeaderCellDef mat-sort-header>
                                     CUI
-                                    <mat-icon class="table-header-help-icon"
-                                        #tooltip="matTooltip" matTooltip="Concept Unique Identifier obtained from the Unified Medical Language System (UMLS) by searching for the given long form.">
+                                    <mat-icon class="table-header-help-icon" #tooltip="matTooltip"
+                                        matTooltip="Concept Unique Identifier obtained from the Unified Medical Language System (UMLS) by searching for the given long form.">
                                         help_outline
                                     </mat-icon>
                                 </mat-header-cell>
-                                <mat-cell *matCellDef="let res" (click)="navigateCUI(res.cui)" [ngClass]="{'cui-link': res.cui != 'SEARCHING' && res.cui != 'NONE'}"> {{res.cui}} </mat-cell>
+                                <mat-cell *matCellDef="let res" (click)="navigateCUI(res.cui)"
+                                    [ngClass]="{'cui-link': res.cui != 'SEARCHING' && res.cui != 'NONE'}"> {{res.cui}}
+                                </mat-cell>
                             </ng-container>
                             <ng-container matColumnDef="frequency">
                                 <mat-header-cell *matHeaderCellDef mat-sort-header>
                                     Frequency
-                                    <mat-icon class="table-header-help-icon"
-                                        #tooltip="matTooltip" matTooltip="The number of times the given acronym is mentioned in the corpus of retrieved documents.">
+                                    <mat-icon class="table-header-help-icon" #tooltip="matTooltip"
+                                        matTooltip="The number of times the given acronym is mentioned in the corpus of retrieved documents.">
                                         help_outline
                                     </mat-icon>
                                 </mat-header-cell>
@@ -170,13 +169,14 @@
                             <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
                             <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
                         </mat-table>
-                        <mat-paginator #paginator [pageSizeOptions]="[10, 20]" [pageSize]="10" showFirstLastButtons></mat-paginator>
+                        <mat-paginator #paginator [pageSizeOptions]="[10, 20]" [pageSize]="10" showFirstLastButtons>
+                        </mat-paginator>
                     </div>
 
                     <div class="normal-header-right-pane right-pane-next">Summary</div>
                     <div class="normal-label-right-pane right-pane-next">Total number of...</div>
-                    <div fxLayout = "row">
-                        <div style = "width: 40%;">
+                    <div fxLayout="row">
+                        <div style="width: 40%;">
                             <mat-table class="senseinventorysummary-table" [dataSource]="senseInventoryTotal">
                                 <ng-container matColumnDef="measure">
                                     <mat-cell *matCellDef="let res"> {{res.measure}} </mat-cell>
@@ -184,11 +184,9 @@
                                 <ng-container matColumnDef="value">
                                     <mat-cell *matCellDef="let res">
                                         <div [hidden]="res.measure != 'CUIs' || allCUIsFound">
-                                            <mat-progress-spinner
-                                                #tooltip="matTooltip"
+                                            <mat-progress-spinner #tooltip="matTooltip"
                                                 matTooltip="Please wait for the UMLS API to return results."
-                                                class="cuisearch-table-spinner"
-                                                diameter="30"
+                                                class="cuisearch-table-spinner" diameter="30"
                                                 [value]="getCUIProgressValue()">
                                             </mat-progress-spinner>
                                         </div>
@@ -201,8 +199,7 @@
                             </mat-table>
                         </div>
                         <div class="cuisearch-container cuisearch-help-container">
-                            <mat-icon class="help-icon"
-                                #tooltip="matTooltip"
+                            <mat-icon class="help-icon" #tooltip="matTooltip"
                                 matTooltip="CUIs are being acquired from UMLS for each long form. Please wait for final total and average CUI values. After loading is complete the more frequently used long forms with the same acronym and CUI 'consume' less frequently used long forms.">
                                 help_outline
                             </mat-icon>
@@ -235,7 +232,7 @@
                     </div>
                     <div class="normal-label-right-pane right-pane-next">Average number of...</div>
                     <div fxLayout="row">
-                        <div style = "width: 50%;">
+                        <div style="width: 50%;">
                             <mat-table class="senseinventorysummary-table" [dataSource]="senseInventoryAverage">
                                 <ng-container matColumnDef="measure">
                                     <mat-cell *matCellDef="let res"> {{res.measure}} </mat-cell>
@@ -243,11 +240,9 @@
                                 <ng-container matColumnDef="value">
                                     <mat-cell *matCellDef="let res">
                                         <div [hidden]="res.measure != 'CUIs per acronym' || allCUIsFound">
-                                            <mat-progress-spinner
-                                                #tooltip="matTooltip"
+                                            <mat-progress-spinner #tooltip="matTooltip"
                                                 matTooltip="Please wait for the UMLS API to return results."
-                                                class="cuisearch-table-spinner"
-                                                diameter="30"
+                                                class="cuisearch-table-spinner" diameter="30"
                                                 [value]="getCUIProgressValue()">
                                             </mat-progress-spinner>
                                         </div>
@@ -260,8 +255,7 @@
                             </mat-table>
                         </div>
                         <div class="cuisearch-container cuisearch-help-container">
-                            <mat-icon class="help-icon"
-                                #tooltip="matTooltip"
+                            <mat-icon class="help-icon" #tooltip="matTooltip"
                                 matTooltip="CUIs are being acquired from UMLS for each long form. Please wait for final total and average CUI values. After loading is complete the more frequently used long forms with the same acronym and CUI 'consume' less frequently used long forms.">
                                 help_outline
                             </mat-icon>
@@ -275,14 +269,11 @@
                         </div> -->
                     </div>
                     <div fxLayout="row" class="senseinventory-buttons-container">
-                        <button mat-stroked-button
-                            color="primary"
-                            (click)="downloadSenseInventoryClick()"
+                        <button mat-stroked-button color="primary" (click)="downloadSenseInventoryClick()"
                             class="senseinventory-button">
                             DOWNLOAD
                         </button>
-                        <mat-icon class="senseinventory-help-icon"
-                            #tooltip="matTooltip"
+                        <mat-icon class="senseinventory-help-icon" #tooltip="matTooltip"
                             matTooltip="Press the 'DOWNLOAD' button to get the json file with the generated sense inventory.">
                             help_outline
                         </mat-icon>
@@ -299,7 +290,7 @@
                             help_outline
                         </mat-icon> -->
                     </div>
-                    
+
                 </div>
             </div>
         </div>
@@ -307,10 +298,17 @@
     </mat-card-content>
     <mat-divider></mat-divider>
     <mat-card-actions class="centeralign">
-        <button mat-raised-button color="primary" (click)="searchButtonClick(query, resultsNumber)" class="normal-button">{{mainButtonText}}</button>
-        <button mat-stroked-button [disabled]="isLoaded" color="primary" (click)="showDatabaseMongoClick()" class="normal-button">LOAD DATABASE</button>
-        <button mat-stroked-button *ngIf="isSearched" color="primary" (click)="downloadAbstractsClick()" class="normal-button">DOWNLOAD ALL</button>
-        <button mat-stroked-button *ngIf="isSearched" color="primary" (click)="insertAllAbstractsClick()" class="normal-button">INSERT ABSTRACTS</button>
+        <button mat-raised-button (click)="searchButtonClick(query, resultsNumber)" color="primary"
+            class="normal-button">{{mainButtonText}}</button>
+        <button mat-stroked-button color="primary" [disabled]="isLoaded" (click)="showDatabaseMongoClick()"
+            color="primary" class="normal-stroked-button">LOAD
+            DATABASE</button>
+        <button mat-stroked-button *ngIf="isSearched" (click)="downloadAbstractsClick()" color="primary"
+            class="normal-stroked-button">DOWNLOAD
+            ALL</button>
+        <button mat-stroked-button *ngIf="isSearched" (click)="insertAllAbstractsClick()" color="primary"
+            class="normal-stroked-button">INSERT
+            ABSTRACTS</button>
         <!-- <button mat-stroked-button *ngIf="isSearched" color="primary" (click)="showAllAcronymsClick()" class="normal-button">SHOW ACRONYMS</button> -->
     </mat-card-actions>
 

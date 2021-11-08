@@ -1,6 +1,13 @@
 .normal-button {
     margin-right: 10px !important;
     font-size: 20px;
+    color: white
+}
+
+.normal-stroked-button {
+  margin-right: 10px !important;
+  font-size: 20px;
+  color:darkslategrey;
 }
 
 .centeralign{
@@ -33,7 +40,7 @@
 
   .database-progress {
     font-size: 15px;
-    color: red;
+    color: #d4374a;
   }
 
   .disclaimer-text {
@@ -117,7 +124,7 @@
 
   .cuisearch-table-spinner {
     margin: 0px;
-    color: #673ab7;
+    color: #d4374a;
     cursor: pointer;
   }
 
@@ -136,7 +143,7 @@
 
   .cuisearch-spinner {
     margin: 0 10px;
-    color: #673ab7;
+    color: #d4374a;
   }
 
   .senseinventory-buttons-container {
@@ -214,7 +221,7 @@
   .cui-link {
     text-decoration: underline;
     cursor: pointer;
-    color: #673ab7;
+    color: #d4374a;
   }
 
 
@@ -285,5 +292,5 @@
   }
 
   .pagination-style /deep/ .ngx-pagination .current {
-    background:#673ab7;
+    background:#d4374a;
   }

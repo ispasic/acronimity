@@ -5,19 +5,19 @@
 <mat-card>
   <mat-card-content *ngIf="!isStarted" class="centeralign">
     <div fxLayout="column">
-        <div class="disclaimer-text centeralign">
-          Web Application for processing acronyms from<br><br>
-        </div>
-        <div class="disclaimer-text centeralign">
-          PubMed abstracts with Schwartz-Hearst Algorithm<br><br>
+      <div class="disclaimer-text centeralign">
+        Web Application for processing acronyms from<br><br>
       </div>
-        <div class="disclaimer-text centeralign">
-            Press START to begin
-        </div>
+      <div class="disclaimer-text centeralign">
+        PubMed abstracts with Schwartz-Hearst Algorithm<br><br>
+      </div>
+      <div class="disclaimer-text centeralign">
+        Press START to begin
+      </div>
     </div>
   </mat-card-content>
   <mat-card-actions *ngIf="!isStarted" class="centeralign">
-        <button mat-raised-button color="primary" (click)="startButtonClick()" class="normal-button">START</button>
+    <button mat-raised-button color="primary" (click)="startButtonClick()" class="normal-button">START</button>
   </mat-card-actions>
 </mat-card>
 
