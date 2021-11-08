@@ -1,19 +1,29 @@
 <mat-toolbar color="primary" class="top-toolbar">
-  <span (click)="resetApp()" style="cursor: pointer;">PubMed Abstract Search</span>
+  <span (click)="resetApp()" style="cursor: pointer;">Acronimity</span>
 </mat-toolbar>
 
 <mat-card>
-  <mat-card-content *ngIf="!isStarted" class="centeralign">
-    <div fxLayout="column">
-      <div class="disclaimer-text centeralign">
-        Web Application for processing acronyms from<br><br>
-      </div>
-      <div class="disclaimer-text centeralign">
-        PubMed abstracts with Schwartz-Hearst Algorithm<br><br>
-      </div>
-      <div class="disclaimer-text centeralign">
-        Press START to begin
-      </div>
+  <mat-card-content *ngIf="!isStarted">
+    <div fxLayout="column" class="centeralign">
+      <p class="disclaimer-text">
+        Global acronyms are used in written text without their formal definitions. This makes it difficult to
+        automatically interpret their sense as acronyms tend to be ambiguous. Supervised machine learning approaches to
+        sense disambiguation require large training datasets. In clinical applications, large datasets are difficult to
+        o btain due to patient privacy. Manual data annotation creates an additional bottleneck. This application
+        automatically modifies PubMed abstracts to (2) simulate global acronym usage and (2) annotate their senses
+        without the need for external sources or manual intervention. It can be used to create large datasets that in
+        turn can be used to train supervised approaches to word sense disambiguation of biomedical acronyms.
+
+      </p>
+      <p class="disclaimer-text">
+        To create an annotated corpus, start by providing a search query that describes a specific area of interest. The
+        matching abstracts will be downloaded from PubMed automatically. Each abstract will be modified so that for each
+        acronym it defines, either its full form or the acronym itself is used consistently throughout the abstract.
+        This choice between the two is random. When an acronym is retained, its full form is used as its sense
+        annotation. Once the corpus has been processed, it can be downloaded together with the sense inventory in a
+        simple JSON format ready to be processed locally by other natural language processing applications.
+      </p>
+      <img src="../assets/pipeline.png">
     </div>
   </mat-card-content>
   <mat-card-actions *ngIf="!isStarted" class="centeralign">
