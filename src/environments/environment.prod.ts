@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  baseApiUrl: '/pubmedacronyms/',
+  baseApiUrl: '/acronyms/',
   pubmedBaseUrl: "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/",
   pubmedApiKey: "842007c31c1ec561c1d418abf9f279f21408",
   umlsBaseTicketUrl: "https://utslogin.nlm.nih.gov/cas/v1/",
