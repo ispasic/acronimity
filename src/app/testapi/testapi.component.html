@@ -80,7 +80,9 @@
 
                     <mat-list>
                         <div fxLayout="row">
-                            <div mat-subheader class="search-results-header">Search results:</div>
+                            <div mat-subheader class="search-results-header">Search results ({{foundTextsNumber}} texts,
+                                {{foundAbstractsNumber}} abstracts):
+                            </div>
                             <mat-icon class="search-help-icon" #tooltip="matTooltip"
                                 matTooltip="Click on title for further details.">
                                 help_outline
@@ -269,7 +271,7 @@
                             </mat-icon>
                         </div> -->
                     </div>
-                    <div fxLayout="row" class="senseinventory-buttons-container">
+                    <!-- <div fxLayout="row" class="senseinventory-buttons-container">
                         <button mat-stroked-button color="primary" (click)="downloadSenseInventoryClick()"
                             class="senseinventory-button">
                             DOWNLOAD
@@ -278,7 +280,7 @@
                             matTooltip="Press the 'DOWNLOAD' button to get the json file with the generated sense inventory.">
                             help_outline
                         </mat-icon>
-                        <!-- <button mat-stroked-button
+                        <button mat-stroked-button
                             color="primary"
                             (click)="consumeSameCUIs()"
                             [disabled]="!allCUIsFound"
@@ -289,8 +291,8 @@
                             #tooltip="matTooltip"
                             matTooltip="Press the 'PROCESS SAME CUIs' button to use more frequently used senses with the same Acronym and CUI to consume less frequently used senses. (Note: button is active only when all CUIs acquired from UMLS).">
                             help_outline
-                        </mat-icon> -->
-                    </div>
+                        </mat-icon>
+                    </div> -->
 
                 </div>
             </div>
@@ -299,14 +301,17 @@
     </mat-card-content>
     <mat-divider></mat-divider>
     <mat-card-actions class="centeralign">
-        <button mat-raised-button (click)="searchButtonClick(query, resultsNumber)" color="primary"
+        <button mat-raised-button *ngIf="!isSearched" (click)="searchButtonClick(query, resultsNumber)" color="primary"
             class="normal-button">{{mainButtonText}}</button>
         <!-- <button mat-stroked-button color="primary" [disabled]="isLoaded" (click)="showDatabaseMongoClick()"
             color="primary" class="normal-stroked-button">LOAD
             DATABASE</button> -->
         <button mat-stroked-button *ngIf="isSearched" (click)="downloadAbstractsClick()" color="primary"
-            class="normal-stroked-button">DOWNLOAD
-            CORPUS</button>
+            class="normal-stroked-button">DOWNLOAD</button>
+        <mat-icon *ngIf="isSearched" class="normal-button-help-icon" #tooltip="matTooltip"
+            matTooltip="Press the 'DOWNLOAD' button to get the json file with the corpus. It contains the following fields: 'abstracts' with the full list of results and 'inventory' with the sense inventory information. Each search result has 'original_abstract' and 'edited_abstract' as well as full list of acronyms in the 'acronyms' field. 'inventory' includes 'data' field with the list of acronyms, senses, CUIs and frequencies, and 'total' and 'average' fields with total and average values from sense inventory table.">
+            help_outline
+        </mat-icon>
         <!-- <button mat-stroked-button *ngIf="isSearched" (click)="insertAllAbstractsClick()" color="primary"
             class="normal-stroked-button">INSERT
             ABSTRACTS</button> -->

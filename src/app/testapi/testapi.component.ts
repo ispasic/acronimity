@@ -101,6 +101,10 @@ export class TestapiComponent implements OnInit {
   listOfAcronymsDuplicates = [];
   listOfAbstracts = [];
 
+  // texts abstracts found
+  foundAbstractsNumber: number = 0;
+  foundTextsNumber: number = 0;
+
   // test object for inserting
   insertObject;
 
@@ -403,6 +407,7 @@ export class TestapiComponent implements OnInit {
         let tokenizer = new Tokenizer();
         tokenizer.setEntry(abstract);
         let sentences = tokenizer.getSentences();
+        let sentencesOriginal = tokenizer.getSentences();
 
         //let acronymMentions = 0;
         for (let k = 0; k < sentences.length; k++) {
@@ -418,13 +423,25 @@ export class TestapiComponent implements OnInit {
           "authors": authors,
           "pubmed_id": stepIDsList[j],
           "text": abstract,
-          "sentences": sentences,
+          "original_abstract": sentencesOriginal,
+          "edited_abstract": sentences,
           "acronyms": listOfAbstractAcronyms
           //"acronymMentionsTotal": acronymMentions
         };
         this.listOfAbstracts.push(singleAbstract);
       }
     }
+
+    // find number of abstracts
+    for (let i = 0; i < this.listOfAbstracts.length; i++) {
+      let ab = this.listOfAbstracts[i];
+      if (ab.text.length != 0) {
+        this.foundAbstractsNumber++;
+      }
+    }
+
+    // number of texts
+    this.foundTextsNumber = this.listOfSearchResults.length;
 
     // generate sense inventory table
     let listOfAcronymsTable = this.generateSenseInventory();
@@ -613,27 +630,51 @@ export class TestapiComponent implements OnInit {
     // download abstracts and sense inventory
     let downloadJson = {
       "abstracts": [],
-      "senseInventory": {
+      "inventory": {
         "data": [],
         "total": {},
         "average": {}
       }
     };
     downloadJson.abstracts = JSON.parse(JSON.stringify(this.listOfAbstracts));
-    downloadJson.senseInventory.data = JSON.parse(JSON.stringify(this.dataSource.data));
-    downloadJson.senseInventory.total = {
+    downloadJson.inventory.data = JSON.parse(JSON.stringify(this.dataSource.data));
+    downloadJson.inventory.total = {
       "acronyms": this.senseInventoryTotal.data[0].value,
       "senses": this.senseInventoryTotal.data[1].value,
       "cuis": this.senseInventoryTotal.data[2].value.toString(),
       "acronymMnetions": this.senseInventoryTotal.data[3].value,
     }
-    downloadJson.senseInventory.average = {
+    downloadJson.inventory.average = {
       "acronymsPerDocument": this.senseInventoryAverage.data[0].value,
       "sensesPerAcronym": this.senseInventoryAverage.data[1].value,
       "cuisPerAcronym": this.senseInventoryAverage.data[2].value,
       "acronymMnetionsPerDocument": this.senseInventoryAverage.data[3].value,
     }
-    // download only abstracts
+
+    // cut text field and add CUIs
+    for (let i = 0; i < downloadJson.abstracts.length; i++) {
+      delete downloadJson.abstracts[i]["text"];
+      for (let j = 0; j < downloadJson.abstracts[i].acronyms.length; j++) {
+        let acr = downloadJson.abstracts[i].acronyms[j];
+        // find that acronym in sense inventory
+        let isCuiFound = false;
+        for (let k = 0; k < downloadJson.inventory.data.length; k++) {
+          let acrInv = downloadJson.inventory.data[k];
+          // compare and if found then assigne cui
+          if (acr.shortform.toLowerCase().localeCompare(acrInv.acronym.toLowerCase()) == 0 && acr.longform.toLowerCase().localeCompare(acrInv.sense.toLowerCase()) == 0) {
+            downloadJson.abstracts[i].acronyms[j].cui = acrInv.cui;
+            isCuiFound = true;
+            break;
+          }
+        }
+        // if nothing found, just NONE
+        if (!isCuiFound) {
+          downloadJson.abstracts[i].acronyms[j].cui = "NONE"
+        }
+      }
+    }
+
+    // download
     var blob = new Blob([JSON.stringify(downloadJson, null, 2)], {type: "text/plain;charset=utf-8"});
     FileSaver.saveAs(blob, "Corpus.json");
 

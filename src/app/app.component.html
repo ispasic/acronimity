@@ -1,5 +1,6 @@
 <mat-toolbar color="primary" class="top-toolbar">
   <span (click)="resetApp()" style="cursor: pointer;">Acronimity</span>
+  <mat-icon class="home-icon" (click)="resetApp()" style="cursor: pointer;"> home</mat-icon>
 </mat-toolbar>
 
 <mat-card>
@@ -9,7 +10,7 @@
         Global acronyms are used in written text without their formal definitions. This makes it difficult to
         automatically interpret their sense as acronyms tend to be ambiguous. Supervised machine learning approaches to
         sense disambiguation require large training datasets. In clinical applications, large datasets are difficult to
-        o btain due to patient privacy. Manual data annotation creates an additional bottleneck. This application
+        obtain due to patient privacy. Manual data annotation creates an additional bottleneck. This application
         automatically modifies PubMed abstracts to simulate global acronym usage and annotate their senses
         without the need for external sources or manual intervention. It can be used to create large datasets that in
         turn can be used to train supervised approaches to word sense disambiguation of biomedical acronyms.
