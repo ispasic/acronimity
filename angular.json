@@ -57,7 +57,7 @@
                   "maximumError": "10kb"
                 }
               ],
-              "baseHref": "/pubmedacronyms/"
+              "baseHref": "/acronyms/"
             }
           }
         },
