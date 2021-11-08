@@ -75,10 +75,12 @@ export class ShowdetailsDialogComponent {
 
       // get the abstract for acronyms search
       let abstract = '';
-      if (abIndexStart < abIndexEnd) {
+      if (abIndexStart == -1) {
+        abstract = "No abstract found in the database"
+      } else if (abIndexStart < abIndexEnd) {
         abstract = this.abstractRes.substring(abIndexStart + 6, abIndexEnd);
+        abstract = abstract.replace(/\s{2,}/g,' '); //swap all multiple spaces with spaces
       }
-      abstract = abstract.replace(/\s{2,}/g,' '); //swap all multiple spaces with spaces
 
       this.abstractOriginal = abstract;
 
@@ -126,7 +128,7 @@ export class ShowdetailsDialogComponent {
       for (let k = 0; k < sentences.length; k++) {
         sentences[k] = this.abstractProcessingService.tagAcronymsSense(sentences[k], this.detailsAcronymList);
         if (k == 0) {
-          this.abstractProcessed = sentences[k];
+          this.abstractProcessed = sentences[k] + " ";
         } else if (k == sentences.length - 1) {
           this.abstractProcessed = this.abstractProcessed + sentences[k];
         } else {
