@@ -635,7 +635,7 @@ export class TestapiComponent implements OnInit {
     }
     // download only abstracts
     var blob = new Blob([JSON.stringify(downloadJson, null, 2)], {type: "text/plain;charset=utf-8"});
-    FileSaver.saveAs(blob, "Abstracts.json");
+    FileSaver.saveAs(blob, "Corpus.json");
 
     // // download only abstracts
     // var blob = new Blob([JSON.stringify(this.listOfAbstracts, null, 2)], {type: "text/plain;charset=utf-8"});

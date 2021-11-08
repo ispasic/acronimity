@@ -65,6 +65,11 @@
     color: gray;
   }
 
+  .publicationdate-text {
+    font-size: 15px;
+    color: gray;
+  }
+
   .result-list-item {
     margin-bottom: 50px;
     width: 42vw !important;
