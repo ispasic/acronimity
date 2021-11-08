@@ -300,12 +300,12 @@
     <mat-card-actions class="centeralign">
         <button mat-raised-button (click)="searchButtonClick(query, resultsNumber)" color="primary"
             class="normal-button">{{mainButtonText}}</button>
-        <button mat-stroked-button color="primary" [disabled]="isLoaded" (click)="showDatabaseMongoClick()"
+        <!-- <button mat-stroked-button color="primary" [disabled]="isLoaded" (click)="showDatabaseMongoClick()"
             color="primary" class="normal-stroked-button">LOAD
-            DATABASE</button>
+            DATABASE</button> -->
         <button mat-stroked-button *ngIf="isSearched" (click)="downloadAbstractsClick()" color="primary"
             class="normal-stroked-button">DOWNLOAD
-            ALL</button>
+            CORPUS</button>
         <button mat-stroked-button *ngIf="isSearched" (click)="insertAllAbstractsClick()" color="primary"
             class="normal-stroked-button">INSERT
             ABSTRACTS</button>
