@@ -28,6 +28,8 @@ export class ShowdetailsDialogComponent {
 
     abstractRes;
     status;
+    abstractOriginal;
+    abstractProcessed;
     isAbstractFormed = false;
     isNoAcronyms = false;
     isTagged = false;
@@ -78,6 +80,8 @@ export class ShowdetailsDialogComponent {
       }
       abstract = abstract.replace(/\s{2,}/g,' '); //swap all multiple spaces with spaces
 
+      this.abstractOriginal = abstract;
+
       //form acronym list
       this.detailsAcronymList.length = 0;
       this.detailsAcronymList = this.acronymService.getAcronymList(abstract);
@@ -121,6 +125,14 @@ export class ShowdetailsDialogComponent {
 
       for (let k = 0; k < sentences.length; k++) {
         sentences[k] = this.abstractProcessingService.tagAcronymsSense(sentences[k], this.detailsAcronymList);
+        if (k == 0) {
+          this.abstractProcessed = sentences[k];
+        } else if (k == sentences.length - 1) {
+          this.abstractProcessed = this.abstractProcessed + sentences[k];
+        } else {
+          this.abstractProcessed = this.abstractProcessed + sentences[k] + " ";
+        }
+
       }
 
       let abstractWithInfo = {

@@ -1,6 +1,14 @@
 .details-dialog {
-    width: auto;
+    width: 800px;
     height: 500px;
+}
+
+.title-text {
+  white-space:pre-wrap;
+  padding-left: 24px;
+  padding-right: 24px;
+  padding-bottom: 0px;
+  padding-top: 10px;
 }
 
 .abstract-text {
@@ -59,6 +67,10 @@
   margin-bottom: 10px;
   width: auto !important;
   height: auto !important;
+}
+
+.mat-list-base {
+  padding-bottom: 10px !important;
 }
 
 .acronym-text {

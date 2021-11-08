@@ -1,6 +1,6 @@
 <div mat-dialog-content class="details-dialog">
     <div fxLayout="row" class="details-toolbar">
-        <div class="details-toolbar-text centeralign">Paper Details</div>
+        <div class="details-toolbar-text centeralign">Details</div>
         <span class="spacer"></span>
         <button mat-icon-button (click)="onNoClick()">
             <mat-icon>close</mat-icon>
@@ -8,10 +8,13 @@
 
     </div>
     <mat-divider></mat-divider>
-    <p class="abstract-text centeralign">{{abstractRes}}</p>
-    <p class="status-text centeralign">{{status}}</p>
+    <p class="title-text" *ngIf="isAbstractFormed">Abstract:</p>
+    <p class="abstract-text centeralign">{{abstractOriginal}}</p>
+    <p class="title-text" *ngIf="isAbstractFormed">Edited abstract:</p>
+    <p class="abstract-text centeralign">{{abstractProcessed}}</p>
+    <!-- <p class="status-text centeralign">{{status}}</p> -->
     <mat-divider></mat-divider>
-    <mat-list *ngIf="isAbstractFormed">
+    <mat-list class="result-list" *ngIf="isAbstractFormed">
         <div mat-subheader>Acronyms:</div>
         <mat-list-item class="result-list-item" *ngFor="let a of detailsAcronymList">
             <div fxLayout="row" class="acronym-item">
@@ -23,11 +26,13 @@
             No acronyms in the abstract
         </mat-list-item>
     </mat-list>
-    <div *ngIf="isAbstractFormed" class="centeralign">
-        <button mat-stroked-button class="download-button" cdkFocusInitial (click)="downloadDetailsClick()">Download</button>
-        <button mat-stroked-button class="download-button" cdkFocusInitial (click)="insertAbstractClick()">Insert Abstract into Database</button>
-        <!-- <button mat-stroked-button class="download-button" cdkFocusInitial (click)="insertAcronymsClick()">Insert Acronyms into Database</button> -->
-        <!-- <button mat-stroked-button class="download-button" cdkFocusInitial (click)="swapAcronymsClick()">Swap Acronyms</button>
-        <button mat-stroked-button class="download-button" cdkFocusInitial (click)="tagAcronymsClick()">Tag Acronyms</button> -->
-    </div>
+    <!-- <div *ngIf="isAbstractFormed" class="centeralign">
+        <button mat-stroked-button class="download-button" cdkFocusInitial
+            (click)="downloadDetailsClick()">Download</button>
+        <button mat-stroked-button class="download-button" cdkFocusInitial (click)="insertAbstractClick()">Insert
+            Abstract into Database</button>
+        <button mat-stroked-button class="download-button" cdkFocusInitial (click)="insertAcronymsClick()">Insert Acronyms into Database</button>
+        <button mat-stroked-button class="download-button" cdkFocusInitial (click)="swapAcronymsClick()">Swap Acronyms</button>
+        <button mat-stroked-button class="download-button" cdkFocusInitial (click)="tagAcronymsClick()">Tag Acronyms</button>
+    </div> -->
 </div>
