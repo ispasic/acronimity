@@ -180,6 +180,12 @@ export class TestapiComponent implements OnInit {
     // unsubscribe
     this.notifier.next();
 
+    // check if query and number of results provided
+    if (!query || !number) {
+      this.searchProgress = "Search parameters cannot be empty.";
+      return;
+    } 
+
     this.searchProgress = "Searching PubMed Database..";
 
     // search the database with an API call
