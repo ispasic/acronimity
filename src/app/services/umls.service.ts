@@ -6,9 +6,9 @@ import { environment } from './../../environments/environment';
 import * as FileSaver from 'file-saver';
 
 const baseUrl = environment.baseApiUrl;
-const baseTicketUrl = environment.umlsBaseTicketUrl;
-const baseSearchUrl = environment.umlsBaseUrl;
-const apiKey = environment.umlsApiKey; 
+const baseTicketUrl = "https://utslogin.nlm.nih.gov/cas/v1/";
+const baseSearchUrl = "https://uts-ws.nlm.nih.gov/rest/search/current";
+const apiKey = environment.umlsApiKey;
 
 @Injectable({
   providedIn: 'root'

@@ -3,7 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from './../../environments/environment';
 
-const baseUrl = environment.pubmedBaseUrl;
+const baseUrl = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
 const apiKey = environment.pubmedApiKey; 
 
 @Injectable({
