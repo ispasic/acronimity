@@ -28,6 +28,18 @@
     width: 42vw !important;
   }
 
+  .left-pane-button-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-end;
+    margin-right: 6vw;
+  }
+
+  .left-pane-button {
+    font-size: 20px;
+    color: white
+  }
+
   .spacer {
     flex: 1 1 auto;
   }

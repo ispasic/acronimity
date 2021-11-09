@@ -33,7 +33,6 @@
                     </mat-icon>
                 </div>
             </div>
-
             <div class="database-progress centeralign">{{searchProgress}}</div>
         </div>
 
@@ -73,7 +72,10 @@
                             </mat-icon>
                         </div>
                     </div>
-
+                    <div class="left-pane-button-container">
+                        <button mat-raised-button (click)="searchButtonClick(query, resultsNumber)" color="primary"
+                            class="left-pane-button">{{mainButtonText}}</button>
+                    </div>
                     <div class="database-progress centeralign">{{searchProgress}}</div>
 
                     <!-- search results -->

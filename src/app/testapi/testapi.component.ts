@@ -174,6 +174,9 @@ export class TestapiComponent implements OnInit {
     this.areCUIsBeingFound = false;
     this.allCUIsFound = false;
 
+    this.foundAbstractsNumber = 0;
+    this.foundTextsNumber = 0;
+
     // unsubscribe
     this.notifier.next();
 
