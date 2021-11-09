@@ -444,8 +444,8 @@ export class TestapiComponent implements OnInit {
       }
     }
 
-    // trim list of search results and list of abstracts of entries with no abstract
-    this.deleteResultsWithNoAbstract();
+    // trim list of search results and list of abstracts of entries with no abstract if necessary
+    // this.deleteResultsWithNoAbstract();
 
     // find number of abstracts
     for (let i = 0; i < this.listOfAbstracts.length; i++) {
