@@ -28,5 +28,8 @@ module.exports = app => {
     // add TGT to database
     router.post("/umls/addTgt", umls.addTgt);
 
+    // delete TGT from database
+    router.post("/umls/deleteTgt", umls.deleteTgt);
+
     app.use("/", router);
 }

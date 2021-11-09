@@ -3,6 +3,8 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from './../../environments/environment';
 
+import * as FileSaver from 'file-saver';
+
 const baseUrl = environment.baseApiUrl;
 const baseTicketUrl = environment.umlsBaseTicketUrl;
 const baseSearchUrl = environment.umlsBaseUrl;
@@ -23,6 +25,14 @@ export class UmlsService {
     let headers = new HttpHeaders();
     let params = new HttpParams();
     return this.http.get(this.findUrl, {headers: headers, params: params});
+  }
+
+  // delete ticket granting tickets from database
+  private deleteTgtFromDatabase(): Observable<any> {
+    this.findUrl = baseUrl + "umls/deleteTgt";
+    let headers = new HttpHeaders();
+    let params = new HttpParams();
+    return this.http.post(this.findUrl, {headers: headers, params: params});
   }
 
   // add ticket granting ticket to the database

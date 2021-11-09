@@ -16,6 +16,21 @@ exports.getTgt = (req, res) => {
         });
 };
 
+// delete a tgt from the database
+exports.deleteTgt = (req, res) => {
+    umlsCollection.deleteOne()
+        .then(data => {
+            console.log(`Deleted tgt from the database.`);
+            res.send(data);
+        })
+        .catch(err => {
+            res.status(500).send({
+                message:
+                    err.message || "Some error occurred while deleting tgt."
+            });
+        });
+};
+
 //add an entry to mongodb
 exports.addTgt = async (req, res) => {
     //if empty ID
