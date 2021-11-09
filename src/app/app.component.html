@@ -3,8 +3,8 @@
   <mat-icon class="home-icon" (click)="resetApp()" style="cursor: pointer;"> home</mat-icon>
 </mat-toolbar>
 
-<mat-card>
-  <mat-card-content *ngIf="!isStarted">
+<mat-card *ngIf="!isStarted">
+  <mat-card-content>
     <div fxLayout="column" class="centeralign">
       <p class="disclaimer-text">
         Global acronyms are used in written text without their formal definitions. This makes it difficult to
@@ -27,7 +27,7 @@
       <img src="assets/pipeline.png">
     </div>
   </mat-card-content>
-  <mat-card-actions *ngIf="!isStarted" class="centeralign">
+  <mat-card-actions class="centeralign">
     <button mat-raised-button color="primary" (click)="startButtonClick()" class="normal-button">START</button>
   </mat-card-actions>
 </mat-card>
