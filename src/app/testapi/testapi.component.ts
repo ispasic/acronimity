@@ -207,6 +207,9 @@ export class TestapiComponent implements OnInit {
     this.isSearched = true;
     this.searchProgress = '';
 
+    // console.log(this.listOfSearchResults);
+    // console.log(this.listOfAbstracts);
+
     // small sleep before starting find of all cuis
     await this.sleep(2000);
     this.findAllCUIs();
@@ -435,6 +438,9 @@ export class TestapiComponent implements OnInit {
       }
     }
 
+    // trim list of search results and list of abstracts of entries with no abstract
+    this.deleteResultsWithNoAbstract();
+
     // find number of abstracts
     for (let i = 0; i < this.listOfAbstracts.length; i++) {
       let ab = this.listOfAbstracts[i];
@@ -452,6 +458,25 @@ export class TestapiComponent implements OnInit {
 
     // generate summary sense tables
     this.generateSenseInventorySummaries(listOfAcronymsTable);
+  }
+
+  deleteResultsWithNoAbstract() {
+    // cycle through list of abstracts and find those with no text
+    for (let i = 0; i < this.listOfAbstracts.length; i++) {
+      if (this.listOfAbstracts[i].text == '') {
+        // find same id in list of search results
+        for (let j = 0; j < this.listOfSearchResults.length; j++) {
+          if (this.listOfSearchResults[j].id == this.listOfAbstracts[i].pubmed_id) {
+            // found needed one, delete both and adjust index
+            this.listOfAbstracts.splice(i, 1);
+            this.listOfSearchResults.splice(j, 1);
+            // adjust index
+            i--;
+            j--;
+          }
+        }
+      }
+    }
   }
 
   generateSenseInventory(): any[] {
