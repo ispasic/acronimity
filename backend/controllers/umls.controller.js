@@ -18,7 +18,7 @@ exports.getTgt = (req, res) => {
 
 // delete a tgt from the database
 exports.deleteTgt = (req, res) => {
-    umlsCollection.deleteOne()
+    umlsCollection.deleteMany({})
         .then(data => {
             console.log(`Deleted tgt from the database.`);
             res.send(data);
