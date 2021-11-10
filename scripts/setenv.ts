@@ -17,7 +17,6 @@ if (isProduction) {
 } else {
    baseApiUrl = "http://localhost:8083/";
 }
-console.log(baseApiUrl);
 const targetPath = isProduction
    ? `./src/environments/environment.prod.ts`
    : `./src/environments/environment.ts`;
