@@ -1,4 +1,4 @@
-# Acronimity Application
+# Acronimity
 
 Global acronyms are used in written text without their formal definitions. This makes it difficult to
 automatically interpret their sense as acronyms tend to be ambiguous. Supervised machine learning approaches to
@@ -15,11 +15,15 @@ This choice between the two is random. When an acronym is retained, its full for
 annotation. Once the corpus has been processed, it can be downloaded together with the sense inventory in a
 simple JSON format ready to be processed locally by other natural language processing applications.
 
+## Application
+
+The application is written using MEAN stack.
+
 ## Set Up
 The following will install the npm packages according to the configuration:
 #### `npm install`
 
-## Development server
+## Development server/Run the application locally
 
 Run `npm start` for a dev server and `node server.js` for backend server from separate consoles.
 Navigate to `http://localhost:4203/`.
@@ -34,7 +38,7 @@ The following will run the production version of the application:
 
 ## Mongodb connection
 
-MongoDB is used to store and access the ticket granting ticket (TGT) for UMLS service. Please ensure to create an `acronyms` database with `umls` collection.
+MongoDB is used to store and access the ticket granting ticket (TGT) for UMLS service. Please ensure to create an `acronyms` database with `umls` empty collection.
 
 Use the following command to create a "Time to Live" (TTL) index on the collection using the following command:
 #### `db.umls.createIndex( { "createdAt": 1 }, { expireAfterSeconds: 25000 } )`
@@ -43,9 +47,12 @@ That will ensure that TGT deletes itself from the database in order for the app 
 ## Environment Variables
 To make use of all the APIs and mongoDB connection, you need to provide API Keys and mongoDB user settings in `.env` file in the source directory.
 The variables required:
+
 - For Pubmed API: `PUBMED_API_KEY`
 - For UMLS: `UMLS_API_KEY`
 - For MongoDB Connection: `MONGODB_USER` and `MONGODB_USER_PASSWORD`
+
+Additionally, if the intention is to run the application not locally, you need to register the application/domain at Google reCaptcha service (https://www.google.com/recaptcha/). Please provide an additional enviromental variable in that case: `CAPTCHA_SITE_KEY`. If that variable is not provided, a default value of the site key is used that works only for local environment.
 
 ## Authors
 - Maxim Filimonov
