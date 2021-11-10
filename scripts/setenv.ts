@@ -17,6 +17,12 @@ if (isProduction) {
 } else {
    baseApiUrl = "http://localhost:8083/";
 }
+let captchaSiteKey = '';
+if (process.env.CAPTCHA_SITE_KEY) {
+   captchaSiteKey = process.env.CAPTCHA_SITE_KEY;
+} else {
+   captchaSiteKey = "6LcOuyYTAAAAAHTjFuqhA52fmfJ_j5iFk5PsfXaU";
+}
 const targetPath = isProduction
    ? `./src/environments/environment.prod.ts`
    : `./src/environments/environment.ts`;
@@ -27,7 +33,8 @@ export const environment = {
    production: ${isProduction},
    baseApiUrl: "${baseApiUrl}",
    pubmedApiKey: "${process.env.PUBMED_API_KEY}",
-   umlsApiKey: "${process.env.UMLS_API_KEY}"
+   umlsApiKey: "${process.env.UMLS_API_KEY}",
+   captchaSiteKey: "${captchaSiteKey}"
 };
 `;
 // write the content to the respective file

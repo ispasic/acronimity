@@ -17,7 +17,7 @@ import { ShowacronymsDialogComponent } from './showacronyms-dialog/showacronyms-
 import * as FileSaver from 'file-saver';
 
 import Tokenizer from "../../../node_modules/sentence-tokenizer/lib/tokenizer"
-import * as pluralize from '../../../node_modules/pluralize';
+import { environment } from './../../environments/environment';
 
 import { PaginationInstance } from 'ngx-pagination';
 import { Subject } from 'rxjs';
@@ -93,7 +93,10 @@ export class TestapiComponent implements OnInit {
   isTested = false;
   isSearched = false;
   isLoaded = false;
+
+  // captcha settings
   isCaptchaResolved = false;
+  captchaSiteKey = environment.captchaSiteKey;
 
   // global lists
   listOfSearchResults = [];

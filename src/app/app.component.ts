@@ -1,8 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-
-import { TestapiComponent} from "./testapi/testapi.component";
-
+import { environment } from './../environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -15,7 +13,8 @@ export class AppComponent {
 
   isStarted = false;
   isCaptchaResolved = false;
-
+  captchaSiteKey = environment.captchaSiteKey;
+  
   constructor(private router: Router) {}
 
   startButtonClick(): void {

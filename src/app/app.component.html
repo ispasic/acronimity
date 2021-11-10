@@ -28,7 +28,7 @@
       </p>
       <img src="assets/pipeline.png">
       <div *ngIf="!isCaptchaResolved">
-        <re-captcha (resolved)="resolved($event)" siteKey="6LcOuyYTAAAAAHTjFuqhA52fmfJ_j5iFk5PsfXaU"></re-captcha>
+        <re-captcha (resolved)="resolved($event)" siteKey={{captchaSiteKey}}></re-captcha>
       </div>
     </div>
 
