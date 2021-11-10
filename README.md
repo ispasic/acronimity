@@ -19,7 +19,7 @@ simple JSON format ready to be processed locally by other natural language proce
 
 The application is written using MEAN stack.
 
-Demo is accessible on `https://datainnovation.cardiff.ac.uk/acronyms/`
+Demo is accessible on https://datainnovation.cardiff.ac.uk/acronyms/
 
 ## Set Up
 The following will install the npm packages according to the configuration:
