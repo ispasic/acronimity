@@ -2,6 +2,8 @@
 
 # environments
 .env
+.env.prod
+.env.local
 # /src/environments/environment.ts
 # /src/environments/environment.prod.ts
 
