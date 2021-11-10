@@ -117,6 +117,7 @@ export class TestapiComponent implements OnInit {
   foundCUIs: number = 0; //meaningful CUIs found
   areCUIsBeingFound = false;
   allCUIsFound = false;
+  cuiProgress = '';
 
   // notifier that time to unsubscribe
   notifier = new Subject()
@@ -183,6 +184,7 @@ export class TestapiComponent implements OnInit {
     this.foundCUIs = 0;
     this.areCUIsBeingFound = false;
     this.allCUIsFound = false;
+    this.cuiProgress = '';
 
     this.foundAbstractsNumber = 0;
     this.foundTextsNumber = 0;
@@ -770,6 +772,7 @@ export class TestapiComponent implements OnInit {
   // button to find all CUIs
   async findAllCUIs() {
     // start the process of CUIs find and show spinner
+    this.cuiProgress = 'Please be patient. The download button will be activated once all data have been processed.';
     this.areCUIsBeingFound = true;
 
     // cycle through all datasource items
@@ -791,6 +794,7 @@ export class TestapiComponent implements OnInit {
           if (this.apiCUIs == this.dataSource.data.length) {
             this.areCUIsBeingFound = false;
             this.allCUIsFound = true;
+            this.cuiProgress = '';
             // if consume is needed, start the function. If not - comment that
             this.consumeSameCUIs();
           }
