@@ -3,8 +3,6 @@
   <mat-icon class="home-icon" (click)="resetApp()" style="cursor: pointer;"> home</mat-icon>
 </mat-toolbar>
 
-
-
 <mat-card *ngIf="!isStarted">
   <mat-card-content>
     <div fxLayout="column" class="centeralign">
@@ -31,8 +29,8 @@
         <re-captcha (resolved)="resolved($event)" siteKey={{captchaSiteKey}}></re-captcha>
       </div>
     </div>
-
   </mat-card-content>
+
   <mat-card-actions class="centeralign">
     <button *ngIf="isCaptchaResolved" mat-raised-button color="primary" (click)="startButtonClick()"
       class="normal-button">START</button>

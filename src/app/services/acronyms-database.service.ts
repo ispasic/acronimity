@@ -3,7 +3,6 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from './../../environments/environment';
 
 const baseUrl = environment.baseApiUrl;
-//const baseUrl = '/';
 
 @Injectable({
   providedIn: 'root'

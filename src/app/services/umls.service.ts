@@ -3,8 +3,6 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from './../../environments/environment';
 
-import * as FileSaver from 'file-saver';
-
 const baseUrl = environment.baseApiUrl;
 const baseTicketUrl = "https://utslogin.nlm.nih.gov/cas/v1/";
 const baseSearchUrl = "https://uts-ws.nlm.nih.gov/rest/search/current";

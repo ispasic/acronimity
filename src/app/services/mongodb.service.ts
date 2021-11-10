@@ -4,7 +4,6 @@ import { map } from 'rxjs/operators';
 import { environment } from './../../environments/environment';
 
 const baseUrl = environment.baseApiUrl;
-//const baseUrl = '/';
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +28,6 @@ export class MongodbService {
     let headers = new HttpHeaders();
     let params = new HttpParams();
     return this.http.get(this.findUrl, {headers: headers, params: params});
-    //return this.http.get(this.findUrl);
   }
 
   public countAbstract() {
