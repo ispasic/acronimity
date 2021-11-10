@@ -3,6 +3,8 @@
   <mat-icon class="home-icon" (click)="resetApp()" style="cursor: pointer;"> home</mat-icon>
 </mat-toolbar>
 
+
+
 <mat-card *ngIf="!isStarted">
   <mat-card-content>
     <div fxLayout="column" class="centeralign">
@@ -25,10 +27,15 @@
         simple JSON format ready to be processed locally by other natural language processing applications.
       </p>
       <img src="assets/pipeline.png">
+      <div *ngIf="!isCaptchaResolved">
+        <re-captcha (resolved)="resolved($event)" siteKey="6LcOuyYTAAAAAHTjFuqhA52fmfJ_j5iFk5PsfXaU"></re-captcha>
+      </div>
     </div>
+
   </mat-card-content>
   <mat-card-actions class="centeralign">
-    <button mat-raised-button color="primary" (click)="startButtonClick()" class="normal-button">START</button>
+    <button *ngIf="isCaptchaResolved" mat-raised-button color="primary" (click)="startButtonClick()"
+      class="normal-button">START</button>
   </mat-card-actions>
 </mat-card>
 

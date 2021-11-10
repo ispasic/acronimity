@@ -15,6 +15,8 @@ import { TestapiComponent } from './testapi/testapi.component';
 import { ShowdetailsDialogComponent } from './testapi/showdetails-dialog/showdetails-dialog.component';
 import { ShowacronymsDialogComponent } from './testapi/showacronyms-dialog/showacronyms-dialog.component';
 
+import { RecaptchaModule } from 'ng-recaptcha';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -30,7 +32,8 @@ import { ShowacronymsDialogComponent } from './testapi/showacronyms-dialog/showa
     HttpClientModule,
     AngularMaterialModule,
     FlexLayoutModule,
-    NgxPaginationModule
+    NgxPaginationModule,
+    RecaptchaModule
   ],
   providers: [],
   bootstrap: [AppComponent]

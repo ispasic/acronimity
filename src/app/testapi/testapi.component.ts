@@ -93,6 +93,7 @@ export class TestapiComponent implements OnInit {
   isTested = false;
   isSearched = false;
   isLoaded = false;
+  isCaptchaResolved = false;
 
   // global lists
   listOfSearchResults = [];
@@ -150,6 +151,12 @@ export class TestapiComponent implements OnInit {
   ngOnDestroy() {
     this.dataSource.paginator.page.unsubscribe();
     this.dataSource.sort.sortChange.unsubscribe();
+  }
+
+  // captcha resolve function
+  public resolved(captchaResponse: string) { 
+    this.isCaptchaResolved = true;
+    // console.log(`Resolved captcha with response: ${captchaResponse}`); // Write your logic here about once human verified what action you want to perform 
   }
 
   // main searchButtonClick
@@ -212,6 +219,8 @@ export class TestapiComponent implements OnInit {
     // search is done
     this.isSearched = true;
     this.searchProgress = '';
+    // null captcha
+    this.isCaptchaResolved = false;
 
     // console.log(this.listOfSearchResults);
     // console.log(this.listOfAbstracts);
@@ -219,6 +228,7 @@ export class TestapiComponent implements OnInit {
     // small sleep before starting find of all cuis
     await this.sleep(2000);
     this.findAllCUIs();
+
   }
 
   async getBasicDataResults(listOfIDs): Promise<any> {

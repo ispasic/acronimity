@@ -72,8 +72,13 @@
                             </mat-icon>
                         </div>
                     </div>
-                    <div class="left-pane-button-container">
-                        <button mat-raised-button (click)="searchButtonClick(query, resultsNumber)" color="primary"
+                    <div fxLayout="row" class="left-pane-button-container">
+                        <div *ngIf="!isCaptchaResolved">
+                            <re-captcha (resolved)="resolved($event)"
+                                siteKey="6LcOuyYTAAAAAHTjFuqhA52fmfJ_j5iFk5PsfXaU"></re-captcha>
+                        </div>
+                        <button *ngIf="isCaptchaResolved" mat-raised-button
+                            (click)="searchButtonClick(query, resultsNumber)" color="primary"
                             class="left-pane-button">{{mainButtonText}}</button>
                     </div>
                     <div class="database-progress centeralign">{{searchProgress}}</div>
