@@ -87,6 +87,38 @@ export class UmlsService {
     return result;
   }
 
+  public async validateTgt() {
+    // get current tgt if any
+    let tgt = await this.getTgt();
+    // try to get a st
+    let st = await this.getStFromUmls(tgt).toPromise().catch(error => {
+      console.log(error);
+      return false;
+    });
+    if (!st) {
+      // no st received, need to generate new tgt
+      // delete all in umls collection
+      await this.deleteTgtFromDatabase().toPromise().catch(error => {
+        console.log(error);
+        return false;
+      });
+      // add a new tgt into database
+      // get tgt from umls
+      let tgtRes = await this.getTgtFromUmls().toPromise().catch(error => {
+        console.log(error)
+        return false;
+      });
+      // cut the actual tgt from the response
+      let result = tgtRes.substring(tgtRes.indexOf("TGT-"), tgtRes.indexOf("method") - 2);
+      // add tgt to database
+      await this.addTgtToDatabase(result).toPromise().catch(error => {
+        console.log(error);
+        return false;
+      });
+    } 
+    return true;
+  }
+
   // get tgt checking the database
   public async getTgt() {
     let result = '';

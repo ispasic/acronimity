@@ -224,16 +224,22 @@ export class TestapiComponent implements OnInit {
     // search is done
     this.isSearched = true;
     this.searchProgress = '';
-    // null captcha
+    // null and reset captcha
     this.isCaptchaResolved = false;
+    grecaptcha.reset();
 
     // console.log(this.listOfSearchResults);
     // console.log(this.listOfAbstracts);
 
     // small sleep before starting find of all cuis
     await this.sleep(2000);
+    // // validate tgt first
+    // let validateResult = await this.UmlsService.validateTgt();
+    // if (!validateResult) {
+    //   this.cuiProgress = 'Error occured while searching CUIs. Please reload the application and try again. If the error persists, contact the developers. Sorry for the inconvenience.';
+    //   return;
+    // }
     this.findAllCUIs();
-
   }
 
   async getBasicDataResults(listOfIDs): Promise<any> {

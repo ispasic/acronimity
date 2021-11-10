@@ -24,12 +24,13 @@ export class AppComponent {
   resetApp(): void {
     this.isStarted = false;
     this.isCaptchaResolved = false;
+    grecaptcha.reset();
   }
 
   // captcha resolve function
   public resolved(captchaResponse: string) { 
     this.isCaptchaResolved = true;
-    // console.log(`Resolved captcha with response: ${captchaResponse}`); // Write your logic here about once human verified what action you want to perform 
+    //console.log(`Resolved captcha with response: ${captchaResponse}`); // Write your logic here about once human verified what action you want to perform 
   }
 
 }

@@ -25,7 +25,7 @@
         simple JSON format ready to be processed locally by other natural language processing applications.
       </p>
       <img src="assets/pipeline.png">
-      <div *ngIf="!isCaptchaResolved">
+      <div [hidden]="isCaptchaResolved">
         <re-captcha (resolved)="resolved($event)" siteKey={{captchaSiteKey}}></re-captcha>
       </div>
     </div>

@@ -73,7 +73,7 @@
                         </div>
                     </div>
                     <div fxLayout="row" class="left-pane-button-container">
-                        <div *ngIf="!isCaptchaResolved">
+                        <div [hidden]="isCaptchaResolved">
                             <re-captcha (resolved)="resolved($event)" siteKey={{captchaSiteKey}}></re-captcha>
                         </div>
                         <button *ngIf="isCaptchaResolved" mat-raised-button
