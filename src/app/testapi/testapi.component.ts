@@ -215,6 +215,9 @@ export class TestapiComponent implements OnInit {
       this.listOfSearchIDs.push(searchResult.esearchresult.idlist[i]);
     }
 
+    // validate tgt first
+    let validateResult = await this.UmlsService.validateTgt();
+
     // get the basic data for each result
     await this.getBasicDataResults(this.listOfSearchIDs);
 
@@ -230,16 +233,16 @@ export class TestapiComponent implements OnInit {
 
     // console.log(this.listOfSearchResults);
     // console.log(this.listOfAbstracts);
+    
+    if (validateResult.stasus == "fail") {
+      this.cuiProgress = 'Error occured while searching CUIs. Please reload the application and try again. If the error persists, contact the developers. Sorry for the inconvenience.';
+      return;
+    } else {
+      // small sleep before starting find of all cuis
+      await this.sleep(3000);
+      this.findAllCUIs();
+    }
 
-    // small sleep before starting find of all cuis
-    await this.sleep(2000);
-    // // validate tgt first
-    // let validateResult = await this.UmlsService.validateTgt();
-    // if (!validateResult) {
-    //   this.cuiProgress = 'Error occured while searching CUIs. Please reload the application and try again. If the error persists, contact the developers. Sorry for the inconvenience.';
-    //   return;
-    // }
-    this.findAllCUIs();
   }
 
   async getBasicDataResults(listOfIDs): Promise<any> {
@@ -1104,7 +1107,7 @@ export class TestapiComponent implements OnInit {
     this.updateVisibleCUIs(itemsShown);
   }
   
-  sleep(ms) {
+  async sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 }

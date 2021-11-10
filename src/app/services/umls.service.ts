@@ -87,40 +87,50 @@ export class UmlsService {
     return result;
   }
 
-  public async validateTgt() {
+  public async validateTgt(): Promise<any> {
     // get current tgt if any
     let tgt = await this.getTgt();
     // try to get a st
     let st = await this.getStFromUmls(tgt).toPromise().catch(error => {
       console.log(error);
-      return false;
+      return new Promise(resolve => {
+        resolve({"stasus": "success"})
+      });
     });
-    if (!st) {
+    if (!this.isString(st)) {
       // no st received, need to generate new tgt
       // delete all in umls collection
       await this.deleteTgtFromDatabase().toPromise().catch(error => {
         console.log(error);
-        return false;
+        return new Promise(resolve => {
+          resolve({"stasus": "success"})
+        });
       });
       // add a new tgt into database
       // get tgt from umls
       let tgtRes = await this.getTgtFromUmls().toPromise().catch(error => {
         console.log(error)
-        return false;
+        return new Promise(resolve => {
+          resolve({"stasus": "success"})
+        });
       });
       // cut the actual tgt from the response
       let result = tgtRes.substring(tgtRes.indexOf("TGT-"), tgtRes.indexOf("method") - 2);
       // add tgt to database
       await this.addTgtToDatabase(result).toPromise().catch(error => {
         console.log(error);
-        return false;
+        return new Promise(resolve => {
+          resolve({"stasus": "success"})
+        });
       });
-    } 
-    return true;
+    }
+    return new Promise(resolve => {
+      resolve({"stasus": "success"})
+    });
   }
 
   // get tgt checking the database
-  public async getTgt() {
+  public async getTgt(): Promise<any> {
     let result = '';
     // get from Database first
     let tgtRes = await this.getTgtFromDatabase().toPromise().catch(error => console.log(error));
@@ -128,7 +138,9 @@ export class UmlsService {
     let tgtResJson = JSON.parse(JSON.stringify(tgtRes));
     // if in database return it
     if (tgtResJson.length != 0) {
-      return tgtRes[0].tgt;
+      return new Promise(resolve => {
+        resolve(tgtRes[0].tgt);
+      });
       // if not in the database, get new tgt and add it to the database and return the value
     } else {
       // get tgt from umls
@@ -138,7 +150,13 @@ export class UmlsService {
       // add tgt to database
       await this.addTgtToDatabase(result).toPromise().catch(error => console.log(error));
       // return the value
-      return result;
+      return new Promise(resolve => {
+        resolve(result);
+      });
     }
+  }
+
+  private isString(value) {
+    return typeof value === 'string' || value instanceof String;
   }
 }
