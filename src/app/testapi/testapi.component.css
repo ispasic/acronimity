@@ -59,6 +59,12 @@
     color: #d4374a;
   }
 
+  .cui-progress {
+    margin-top: 10px;
+    font-size: 15px;
+    color: #d4374a;
+  }
+
   .disclaimer-text {
     font-size: 25px;
     display:flex;
