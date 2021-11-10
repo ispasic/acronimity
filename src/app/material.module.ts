@@ -24,6 +24,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 import { MatSortModule } from '@angular/material/sort';
+import { MatDialogModule } from '@angular/material/dialog';
 
 
 @NgModule({
@@ -50,7 +51,8 @@ import { MatSortModule } from '@angular/material/sort';
       MatSlideToggleModule,
       MatSortModule,
       MatProgressSpinnerModule,
-      MatProgressBarModule
+      MatProgressBarModule,
+      MatDialogModule
    ],
    exports: [
       MatButtonModule,
@@ -74,7 +76,8 @@ import { MatSortModule } from '@angular/material/sort';
       MatSlideToggleModule,
       MatSortModule,
       MatProgressSpinnerModule,
-      MatProgressBarModule
+      MatProgressBarModule,
+      MatDialogModule
    ],
    providers: [
       MatDatepickerModule,

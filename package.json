@@ -12,6 +12,7 @@
   },
   "private": true,
   "dependencies": {
+    "@angular/flex-layout": "^12.0.0-beta.35",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
