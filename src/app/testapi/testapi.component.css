@@ -313,6 +313,6 @@
     cursor: pointer;
   }
 
-  .pagination-style /deep/ .ngx-pagination .current {
+  .pagination-style ::ng-deep .ngx-pagination .current {
     background:#d4374a;
   }
