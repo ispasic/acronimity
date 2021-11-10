@@ -13,7 +13,7 @@ const environment = argv.environment;
 const isProduction = environment === 'prod';
 let baseApiUrl = '';
 if (isProduction) {
-   baseApiUrl = "/acronyms";
+   baseApiUrl = "/acronyms/";
 } else {
    baseApiUrl = "http://localhost:8083/";
 }
