@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Nov 12 15:09:52 2021
+Created on Fri Nov 12 15:51:52 2021
 
-@authors: Maxim Filimonov, Irena Spasic
+@authors: Maxim Filimonov, Irena Spasić (School of Computer Science & Informatics, Cardiff University, Cardiff, CF24 4AG, UK)
+@contact information: spasici@cardiff.ac.uk, filimonovm@cardiff.ac.uk
 """
 
 import json
