@@ -2,7 +2,7 @@
 """
 Created on Fri Nov 12 15:51:52 2021
 
-@authors: Maxim Filimonov, Irena Spasić (School of Computer Science & Informatics, Cardiff University, Cardiff, CF24 4AG, UK)
+@authors: Maxim Filimonov, Irena Spasic (School of Computer Science & Informatics, Cardiff University, Cardiff, CF24 4AG, UK)
 @contact information: spasici@cardiff.ac.uk, filimonovm@cardiff.ac.uk
 """
 
@@ -39,15 +39,21 @@ for abstract in data['abstracts']:
 
     # cycle through each acronym in acronyms for current abstract
     for acronym in abstract['acronyms']:
+
+        # get random value from 0 to 1
+        coin = random.randint(0, 1)
+
+        # define acronym sense construct from processed abstract
+        acronymsenseconstruct = "<acronym sense='"+ acronym['longform'] + "'>" + acronym['shortform'] + "</acronym>"
+
         # cycle through each sentence in the document with index so that change is possible
-        for i in range(len(document)):
-            # get random value from 0 to 1
-            coin = random.randint(0, 1)
-            # define acronym sense construct from processed abstract
-            acronymsenseconstruct = "<acronym sense='"+ acronym['longform'] + "'>" + acronym['shortform'] + "</acronym>"
-            if coin == 0:
+        if coin == 0:
+            acronym["form"] = "short"
+            for i in range(len(document)):
                 document[i] = document[i].replace(acronymsenseconstruct, acronym['shortform'])
-            else:
+        else:
+            acronym["form"] = "long"
+            for i in range(len(document)):
                 document[i] = document[i].replace(acronymsenseconstruct, acronym['longform'])
 
     # append processed data
