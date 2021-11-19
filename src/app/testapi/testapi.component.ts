@@ -241,6 +241,7 @@ export class TestapiComponent implements OnInit {
       return;
     } else {
       // small sleep before starting find of all cuis
+      this.cuiProgress = 'Please be patient. The download button will be activated once all data have been processed.';
       await this.sleep(3000);
       this.findAllCUIs();
     }
@@ -801,7 +802,6 @@ export class TestapiComponent implements OnInit {
   // button to find all CUIs
   async findAllCUIs() {
     // start the process of CUIs find and show spinner
-    this.cuiProgress = 'Please be patient. The download button will be activated once all data have been processed.';
     this.areCUIsBeingFound = true;
 
     // cycle through all datasource items
