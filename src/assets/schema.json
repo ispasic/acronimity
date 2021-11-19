@@ -1,0 +1,83 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "object",
+  "properties": {
+    "abstracts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "journal": { "type": "string" },
+          "pubdate": { "type": "string" },
+          "authors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name":      { "type": "string" },
+                "clusterid": { "type": "string" },
+                "authtype":  { "type": "string" }
+              }
+            }
+          },
+          "pubmed_id": { "type": "string" },
+          "original_abstract": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "edited_abstract": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "acronyms": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "longform":  { "type": "string" },
+                "shortform": { "type": "string" },
+                "cui":       { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "inventory": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "acronym":   { "type": "string" },
+              "sense":     { "type": "string" },
+              "cui":       { "type": "string" },
+              "frequency": { "type": "integer" }
+            }
+          }
+        },
+        "total": {
+          "type": "object",
+          "properties": {
+            "acronyms":         { "type": "integer" },
+            "senses":           { "type": "integer" },
+            "cuis":             { "type": "integer" },
+            "acronymMentions":  { "type": "integer" }
+          }
+        },
+        "average": {
+          "type": "object",
+          "properties": {
+            "acronymsPerDocument":        { "type": "number" },
+            "sensesPerAcronym":           { "type": "number" },
+            "cuisPerAcronym":             { "type": "number" },
+            "acronymMentionsPerDocument": { "type": "number" }
+          }
+        }
+      }
+    }
+  }
+}
