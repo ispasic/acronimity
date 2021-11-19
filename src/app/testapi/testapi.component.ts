@@ -10,11 +10,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort, MatSortable } from '@angular/material/sort';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 
 import { ShowdetailsDialogComponent } from './showdetails-dialog/showdetails-dialog.component';
 import { ShowacronymsDialogComponent } from './showacronyms-dialog/showacronyms-dialog.component';
 
 import * as FileSaver from 'file-saver';
+import * as JSZip from 'jszip';
 
 import Tokenizer from "../../../node_modules/sentence-tokenizer/lib/tokenizer"
 import { environment } from './../../environments/environment';
@@ -42,7 +44,6 @@ export interface senseInventorySummary {
   styleUrls: ['./testapi.component.css']
 })
 export class TestapiComponent implements OnInit {
-
   constructor(private router: Router,
     private pubmedService: PubmedService,
     private acronymService: AcronymService,
@@ -51,7 +52,8 @@ export class TestapiComponent implements OnInit {
     private abstractProcessingService: AbstractProcessingService,
     private UmlsService: UmlsService,
     private dialog: MatDialog,
-    private changeDetectorRef: ChangeDetectorRef) { }
+    private changeDetectorRef: ChangeDetectorRef,
+    private http: HttpClient) { }
 
   // Sense Inventory Table declarations
 
@@ -684,7 +686,7 @@ export class TestapiComponent implements OnInit {
   }
 
   //download all abstracts from results as single file
-  async downloadAbstractsClick(): Promise<void> {
+  async downloadClick(): Promise<void> {
     // download abstracts and sense inventory
     let downloadJson = {
       "abstracts": [],
@@ -732,9 +734,27 @@ export class TestapiComponent implements OnInit {
       }
     }
 
+    // create archive before download
+    var archive = new JSZip();
+    archive.file("corpus.json", new Blob([JSON.stringify(downloadJson, null, 2)], {type: "text/plain;charset=utf-8"}));
+    let readmeFile;
+    readmeFile = await this.http.get('assets/ReadMe.txt', {responseType: 'text'}).toPromise().catch(error => console.log(error));
+    archive.file("ReadMe.txt", readmeFile);
+    let schemaFile;
+    schemaFile = await this.http.get('assets/schema.json', {responseType: 'json'}).toPromise().catch(error => console.log(error));
+    archive.file("schema.json", new Blob([JSON.stringify(schemaFile, null, 2)], {type: "text/plain;charset=utf-8"}));
+    let pythonFile;
+    pythonFile = await this.http.get('assets/randomise.py', {responseType: 'text'}).toPromise().catch(error => console.log(error));
+    archive.file("randomise.py", pythonFile);
+    //generate archive and download
+    archive.generateAsync({ type: 'blob' }).then(function(content) {
+      // see FileSaver.js
+      FileSaver.saveAs(content, 'data.zip');
+    });
+
     // download
-    var blob = new Blob([JSON.stringify(downloadJson, null, 2)], {type: "text/plain;charset=utf-8"});
-    FileSaver.saveAs(blob, "Corpus.json");
+    // var blob = new Blob([JSON.stringify(downloadJson, null, 2)], {type: "text/plain;charset=utf-8"});
+    // FileSaver.saveAs(blob, "Corpus.json");
 
     // // download only abstracts
     // var blob = new Blob([JSON.stringify(this.listOfAbstracts, null, 2)], {type: "text/plain;charset=utf-8"});

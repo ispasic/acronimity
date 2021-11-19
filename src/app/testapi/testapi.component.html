@@ -312,10 +312,10 @@
         <!-- <button mat-stroked-button color="primary" [disabled]="isLoaded" (click)="showDatabaseMongoClick()"
             color="primary" class="normal-stroked-button">LOAD
             DATABASE</button> -->
-        <button mat-stroked-button *ngIf="isSearched" [disabled]="!allCUIsFound" (click)="downloadAbstractsClick()"
+        <button mat-stroked-button *ngIf="isSearched" [disabled]="!allCUIsFound" (click)="downloadClick()"
             color="primary" class="normal-stroked-button">DOWNLOAD</button>
         <mat-icon *ngIf="isSearched" class="normal-button-help-icon" #tooltip="matTooltip"
-            matTooltip="Press the 'DOWNLOAD' button to get the json file with the corpus. It contains the following fields: 'abstracts' with the full list of results and 'inventory' with the sense inventory information. Each search result has 'original_abstract' and 'edited_abstract' as well as full list of acronyms in the 'acronyms' field. 'inventory' includes 'data' field with the list of acronyms, senses, CUIs and frequencies, and 'total' and 'average' fields with total and average values from sense inventory table.">
+            matTooltip="Press to download processed data if you wish to process them further locally.">
             help_outline
         </mat-icon>
         <!-- <button mat-stroked-button *ngIf="isSearched" (click)="insertAllAbstractsClick()" color="primary"
