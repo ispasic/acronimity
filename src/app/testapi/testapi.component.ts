@@ -697,16 +697,16 @@ export class TestapiComponent implements OnInit {
     downloadJson.abstracts = JSON.parse(JSON.stringify(this.listOfAbstracts));
     downloadJson.inventory.data = JSON.parse(JSON.stringify(this.dataSource.data));
     downloadJson.inventory.total = {
-      "acronyms": this.senseInventoryTotal.data[0].value,
-      "senses": this.senseInventoryTotal.data[1].value,
-      "cuis": this.senseInventoryTotal.data[2].value.toString(),
-      "acronymMnetions": this.senseInventoryTotal.data[3].value,
+      "acronyms": Number(this.senseInventoryTotal.data[0].value),
+      "senses": Number(this.senseInventoryTotal.data[1].value),
+      "cuis": Number(this.senseInventoryTotal.data[2].value.toString()),
+      "acronymMentions": Number(this.senseInventoryTotal.data[3].value),
     }
     downloadJson.inventory.average = {
-      "acronymsPerDocument": this.senseInventoryAverage.data[0].value,
-      "sensesPerAcronym": this.senseInventoryAverage.data[1].value,
-      "cuisPerAcronym": this.senseInventoryAverage.data[2].value,
-      "acronymMnetionsPerDocument": this.senseInventoryAverage.data[3].value,
+      "acronymsPerDocument": Number(this.senseInventoryAverage.data[0].value),
+      "sensesPerAcronym": Number(this.senseInventoryAverage.data[1].value),
+      "cuisPerAcronym": Number(this.senseInventoryAverage.data[2].value),
+      "acronymMentionsPerDocument": Number(this.senseInventoryAverage.data[3].value),
     }
 
     // cut text field and add CUIs
@@ -754,13 +754,13 @@ export class TestapiComponent implements OnInit {
       "acronyms": this.senseInventoryTotal.data[0].value,
       "senses": this.senseInventoryTotal.data[1].value,
       "cuis": this.senseInventoryTotal.data[2].value.toString(),
-      "acronymMnetions": this.senseInventoryTotal.data[3].value,
+      "acronymMentions": this.senseInventoryTotal.data[3].value,
     }
     senseInventory.average = {
       "acronymsPerDocument": this.senseInventoryAverage.data[0].value,
       "sensesPerAcronym": this.senseInventoryAverage.data[1].value,
       "cuisPerAcronym": this.senseInventoryAverage.data[2].value,
-      "acronymMnetionsPerDocument": this.senseInventoryAverage.data[3].value,
+      "acronymMentionsPerDocument": this.senseInventoryAverage.data[3].value,
     }
     var blob = new Blob([JSON.stringify(senseInventory, null, 2)], {type: "text/plain;charset=utf-8"});
     FileSaver.saveAs(blob, "Sense_Inventory.json");
