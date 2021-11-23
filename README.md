@@ -17,7 +17,7 @@ simple JSON format ready to be processed locally by other natural language proce
 
 ## Application
 
-The application is written using MEAN stack.
+The application is written using MEAN stack (http://meanjs.org/)
 
 Demo is accessible on https://datainnovation.cardiff.ac.uk/acronyms/
 
@@ -27,7 +27,7 @@ The following will install the npm packages according to the configuration:
 
 ## Development server/Run the application locally
 
-Run `npm start` for a dev server and `node server.js` for backend server from separate consoles.
+Run `npm start` for a dev frontend server and `node server.js` for backend server from separate consoles.
 Navigate to `http://localhost:4203/`.
 The app will automatically reload if you change any of the source files.
 
@@ -53,6 +53,10 @@ The variables required:
 - For Pubmed API: `PUBMED_API_KEY`
 - For UMLS: `UMLS_API_KEY`
 - For MongoDB Connection: `MONGODB_USER` and `MONGODB_USER_PASSWORD`
+
+Please refer to https://www.ncbi.nlm.nih.gov/home/develop/api/ in order to acquire PubMed database API key.
+
+Please refer to https://documentation.uts.nlm.nih.gov/rest/authentication.html in order to acquire UMLS API key.
 
 Additionally, if the intention is to run the application not locally, you need to register the application/domain at Google reCaptcha service (https://www.google.com/recaptcha/). Please provide an additional enviromental variable in that case: `CAPTCHA_SITE_KEY`. If that variable is not provided, a default value of the site key is used that works only for local environment.
 
