@@ -19,6 +19,10 @@ simple JSON format ready to be processed locally by other natural language proce
 
 The application is written using MEAN stack (http://meanjs.org/)
 
+Due to limitations associated with the use of PubMed and UMLS APIs, we recommend installing the application
+locally and using your own API keys if you plan to use the application frequently or to generate a large
+dataset.
+
 Demo is accessible on https://datainnovation.cardiff.ac.uk/acronyms/
 
 ## Set Up
