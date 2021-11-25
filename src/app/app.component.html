@@ -24,6 +24,13 @@
         annotation. Once the corpus has been processed, it can be downloaded together with the sense inventory in a
         simple JSON format ready to be processed locally by other natural language processing applications.
       </p>
+      <p class="disclaimer-text">
+        Due to limitations associated with the use of PubMed and UMLS APIs, we recommend installing the application
+        locally and using your own API keys if you plan to use the application frequently or to generate a large
+        dataset.
+        The source code is available from <a href="https://github.com/ispasic/acronimity">GitHub</a>. In the
+        meantime, you can try the demo version here.
+      </p>
       <img src="assets/pipeline.png">
       <div [hidden]="isCaptchaResolved">
         <re-captcha (resolved)="resolved($event)" siteKey={{captchaSiteKey}}></re-captcha>
