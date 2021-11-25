@@ -65,6 +65,3 @@ Additionally, if the intention is to run the application not locally, you need t
 - Irena Spasić
 
 School of Computer Science & Informatics, Cardiff University
-
-## Contact Information
-If you have any questions, feel free to contact the authors on `spasici@cardiff.ac.uk` or `filimonovm@cardiff.ac.uk`
