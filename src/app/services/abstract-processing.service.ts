@@ -16,24 +16,42 @@ export class AbstractProcessingService {
     taggedText = taggedText.replace(/\s{2,}/g,' '); //swap all multiple spaces with spaces
 
     // preprocess sentence
-
     for (let acronym of acronymList) {
+      // using javascript notations
       // transform `longform (shortform)` strings into `shortform`
-      taggedText = this.replaceAll(taggedText, acronym.longform + " (" + acronym.shortform + ")", acronym.shortform);
-      taggedText = this.replaceAll(taggedText, acronym.longform + "(" + acronym.shortform + ")", acronym.shortform);
+      taggedText = this.replaceAll(taggedText, `${acronym.longform} (${acronym.shortform})`, acronym.shortform);
+      taggedText = this.replaceAll(taggedText, `${acronym.longform}(${acronym.shortform})`, acronym.shortform);
       // transform `longform (shortform)-` strings into `shortform`
-      taggedText = this.replaceAll(taggedText, acronym.longform + " (" + acronym.shortform + ")", acronym.shortform);
+      taggedText = this.replaceAll(taggedText, `${acronym.longform}(${acronym.shortform})-`, acronym.shortform);
       // transform `shortform (longform)` string into `shortform`
-      taggedText = this.replaceAll(taggedText, acronym.shortform + " (" + acronym.longform + ")", acronym.shortform);
-      taggedText = this.replaceAll(taggedText, acronym.shortform + "(" + acronym.longform + ")", acronym.shortform);
+      taggedText = this.replaceAll(taggedText, `${acronym.shortform} (${acronym.longform})`, acronym.shortform);
+      taggedText = this.replaceAll(taggedText, `${acronym.shortform}(${acronym.longform})`, acronym.shortform);
       // transform `(shortform) longform` string into `shortform`
-      taggedText = this.replaceAll(taggedText, "(" + acronym.shortform + ") " + acronym.longform, acronym.shortform);
-      taggedText = this.replaceAll(taggedText, "(" + acronym.shortform + ")" + acronym.longform, acronym.shortform);
+      taggedText = this.replaceAll(taggedText, `(${acronym.shortform}) ${acronym.longform}`, acronym.shortform);
+      taggedText = this.replaceAll(taggedText, `(${acronym.shortform})${acronym.longform}`, acronym.shortform);
+
+      // do the same for plural
+      // transform `longform (shortform)` strings into `shortform`
+      taggedText = this.replaceAll(taggedText, `${acronym.longform}s (${acronym.shortform}s)`, `${acronym.shortform}s`);
+      taggedText = this.replaceAll(taggedText, `${acronym.longform}s(${acronym.shortform}s)`, `${acronym.shortform}s`);
+      // transform `longform (shortform)-` strings into `shortform`
+      taggedText = this.replaceAll(taggedText, `${acronym.longform}s(${acronym.shortform}s)-`, `${acronym.shortform}s`);
+      // transform `shortform (longform)` string into `shortform`
+      taggedText = this.replaceAll(taggedText, `${acronym.shortform}s (${acronym.longform}s)`, `${acronym.shortform}s`);
+      taggedText = this.replaceAll(taggedText, `${acronym.shortform}s(${acronym.longform}s)`, `${acronym.shortform}s`);
+      // transform `(shortform) longform` string into `shortform`
+      taggedText = this.replaceAll(taggedText, `(${acronym.shortform}s) ${acronym.longform}s`, `${acronym.shortform}s`);
+      taggedText = this.replaceAll(taggedText, `(${acronym.shortform}s)${acronym.longform}s`, `${acronym.shortform}s`);
     }
 
     for (let acronym of acronymList) {
-      // transform `shortform` into `<acronym sense=longform>shortform</acronym>
-      taggedText = this.replaceAllBoundaries(taggedText, acronym.shortform, "<acronym sense='" + acronym.longform + "'>" + acronym.shortform + "</acronym>");
+      // transform `shortform` into `<acronym sense='longform'>shortform</acronym>
+      // taggedText = this.replaceAllBoundaries(taggedText, acronym.shortform, `<acronym sense='${acronym.longform}'>${acronym.shortform}</acronym>`)
+
+      // transform `shortform` into `<acronym shortform='shortform' longform='longform'>shortform</acronym>
+      taggedText = this.replaceAllBoundaries(taggedText, acronym.shortform, `<acronym shortform='${acronym.shortform}' longform='${acronym.longform}'>${acronym.shortform}</acronym>`)
+      // same for plurals
+      taggedText = this.replaceAllBoundaries(taggedText, `${acronym.shortform}s`, `<acronym shortform='${acronym.shortform}' longform='${acronym.longform}'>${acronym.shortform}s</acronym>`)
     }
     return taggedText;
   }
