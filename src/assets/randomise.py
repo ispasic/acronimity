@@ -11,6 +11,17 @@ import os
 import sys
 import argparse
 import random
+import re
+
+# define multiple simultaneous replacement functions
+def multiple_replacer(*key_values):
+    replace_dict = dict(key_values)
+    replacement_function = lambda match: replace_dict[match.group(0)]
+    pattern = re.compile("|".join([re.escape(k) for k, v in key_values]), re.M)
+    return lambda string: pattern.sub(replacement_function, string)
+
+def multiple_replace(string, *key_values):
+    return multiple_replacer(*key_values)(string)
 
 # set command line arguments
 parser = argparse.ArgumentParser(description='Randomise acronyms and longforms in corpus JSON file')
@@ -25,7 +36,7 @@ output_path = sys.argv[2]
 
 # read json file
 input = os.path.join(os.getcwd(), input_path)
-f = open(input)
+f = open(input, encoding="utf8")
 
 # get JSON object as a dictionary
 data = json.load(f)
@@ -43,18 +54,23 @@ for abstract in data['abstracts']:
         # get random value from 0 to 1
         coin = random.randint(0, 1)
 
-        # define acronym sense construct from processed abstract
-        acronymsenseconstruct = "<acronym sense='"+ acronym['longform'] + "'>" + acronym['shortform'] + "</acronym>"
+        # define acronym sense construct from processed abstract for both singular and plural
+        acronymsenseconstruct_singular = "<acronym shortform='" + acronym['shortform'] + "' longform='" + acronym['longform'] + "'>" + acronym['shortform'] + "</acronym>"
+        acronymsenseconstruct_plural = "<acronym shortform='" + acronym['shortform'] + "' longform='" + acronym['longform'] + "'>" + acronym['shortform'] + "s</acronym>"
 
         # cycle through each sentence in the document with index so that change is possible
         if coin == 0:
-            acronym["form"] = "short"
+            acronym["form"] = "short" # resulting form for particular acronym
+            # define replacements dictionary for both singular and plural
+            replacements = (acronymsenseconstruct_singular, acronym['shortform']), (acronymsenseconstruct_plural, acronym['shortform'] + "s")
             for i in range(len(document)):
-                document[i] = document[i].replace(acronymsenseconstruct, acronym['shortform'])
+                document[i] = multiple_replace(document[i], *replacements)
         else:
-            acronym["form"] = "long"
+            acronym["form"] = "long" # resulting form for particular acronym
+            # define replacements dictionary for both singular and plural
+            replacements = (acronymsenseconstruct_singular, acronym['longform']), (acronymsenseconstruct_plural, acronym['longform'] + "s")
             for i in range(len(document)):
-                document[i] = document[i].replace(acronymsenseconstruct, acronym['longform'])
+                document[i] = multiple_replace(document[i], *replacements)
 
     # append processed data
     processed_data['documents'].append({
@@ -70,3 +86,4 @@ with open(output, 'w') as outfile:
 
 # close file
 f.close()
+
