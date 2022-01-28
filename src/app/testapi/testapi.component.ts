@@ -592,6 +592,7 @@ export class TestapiComponent implements OnInit {
         // if all cuis found
         if (this.apiCUIs == listOfAcronymsTable.length) {
           this.allCUIsFound = true;
+          this.cuiProgress = '';
         }
       });
     }
@@ -735,6 +736,9 @@ export class TestapiComponent implements OnInit {
       }
     }
 
+    // process corpus.json with randomise.py and save results in randomise.json
+    let processedData = this.processRandomisePython(downloadJson);
+
     // create archive before download
     var archive = new JSZip();
     archive.file("corpus.json", new Blob([JSON.stringify(downloadJson, null, 2)], {type: "text/plain;charset=utf-8"}));
@@ -747,6 +751,7 @@ export class TestapiComponent implements OnInit {
     let pythonFile;
     pythonFile = await this.http.get('assets/randomise.py', {responseType: 'text'}).toPromise().catch(error => console.log(error));
     archive.file("randomise.py", pythonFile);
+    archive.file("randomise.json", new Blob([JSON.stringify(processedData, null, 2)], {type: "text/plain;charset=utf-8"}));
     //generate archive and download
     archive.generateAsync({ type: 'blob' }).then(function(content) {
       // see FileSaver.js
@@ -762,8 +767,53 @@ export class TestapiComponent implements OnInit {
     // FileSaver.saveAs(blob, "Abstracts.json");
   }
 
-   //download all abstracts from results as single file
-   async downloadSenseInventoryClick(): Promise<void> {
+  // function that copies functionality of randomise.py script in javascript
+  processRandomisePython(corpus) {
+    // construct output json data
+    let processedData = {
+      "documents": []
+    };
+    
+    // cycle through the json list
+    for (let abstract of corpus.abstracts) {
+      // create proper copy of json object
+      let document = JSON.parse(JSON.stringify(abstract.edited_abstract));
+      // cycle through each acronym in acronyms for current abstract
+      for (let acronym of abstract.acronyms) {
+        // get random value from 0 to 1
+        let coin = Math.round(Math.random());
+
+        // define acronym sense construct from processed abstract for both singular and plural
+        let acronymsenseconstruct_singular = `<acronym shortform='${acronym.shortform}' longform='${acronym.longform}'>${acronym.shortform}</acronym>`
+        let acronymsenseconstruct_plural = `<acronym shortform='${acronym.shortform}' longform='${acronym.longform}'>${acronym.shortform}s</acronym>`
+
+        // cycle through each sentence in the document with index so that change is possible
+        if (coin == 0) {
+          acronym.form = "short"; // resulting form for particular acronym
+          for (let i = 0; i < document.length; i++) {
+            document[i] = this.abstractProcessingService.replaceAllBoundaries(document[i], acronymsenseconstruct_singular, `${acronym.shortform}`);
+            document[i] = this.abstractProcessingService.replaceAllBoundaries(document[i], acronymsenseconstruct_plural, `${acronym.shortform}s`);
+          }
+        } else {
+          acronym.form = "long"; // resulting form for particular acronym
+          for (let i = 0; i < document.length; i++) {
+            document[i] = this.abstractProcessingService.replaceAllBoundaries(document[i], acronymsenseconstruct_singular, `${acronym.longform}`);
+            document[i] = this.abstractProcessingService.replaceAllBoundaries(document[i], acronymsenseconstruct_plural, `${acronym.longform}s`);
+          }
+        }
+      }
+      // append processed data
+      processedData.documents.push({
+          "pubmed_id": abstract.pubmed_id,
+          "document": document,
+          "acronyms": abstract.acronyms
+      })
+    }
+    return processedData;
+  }
+
+  //download all abstracts from results as single file
+  async downloadSenseInventoryClick(): Promise<void> {
     // download sense inventory
     let senseInventory = {
         "data": [],
@@ -910,6 +960,7 @@ export class TestapiComponent implements OnInit {
           }
           if (this.apiCUIs == this.dataSource.data.length) {
             this.allCUIsFound = true;
+            this.cuiProgress = '';
           }
         });
       }
