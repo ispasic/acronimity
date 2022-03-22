@@ -161,7 +161,7 @@
                                     </mat-icon>
                                 </mat-header-cell>
                                 <mat-cell *matCellDef="let res" (click)="navigateCUI(res.cui)"
-                                    [ngClass]="{'cui-link': res.cui != 'SEARCHING' && res.cui != 'NONE' && res.cui != 'ERROR'}">
+                                    [ngClass]="{'cui-link': res.cui != 'SEARCHING' && res.cui != 'NONE' && res.cui != 'NULL'}">
                                     {{res.cui}}
                                 </mat-cell>
                             </ng-container>

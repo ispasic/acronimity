@@ -644,7 +644,7 @@ export class TestapiComponent implements OnInit {
     // if tgt validation error assign ERROR to all CUIs
     if (this.validateResult.status == "fail") {
       for (let item of this.dataSource.data) {
-        item.cui = 'ERROR';
+        item.cui = 'NULL';
       }
       this.allCUIsFound = true;
     }
