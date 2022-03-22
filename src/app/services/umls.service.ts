@@ -80,60 +80,75 @@ export class UmlsService {
   public async findCUI(query) {
     // get tgt
     let tgt = await this.getTgt();
+    // if error while searching for CUI
+    if (tgt.status) {
+      if (tgt.status == 'error') {
+        return new Promise(resolve => {
+          resolve({"status": "fail"})
+        });
+      }
+    }
     // get st
-    let st = await this.getStFromUmls(tgt).toPromise().catch(error => console.log(error));
+    let st = await this.getStFromUmls(tgt).toPromise().catch(error => console.log("Error while getting service ticket"));
     // get result through UMLS API Call
-    let result = await this.searchUmls(query, st).toPromise().catch(error => console.log(error));
+    let result = await this.searchUmls(query, st).toPromise().catch(error => console.log("Error while searching UMLS"));
     return result;
   }
 
   public async validateTgt(): Promise<any> {
     // get current tgt if any
     let tgt = await this.getTgt();
+    if (tgt.status) {
+      if (tgt.status == 'error') {
+        return new Promise(resolve => {
+          resolve({"status": "fail"})
+        });
+      }
+    }
     // try to get a st
     let st = await this.getStFromUmls(tgt).toPromise().catch(error => {
-      console.log(error);
+      console.log("Error while getting service ticket");
       return new Promise(resolve => {
-        resolve({"stasus": "success"})
+        resolve({"status": "fail"})
       });
     });
     if (!this.isString(st)) {
       // no st received, need to generate new tgt
       // delete all in umls collection
       await this.deleteTgtFromDatabase().toPromise().catch(error => {
-        console.log(error);
+        console.log("Error while deleting ticket granting tickets from database");
         return new Promise(resolve => {
-          resolve({"stasus": "success"})
+          resolve({"status": "fail"})
         });
       });
       // add a new tgt into database
       // get tgt from umls
       let tgtRes = await this.getTgtFromUmls().toPromise().catch(error => {
-        console.log(error)
+        console.log("Error while getting ticket granting tickets")
         return new Promise(resolve => {
-          resolve({"stasus": "success"})
+          resolve({"status": "fail"})
         });
       });
       // cut the actual tgt from the response
       let result = tgtRes.substring(tgtRes.indexOf("TGT-"), tgtRes.indexOf("method") - 2);
       // add tgt to database
       await this.addTgtToDatabase(result).toPromise().catch(error => {
-        console.log(error);
+        console.log("Error while adding ticket granting tickets from database");
         return new Promise(resolve => {
-          resolve({"stasus": "success"})
+          resolve({"status": "fail"})
         });
       });
     }
     return new Promise(resolve => {
-      resolve({"stasus": "success"})
+      resolve({"status": "success"})
     });
   }
 
   // get tgt checking the database
-  public async getTgt(): Promise<any> {
+  private async getTgt(): Promise<any> {
     let result = '';
     // get from Database first
-    let tgtRes = await this.getTgtFromDatabase().toPromise().catch(error => console.log(error));
+    let tgtRes = await this.getTgtFromDatabase().toPromise().catch(error => console.log("Error while getting ticket granting tickets from database"));
     // check if in database
     let tgtResJson = JSON.parse(JSON.stringify(tgtRes));
     // if in database return it
@@ -144,11 +159,17 @@ export class UmlsService {
       // if not in the database, get new tgt and add it to the database and return the value
     } else {
       // get tgt from umls
-      tgtRes = await this.getTgtFromUmls().toPromise().catch(error => console.log(error));
+      tgtRes = await this.getTgtFromUmls().toPromise().catch(error => console.log("Error while getting ticket granting tickets"));
+      // if no tgt received (authorization error etc.) send an error
+      if (!tgtRes) {
+        return new Promise(resolve => {
+          resolve({"status": "error"})
+        });
+      }
       // cut the actual tgt from the response
       result = tgtRes.substring(tgtRes.indexOf("TGT-"), tgtRes.indexOf("method") - 2);
       // add tgt to database
-      await this.addTgtToDatabase(result).toPromise().catch(error => console.log(error));
+      await this.addTgtToDatabase(result).toPromise().catch(error => console.log("Error while adding ticket granting tickets from database"));
       // return the value
       return new Promise(resolve => {
         resolve(result);

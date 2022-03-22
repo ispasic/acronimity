@@ -161,7 +161,8 @@
                                     </mat-icon>
                                 </mat-header-cell>
                                 <mat-cell *matCellDef="let res" (click)="navigateCUI(res.cui)"
-                                    [ngClass]="{'cui-link': res.cui != 'SEARCHING' && res.cui != 'NONE'}"> {{res.cui}}
+                                    [ngClass]="{'cui-link': res.cui != 'SEARCHING' && res.cui != 'NONE' && res.cui != 'ERROR'}">
+                                    {{res.cui}}
                                 </mat-cell>
                             </ng-container>
                             <ng-container matColumnDef="frequency">

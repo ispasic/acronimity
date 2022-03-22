@@ -127,6 +127,9 @@ export class TestapiComponent implements OnInit {
   // how many IDs are processed each time
   fetchStep = 400;
 
+  // global validate tgt result for UMLS
+  validateResult;
+
   // paginator settings
   page: number = 1;
   maxSize: number = 10;
@@ -218,7 +221,7 @@ export class TestapiComponent implements OnInit {
     }
 
     // validate tgt first
-    let validateResult = await this.UmlsService.validateTgt();
+    this.validateResult = await this.UmlsService.validateTgt();
 
     // get the basic data for each result
     await this.getBasicDataResults(this.listOfSearchIDs);
@@ -236,8 +239,8 @@ export class TestapiComponent implements OnInit {
     // console.log(this.listOfSearchResults);
     // console.log(this.listOfAbstracts);
     
-    if (validateResult.stasus == "fail") {
-      this.cuiProgress = 'Error occured while searching CUIs. Please reload the application and try again. If the error persists, contact the developers. Sorry for the inconvenience.';
+    if (this.validateResult.status == "fail") {
+      this.cuiProgress = 'Error occured while searching CUIs. Please reload the application and try again. If the error persists, contact the developers (https://github.com/ispasic/acronimity). Sorry for the inconvenience.';
       return;
     } else {
       // small sleep before starting find of all cuis
@@ -569,33 +572,33 @@ export class TestapiComponent implements OnInit {
   }
 
   async generateSenseInventoryTable(listOfAcronymsTable): Promise<void> {
-
-    // generate TGT
-    await this.UmlsService.getTgt();
-
-    // sort the listOfAcronymsTable and assign first 10 CUIs
+    // sort the listOfAcronymsTable
     listOfAcronymsTable.sort((a, b) => (a.acronym > b.acronym) ? 1 : -1);
-    for (let i = 0; i < Math.min(10, listOfAcronymsTable.length); i++) {
-      // sleep cause 20 api calls per second
-      await this.sleep(50);
-      this.UmlsService.findCUI(listOfAcronymsTable[i].sense).then(data => {
-        // increase the number of overall found CUIs
-        this.apiCUIs++;
-        listOfAcronymsTable[i].cui = data.result.results[0].ui;
-        // update the sense inventory total and average CUI values
-        if (listOfAcronymsTable[i].cui != "NONE") {
-          // increase the number of found meaningful CUIs
-          this.foundCUIs++;
-          // update the value in Sense Inventory Total and Average tables
-          this.updateSenseInventoryCUIs();
-        }
-        // if all cuis found
-        if (this.apiCUIs == listOfAcronymsTable.length) {
-          this.allCUIsFound = true;
-          this.cuiProgress = '';
-        }
-      });
-    }
+
+    // if no validate tgt error, assign first 10 CUIs
+    // if (this.validateResult.status == "success") {
+    //   for (let i = 0; i < Math.min(10, listOfAcronymsTable.length); i++) {
+    //     // sleep cause 20 api calls per second
+    //     await this.sleep(50);
+    //     this.UmlsService.findCUI(listOfAcronymsTable[i].sense).then(data => {
+    //       // increase the number of overall found CUIs
+    //       this.apiCUIs++;
+    //       listOfAcronymsTable[i].cui = data.result.results[0].ui;
+    //       // update the sense inventory total and average CUI values
+    //       if (listOfAcronymsTable[i].cui != "NONE") {
+    //         // increase the number of found meaningful CUIs
+    //         this.foundCUIs++;
+    //         // update the value in Sense Inventory Total and Average tables
+    //         this.updateSenseInventoryCUIs();
+    //       }
+    //       // if all cuis found
+    //       if (this.apiCUIs == listOfAcronymsTable.length) {
+    //         this.allCUIsFound = true;
+    //         this.cuiProgress = '';
+    //       }
+    //     });
+    //   }
+    // }
 
     // generate the main sense inventory
     this.dataSource = new MatTableDataSource<senseInventory>(listOfAcronymsTable);
@@ -637,6 +640,14 @@ export class TestapiComponent implements OnInit {
       // update CUIs of visible items
       this.updateVisibleCUIs(itemsShown);
     });
+
+    // if tgt validation error assign ERROR to all CUIs
+    if (this.validateResult.status == "fail") {
+      for (let item of this.dataSource.data) {
+        item.cui = 'ERROR';
+      }
+      this.allCUIsFound = true;
+    }
   }
 
   generateSenseInventorySummaries(listOfAcronymsTable): void {
