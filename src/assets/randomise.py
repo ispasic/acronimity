@@ -6,12 +6,13 @@ Created on Fri Nov 12 15:51:52 2021
 @contact information: spasici@cardiff.ac.uk, filimonovm@cardiff.ac.uk
 """
 
+from cmath import inf
 import json
 import os
-import sys
 import argparse
 import random
 import re
+import inflect # library for correct generation of plurals (https://pypi.org/project/inflect/)
 
 # define multiple simultaneous replacement functions
 def multiple_replacer(*key_values):
@@ -25,18 +26,21 @@ def multiple_replace(string, *key_values):
 
 # set command line arguments
 parser = argparse.ArgumentParser(description='Randomise acronyms and longforms in corpus JSON file')
-parser.add_argument('input_path', metavar='input_path', type=str, help='Path to the input JSON file')
-parser.add_argument('output_path', metavar='output_path', type=str, help='Path to the output JSON file')
-
+parser.add_argument('-i', '--input', metavar="input", type=str, required=True, help='Path to the input JSON file')
+parser.add_argument('-o', '--output', metavar="output", type=str, required=True, help='Path to the output JSON file')
+parser.add_argument('-t', '--threshold', metavar="threshold", type=int, required=False, default=50, help='Probability of replacement. The higher it is the more longforms will be in the processed corpus. Default value is 50%')
 args = parser.parse_args()
 
 # read arguments from the command line
-input_path = sys.argv[1]
-output_path = sys.argv[2]
+input_path = args.input
+output_path = args.output
+threshold = args.threshold # that is 50 by default if not provided
+
+# initialise inflect plural engine
+p = inflect.engine()
 
 # read json file
-input = os.path.join(os.getcwd(), input_path)
-f = open(input, encoding="utf8")
+f = open(os.path.join(os.getcwd(), input_path), encoding="utf8")
 
 # get JSON object as a dictionary
 data = json.load(f)
@@ -51,15 +55,20 @@ for abstract in data['abstracts']:
     # cycle through each acronym in acronyms for current abstract
     for acronym in abstract['acronyms']:
 
-        # get random value from 0 to 1
-        coin = random.randint(0, 1)
+        # get uniform random value from 0 to 100
+        coin = random.uniform(0, 100)
 
-        # define acronym sense construct from processed abstract for both singular and plural
+        # define acronym-sense construct from processed abstract for both singular and plural (based on processed abstract from web application)
         acronymsenseconstruct_singular = "<acronym shortform='" + acronym['shortform'] + "' longform='" + acronym['longform'] + "'>" + acronym['shortform'] + "</acronym>"
         acronymsenseconstruct_plural = "<acronym shortform='" + acronym['shortform'] + "' longform='" + acronym['longform'] + "'>" + acronym['shortform'] + "s</acronym>"
+        
+        # define correct longform for plural using inflect pluralise engine
+        longform_plural = acronym['longform'].split(' ')
+        longform_plural[len(longform_plural) - 1] = p.plural(longform_plural[len(longform_plural) - 1])
+        longform_plural = ' '.join(longform_plural)
 
         # cycle through each sentence in the document with index so that change is possible
-        if coin == 0:
+        if coin < threshold:
             acronym["form"] = "short" # resulting form for particular acronym
             # define replacements dictionary for both singular and plural
             replacements = (acronymsenseconstruct_singular, acronym['shortform']), (acronymsenseconstruct_plural, acronym['shortform'] + "s")
@@ -68,7 +77,7 @@ for abstract in data['abstracts']:
         else:
             acronym["form"] = "long" # resulting form for particular acronym
             # define replacements dictionary for both singular and plural
-            replacements = (acronymsenseconstruct_singular, acronym['longform']), (acronymsenseconstruct_plural, acronym['longform'] + "s")
+            replacements = (acronymsenseconstruct_singular, acronym['longform']), (acronymsenseconstruct_plural, longform_plural)
             for i in range(len(document)):
                 document[i] = multiple_replace(document[i], *replacements)
 
@@ -80,8 +89,7 @@ for abstract in data['abstracts']:
     })
 
 # pretty-write processed data into result file
-output = os.path.join(os.getcwd(), output_path)
-with open(output, 'w') as outfile:
+with open(os.path.join(os.getcwd(), output_path), 'w') as outfile:
     json.dump(processed_data, outfile, indent = 4)
 
 # close file
