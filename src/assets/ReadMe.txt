@@ -1,4 +1,4 @@
-corpus.json : Processed data including the corpus and the sense inventory.
-schema.json : The schema describes the format of the processed data.
-randomise.json : Annotated corpus with acronyms replaced by their long forms or vice versa in a random manner with 50% probability.
-randomise.py : Run this script on corpus.json if you wish to replace acronyms by their long forms or vice versa in a random manner.
+corpus.json : Processed data including the corpus (both raw and annotated documents) and the sense inventory (i.e. acronyms mapped to their long forms).
+schema.json : The schema describes the format of the processed data stored in the corpus.json file.
+randomise.json : A randomised corpus with acronyms replaced by their long forms or vice versa in a random manner with 50% probability. Annotations are provided in a standoff format.
+randomise.py : Run this script on corpus.json if you wish to re-randomise the corpus by replacing acronyms by their long forms or vice versa. The probability of replacement can be changed from the default 50% if necessary.
