@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import * as pluralize from '../../../node_modules/pluralize';
 
 @Injectable({
   providedIn: 'root'
@@ -32,16 +33,16 @@ export class AbstractProcessingService {
 
       // do the same for plural
       // transform `longform (shortform)` strings into `shortform`
-      taggedText = this.replaceAll(taggedText, `${acronym.longform}s (${acronym.shortform}s)`, `${acronym.shortform}s`);
-      taggedText = this.replaceAll(taggedText, `${acronym.longform}s(${acronym.shortform}s)`, `${acronym.shortform}s`);
+      taggedText = this.replaceAll(taggedText, `${pluralize.plural(acronym.longform)} (${acronym.shortform}s)`, `${acronym.shortform}s`);
+      taggedText = this.replaceAll(taggedText, `${pluralize.plural(acronym.longform)}(${acronym.shortform}s)`, `${acronym.shortform}s`);
       // transform `longform (shortform)-` strings into `shortform`
-      taggedText = this.replaceAll(taggedText, `${acronym.longform}s(${acronym.shortform}s)-`, `${acronym.shortform}s`);
+      taggedText = this.replaceAll(taggedText, `${pluralize.plural(acronym.longform)}(${acronym.shortform}s)-`, `${acronym.shortform}s`);
       // transform `shortform (longform)` string into `shortform`
-      taggedText = this.replaceAll(taggedText, `${acronym.shortform}s (${acronym.longform}s)`, `${acronym.shortform}s`);
-      taggedText = this.replaceAll(taggedText, `${acronym.shortform}s(${acronym.longform}s)`, `${acronym.shortform}s`);
+      taggedText = this.replaceAll(taggedText, `${acronym.shortform}s (${pluralize.plural(acronym.longform)})`, `${acronym.shortform}s`);
+      taggedText = this.replaceAll(taggedText, `${acronym.shortform}s(${pluralize.plural(acronym.longform)})`, `${acronym.shortform}s`);
       // transform `(shortform) longform` string into `shortform`
-      taggedText = this.replaceAll(taggedText, `(${acronym.shortform}s) ${acronym.longform}s`, `${acronym.shortform}s`);
-      taggedText = this.replaceAll(taggedText, `(${acronym.shortform}s)${acronym.longform}s`, `${acronym.shortform}s`);
+      taggedText = this.replaceAll(taggedText, `(${acronym.shortform}s) ${pluralize.plural(acronym.longform)}`, `${acronym.shortform}s`);
+      taggedText = this.replaceAll(taggedText, `(${acronym.shortform}s)${pluralize.plural(acronym.longform)}`, `${acronym.shortform}s`);
     }
 
     for (let acronym of acronymList) {

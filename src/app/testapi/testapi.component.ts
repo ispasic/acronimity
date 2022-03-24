@@ -17,6 +17,7 @@ import { ShowacronymsDialogComponent } from './showacronyms-dialog/showacronyms-
 
 import * as FileSaver from 'file-saver';
 import * as JSZip from 'jszip';
+import * as pluralize from '../../../node_modules/pluralize';
 
 import Tokenizer from "../../../node_modules/sentence-tokenizer/lib/tokenizer"
 import { environment } from './../../environments/environment';
@@ -809,7 +810,7 @@ export class TestapiComponent implements OnInit {
           acronym.form = "long"; // resulting form for particular acronym
           for (let i = 0; i < document.length; i++) {
             document[i] = this.abstractProcessingService.replaceAllBoundaries(document[i], acronymsenseconstruct_singular, `${acronym.longform}`);
-            document[i] = this.abstractProcessingService.replaceAllBoundaries(document[i], acronymsenseconstruct_plural, `${acronym.longform}s`);
+            document[i] = this.abstractProcessingService.replaceAllBoundaries(document[i], acronymsenseconstruct_plural, `${pluralize.plural(acronym.longform)}`);
           }
         }
       }
