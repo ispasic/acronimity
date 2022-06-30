@@ -18,7 +18,7 @@ if (isProduction) {
    baseApiUrl = "http://localhost:8083/";
 }
 let captchaSiteKey = '';
-if (process.env.CAPTCHA_SITE_KEY) {
+if (isProduction) {
    captchaSiteKey = process.env.CAPTCHA_SITE_KEY;
 } else {
    captchaSiteKey = "6LcOuyYTAAAAAHTjFuqhA52fmfJ_j5iFk5PsfXaU";

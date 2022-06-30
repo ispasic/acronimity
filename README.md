@@ -19,10 +19,6 @@ simple JSON format ready to be processed locally by other natural language proce
 
 The application is written using MEAN stack (http://meanjs.org/)
 
-Due to limitations associated with the use of PubMed and UMLS APIs, we recommend installing the application
-locally and using your own API keys if you plan to use the application frequently or to generate a large
-dataset.
-
 Demo is accessible on https://datainnovation.cardiff.ac.uk/acronyms/
 
 ## Set Up
@@ -42,21 +38,12 @@ The following will build the production version of the applicaion:
 The following will run the production version of the application:
 #### `node server.js`
 
-## Mongodb connection
-
-MongoDB is used to store and access the ticket granting ticket (TGT) for UMLS service. Please ensure to create an `acronyms` database with `umls` empty collection.
-
-Use the following command to create a "Time to Live" (TTL) index on the collection using the following command:
-#### `db.umls.createIndex( { "createdAt": 1 }, { expireAfterSeconds: 25000 } )`
-That will ensure that TGT deletes itself from the database in order for the app to acquire a new one as TGT expires in 8 hours.
-
 ## Environment Variables
 To make use of all the APIs and mongoDB connection, you need to provide API Keys and mongoDB user settings in `.env` file in the source directory.
 The variables required:
 
 - For Pubmed API: `PUBMED_API_KEY`
 - For UMLS: `UMLS_API_KEY`
-- For MongoDB Connection: `MONGODB_USER` and `MONGODB_USER_PASSWORD`
 
 Please refer to https://www.ncbi.nlm.nih.gov/home/develop/api/ in order to acquire PubMed database API key.
 
@@ -64,8 +51,15 @@ Please refer to https://documentation.uts.nlm.nih.gov/rest/authentication.html i
 
 Additionally, if the intention is to run the application not locally, you need to register the application/domain at Google reCaptcha service (https://www.google.com/recaptcha/). Please provide an additional enviromental variable in that case: `CAPTCHA_SITE_KEY`. If that variable is not provided, a default value of the site key is used that works only for local environment.
 
+## Changelog
+
+- 30/06/2022:
+    - Updated UMLS API (Reason: use of ticket granting tickets and service tickets was deprecated by UMLS)
+    - Removed MongoDB connection (Reason: no need to store UMLS tickets as their use was deprecated by UMLS)
+
 ## Authors
 - Maxim Filimonov
 - Irena Spasić
 
-School of Computer Science & Informatics, Cardiff University
+## Contact Information
+If you have any questions, feel free to contact the authors on `spasici@cardiff.ac.uk` or `filimonovm@cardiff.ac.uk`

@@ -2,7 +2,6 @@ import { ChangeDetectorRef, Component, OnInit, ViewChild, ViewChildren } from '@
 import { Router } from '@angular/router';
 import { PubmedService } from '../services/pubmed.service';
 import { AcronymService } from '../services/acronym.service';
-import { AcronymsDatabaseService } from '../services/acronyms-database.service';
 import { MongodbService } from '../services/mongodb.service';
 import { AbstractProcessingService } from '../services/abstract-processing.service';
 import { UmlsService } from '../services/umls.service';
@@ -48,7 +47,6 @@ export class TestapiComponent implements OnInit {
   constructor(private router: Router,
     private pubmedService: PubmedService,
     private acronymService: AcronymService,
-    private acronymsDatabaseService: AcronymsDatabaseService,
     private mongodbService: MongodbService,
     private abstractProcessingService: AbstractProcessingService,
     private UmlsService: UmlsService,
@@ -221,8 +219,8 @@ export class TestapiComponent implements OnInit {
       this.listOfSearchIDs.push(searchResult.esearchresult.idlist[i]);
     }
 
-    // validate tgt first
-    this.validateResult = await this.UmlsService.validateTgt();
+    // validate umls service first
+    this.validateResult = await this.validateUmlsService();
 
     // get the basic data for each result
     await this.getBasicDataResults(this.listOfSearchIDs);
@@ -246,7 +244,7 @@ export class TestapiComponent implements OnInit {
     } else {
       // small sleep before starting find of all cuis
       this.cuiProgress = 'Please be patient. The download button will be activated once all data have been processed.';
-      await this.sleep(3000);
+      await this.sleep(1100);
       this.findAllCUIs();
     }
 
@@ -576,31 +574,6 @@ export class TestapiComponent implements OnInit {
     // sort the listOfAcronymsTable
     listOfAcronymsTable.sort((a, b) => (a.acronym > b.acronym) ? 1 : -1);
 
-    // if no validate tgt error, assign first 10 CUIs
-    // if (this.validateResult.status == "success") {
-    //   for (let i = 0; i < Math.min(10, listOfAcronymsTable.length); i++) {
-    //     // sleep cause 20 api calls per second
-    //     await this.sleep(50);
-    //     this.UmlsService.findCUI(listOfAcronymsTable[i].sense).then(data => {
-    //       // increase the number of overall found CUIs
-    //       this.apiCUIs++;
-    //       listOfAcronymsTable[i].cui = data.result.results[0].ui;
-    //       // update the sense inventory total and average CUI values
-    //       if (listOfAcronymsTable[i].cui != "NONE") {
-    //         // increase the number of found meaningful CUIs
-    //         this.foundCUIs++;
-    //         // update the value in Sense Inventory Total and Average tables
-    //         this.updateSenseInventoryCUIs();
-    //       }
-    //       // if all cuis found
-    //       if (this.apiCUIs == listOfAcronymsTable.length) {
-    //         this.allCUIsFound = true;
-    //         this.cuiProgress = '';
-    //       }
-    //     });
-    //   }
-    // }
-
     // generate the main sense inventory
     this.dataSource = new MatTableDataSource<senseInventory>(listOfAcronymsTable);
     this.changeDetectorRef.detectChanges();
@@ -642,7 +615,7 @@ export class TestapiComponent implements OnInit {
       this.updateVisibleCUIs(itemsShown);
     });
 
-    // if tgt validation error assign ERROR to all CUIs
+    // if umls validation error assign NULL to all CUIs
     if (this.validateResult.status == "fail") {
       for (let item of this.dataSource.data) {
         item.cui = 'NULL';
@@ -870,10 +843,15 @@ export class TestapiComponent implements OnInit {
     for (let item of this.dataSource.data) {
       // find only those that are not found
       if (item.cui == 'SEARCHING') {
-        // sleep cause 20 api calls per second
-        await this.sleep(50);
-        this.UmlsService.findCUI(item.sense).then(data => {
-          item.cui = data.result.results[0].ui;
+        // sleep cause 20 api calls per second (with some extra time for precaution)
+        await this.sleep(75);
+
+        this.findUMLSCUI(item.sense).then(data => {
+          if (data.result.results.length > 0) {
+            item.cui = data.result.results[0].ui;
+          } else {
+            item.cui = "NONE";
+          }
           // add to number of found CUIs for progress spinner
           this.apiCUIs++;
           // add to meaningful CUIs
@@ -959,12 +937,16 @@ export class TestapiComponent implements OnInit {
   async updateVisibleCUIs(itemsShown): Promise<void> {
     for (let item of itemsShown) {
       if (item.cui == 'SEARCHING') {
-        // sleep cause 20 api calls per second
-        await this.sleep(50);
+        // sleep cause 20 api calls per second (with some extra time for precaution)
+        await this.sleep(75);
         // increase the number of found CUIs
-        this.UmlsService.findCUI(item.sense).then(data => {
+        this.findUMLSCUI(item.sense).then(data => {
           this.apiCUIs++;
-          item.cui = data.result.results[0].ui;
+          if (data.result.results.length > 0) {
+            item.cui = data.result.results[0].ui;
+          } else {
+            item.cui = "NONE";
+          }
           // update the sense inventory total and average CUI values
           if (item.cui != "NONE") {
             this.foundCUIs++;
@@ -1153,6 +1135,15 @@ export class TestapiComponent implements OnInit {
     return result;
   }
 
+  // umls search service with sleep
+  async findUMLSCUI(query) {
+    const result = await this.UmlsService.findCUI(query).toPromise().catch(error => {
+      console.log("Error while searching UMLS");
+      return error.error;
+    });
+    return result
+  }
+
   // form list of authors to display in search results
   formDisplayAuthors(authors): String {
     var result;
@@ -1192,5 +1183,25 @@ export class TestapiComponent implements OnInit {
   
   async sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // validate umls service
+  async validateUmlsService(): Promise<any> {
+    let validateQueryResult = await this.findUMLSCUI("Test Query");
+    if (validateQueryResult) {
+      if (validateQueryResult.result) {
+        return new Promise(resolve => {
+          resolve({"status": "success"})
+        });
+      } else {
+        return new Promise(resolve => {
+          resolve({"status": "fail"})
+        });
+      }
+    } else {
+      return new Promise(resolve => {
+        resolve({"status": "fail"})
+      });
+    }
   }
 }

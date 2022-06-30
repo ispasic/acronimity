@@ -3,7 +3,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { PubmedService } from '../../services/pubmed.service';
 import { AcronymService } from '../../services/acronym.service';
-import { AcronymsDatabaseService } from '../../services/acronyms-database.service';
 
 import * as FileSaver from 'file-saver';
 
@@ -17,8 +16,7 @@ export class ShowacronymsDialogComponent implements OnInit {
   constructor(public dialogRef: MatDialogRef<ShowacronymsDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     private pubmedService: PubmedService,
-    private acronymService: AcronymService,
-    private acronymsDatabaseService: AcronymsDatabaseService) { }
+    private acronymService: AcronymService) { }
 
   allAcronymList: any[];
   insertObject;
@@ -44,18 +42,4 @@ export class ShowacronymsDialogComponent implements OnInit {
     var blob = new Blob([JSON.stringify(this.allAcronymList, null, '\t')], {type: "text/plain;charset=utf-8"});
     FileSaver.saveAs(blob, "Acronyms.json");
   }
-
-  async insertAcronymsClick(): Promise<void> {
-    for (var acronym of this.data)
-    {
-      this.insertObject = await this.insertAcronym(acronym);
-      console.log(this.insertObject);
-    }
-  }
-
-  async insertAcronym(acronym) {
-    const result = await this.acronymsDatabaseService.insertAcronym(acronym).toPromise().catch(error => console.log(error));
-    return result;
-  }
-
 }

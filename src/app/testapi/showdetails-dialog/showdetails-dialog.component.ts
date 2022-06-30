@@ -3,7 +3,6 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { PubmedService } from '../../services/pubmed.service';
 import { AcronymService } from '../../services/acronym.service';
-import { AcronymsDatabaseService } from '../../services/acronyms-database.service';
 import { AbstractProcessingService } from '../../services/abstract-processing.service';
 import { MongodbService } from '../../services/mongodb.service';
 
@@ -22,7 +21,6 @@ export class ShowdetailsDialogComponent {
     @Inject(MAT_DIALOG_DATA) public data: any,
     private pubmedService: PubmedService,
     private acronymService: AcronymService,
-    private acronymsDatabaseService: AcronymsDatabaseService,
     private abstractProcessingService: AbstractProcessingService,
     private mongodbService: MongodbService) { }
 
@@ -173,20 +171,6 @@ export class ShowdetailsDialogComponent {
     downloadDetailsClick(): void {
       var blob = new Blob([JSON.stringify(this.detailsAbstractList, null, 2)], {type: "text/plain;charset=utf-8"});
       FileSaver.saveAs(blob, "Abstract.json");
-    }
-
-    // insert acronyms into mysql
-    async insertAcronymsClick(): Promise<void> {
-      for (var acronym of this.detailsAcronymList)
-      {
-        this.insertObject = await this.insertAcronym(acronym);
-        console.log(this.insertObject);
-      }
-    }
-
-    async insertAcronym(acronym) {
-      const result = await this.acronymsDatabaseService.insertAcronym(acronym).toPromise().catch(error => console.log(error));
-      return result;
     }
 
     // abstract processing service
