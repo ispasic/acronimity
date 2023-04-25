@@ -44,6 +44,8 @@ The variables required:
 
 - For Pubmed API: `PUBMED_API_KEY`
 - For UMLS: `UMLS_API_KEY`
+- `MONGODB_USER`: MongoDB username
+- `MONGODB_USER_PASSWORD`: MongoDB password
 
 Please refer to https://www.ncbi.nlm.nih.gov/home/develop/api/ in order to acquire PubMed database API key.
 
